@@ -30,18 +30,24 @@ public class TileManager : MonoBehaviour
         {
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridPos = map.WorldToCell(mousePos);
-
-            TileBase clickedTile = map.GetTile(gridPos);
-
-            string tileType = dataFromTiles[clickedTile].tileType;
-            float travelCost = dataFromTiles[clickedTile].travelCost;
-            float waterValue = dataFromTiles[clickedTile].waterValue;
-            float landFertility = dataFromTiles[clickedTile].landFertility;
             
-            print(clickedTile != null ? "At position " + gridPos + " there is a " + tileType 
+            
+            var clickedTileData = getTileDataByCoords(mousePos);
+
+            string tileType = clickedTileData.tileType;
+            float travelCost = clickedTileData.travelCost;
+            float waterValue = clickedTileData.waterValue;
+            float landFertility = clickedTileData.landFertility;
+            
+            print(clickedTileData != null ? "At position " + gridPos + " there is a " + tileType 
                 + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility 
                                       : "At position " + gridPos + " there is no tile ");
         }
     }
+
+    public TileData getTileDataByCoords(Vector2 coordinates)
+    {
+        Vector3Int gridPos = map.WorldToCell(coordinates);
+        return dataFromTiles[map.GetTile(gridPos)];
+    }
 }
-//
