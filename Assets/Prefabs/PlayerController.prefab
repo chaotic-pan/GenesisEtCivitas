@@ -217,5 +217,5 @@ MonoBehaviour:
   edgeThreshold: 5
   rightMouseSpeedMultiplier: 500
   zoomSpeed: 200
-  rotateSpeed: 0.5
+  rotateSpeed: 50
   rotateFallback: 1000
