@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: a7894587655ab4e418259be6ccf26c3c
+AssetOrigin:
+  serializedVersion: 1
+  productId: 312045
+  packageName: Simple RTS Camera
+  packageVersion: 1.0.0
+  assetPath: Assets/SimpleRtsCamera/Scripts/SimpleRtsCamera.cs
+  uploadId: 735284
