@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace Player
@@ -26,6 +27,8 @@ namespace Player
 		private float _scrollMouseInput;
 		private float _middleMouseInput;
 
+		private Vector3 _cameraForward;
+		private Vector3 _cameraRight;
 		private bool _isDragging;
 
 		private void Awake()
@@ -55,6 +58,7 @@ namespace Player
 
 		private void LateUpdate()
 		{
+			UpdateRelativeCameraVectors();
 			MoveCamera();
 			MoveCameraWithCursor();
 			MoveCameraWithRightMouse();
@@ -95,6 +99,7 @@ namespace Player
 
 		private void RightMouseHandler(InputAction.CallbackContext callbackContext) {
 			_rightMouseInput = callbackContext.ReadValue<float>();
+			
 			if (callbackContext.performed)
 			{
 				_isDragging = true;
@@ -107,12 +112,32 @@ namespace Player
 		private void ScrollMouseHandler(InputAction.CallbackContext callbackContext) =>
 			_scrollMouseInput = callbackContext.ReadValue<float>();
 
-		private void MiddleMouseHandler(InputAction.CallbackContext callbackContext) =>
+		private void MiddleMouseHandler(InputAction.CallbackContext callbackContext)
+		{
 			_middleMouseInput = callbackContext.ReadValue<float>();
+			
+			if (callbackContext.performed)
+			{
+				_isDragging = true;
+			} else if (callbackContext.canceled)
+			{
+				_isDragging = false;
+			}
+		}
 
+		private void UpdateRelativeCameraVectors()
+		{
+			var forward = new Vector3(transform.forward.x, 0, transform.forward.z);
+			var right = new Vector3(transform.right.x, 0, transform.right.z);
+			forward.Normalize();
+			right.Normalize();
+			_cameraForward = forward;
+			_cameraRight = right;
+		}
+		
 		private void MoveCamera()
 		{
-			var moveDirection = new Vector3(_moveInput.x, 0, _moveInput.y) * (moveSpeed * Time.deltaTime);
+			Vector3 moveDirection = (_cameraRight * _moveInput.x + _cameraForward * _moveInput.y) * (moveSpeed * Time.deltaTime);
 			transform.position += moveDirection;
 		}
 
@@ -123,20 +148,20 @@ namespace Player
 			
 			if (_mousePositionInput.x < edgeThreshold)
 			{
-				transform.position += Vector3.left * (moveSpeed * Time.deltaTime);
+				transform.position += _cameraRight * (Vector3.left.x * (moveSpeed * Time.deltaTime));
 			}
 			else if (_mousePositionInput.x > Screen.width - edgeThreshold)
 			{
-				transform.position += Vector3.right * (moveSpeed * Time.deltaTime);
+				transform.position += _cameraRight * (Vector3.right.x * (moveSpeed * Time.deltaTime));
 			}
 
 			if (_mousePositionInput.y < edgeThreshold)
 			{
-				transform.position += Vector3.back * (moveSpeed * Time.deltaTime);
+				transform.position += _cameraForward * (Vector3.back.z * (moveSpeed * Time.deltaTime));
 			}
 			else if (_mousePositionInput.y > Screen.height - edgeThreshold)
 			{
-				transform.position += Vector3.forward * (moveSpeed * Time.deltaTime);
+				transform.position += _cameraForward * (Vector3.forward.z * (moveSpeed * Time.deltaTime));
 			}
 		}
 
@@ -145,12 +170,8 @@ namespace Player
 			if (Mathf.Approximately(_rightMouseInput, 0) || _initialMousePosition == Vector2.zero) return;
 
 			var mouseDelta = (_mousePositionInput - _initialMousePosition) * -1;
-			
-			
-			var moveX = mouseDelta.x * (moveSpeed * rightMouseSpeedMultiplier / Screen.width) * Time.deltaTime;
-			var moveY = mouseDelta.y * (moveSpeed * rightMouseSpeedMultiplier / Screen.height) * Time.deltaTime;
 
-			var moveDirection = new Vector3(moveX, 0, moveY);
+			Vector3 moveDirection = (_cameraRight * mouseDelta.x + _cameraForward * mouseDelta.y) * ((moveSpeed * rightMouseSpeedMultiplier / Screen.width) * Time.deltaTime);
 			transform.position += moveDirection;
 
 			_initialMousePosition = _mousePositionInput;
@@ -166,11 +187,13 @@ namespace Player
 
 		private void RotateCamera()
 		{
-			if (Mathf.Approximately(_middleMouseInput, 0)) return;
+			if (Mathf.Approximately(_middleMouseInput, 0) || _initialMousePosition == Vector2.zero) return;
 
 			var lookAtPoint = GetCameraLookAtPoint();
 			var mouseDelta = _mousePositionInput - _initialMousePosition;
 			transform.RotateAround(lookAtPoint, Vector3.up, mouseDelta.x * rotateSpeed * Time.deltaTime);
+			
+			_initialMousePosition = _mousePositionInput;
 		}
 
 		private Vector3 GetCameraLookAtPoint()
