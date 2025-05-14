@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class PlayerModel : MonoBehaviour
+namespace Player
 {
-
-    public int influencePoints = 100;
-    public int maxIP = 1000;
+    public class PlayerModel : MonoBehaviour
+    {
+        public int influencePoints = 100;
+        public int maxIP = 1000;
+    }
 }

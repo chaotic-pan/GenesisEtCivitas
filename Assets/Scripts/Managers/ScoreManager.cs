@@ -1,28 +1,32 @@
 using System.Collections;
 using UnityEngine;
+using Player;
 
-public class ScoreManager : MonoBehaviour
+namespace Managers
 {
-    private PlayerModel _playerModel;
-    
-    private void Start()
+    public class ScoreManager : MonoBehaviour
     {
-
-        GameObject playerController = GameObject.Find("PlayerController");
-        _playerModel = playerController.GetComponent<PlayerModel>();
-
-        StartCoroutine(IncreaseIP());
-    }
-
-    private IEnumerator IncreaseIP()
-    {
-        while (true)
+        private PlayerModel _playerModel;
+        
+        private void Start()
         {
-            yield return new WaitForSeconds(1f);
 
-            if (_playerModel.influencePoints < _playerModel.maxIP)
+            var player = GameObject.Find("Player");
+            _playerModel = player.GetComponent<PlayerModel>();
+
+            StartCoroutine(IncreaseIP());
+        }
+
+        private IEnumerator IncreaseIP()
+        {
+            while (true)
             {
-                _playerModel.influencePoints += 10;
+                yield return new WaitForSeconds(1f);
+
+                if (_playerModel.influencePoints < _playerModel.maxIP)
+                {
+                    _playerModel.influencePoints += 10;
+                }
             }
         }
     }

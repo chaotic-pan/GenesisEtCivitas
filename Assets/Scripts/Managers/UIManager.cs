@@ -1,20 +1,22 @@
 using UnityEngine;
 using TMPro;
+using Player;
 
-public class UIManager : MonoBehaviour
+namespace Managers
 {
-    private PlayerModel _playerModel;
-    [SerializeField] private TMP_Text _IpText;
-    void Start()
+    public class UIManager : MonoBehaviour
     {
-        GameObject playerController = GameObject.Find("PlayerController");
-          _playerModel = playerController.GetComponent<PlayerModel>();
+        private PlayerModel _playerModel;
+        [SerializeField] private TMP_Text _IpText;
+        private void Start()
+        {
+            var player = GameObject.Find("Player");
+              _playerModel = player.GetComponent<PlayerModel>();
+        }
+
+        private void Update()
+        {
+            _IpText.text = _playerModel.influencePoints.ToString();
+        }
     }
-
-    void Update()
-    {
-        _IpText.text = _playerModel.influencePoints.ToString();
-    }
-
-
 }
