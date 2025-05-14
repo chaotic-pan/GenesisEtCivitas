@@ -1,28 +1,29 @@
+using System.Collections;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
     private PlayerModel _playerModel;
-
-
-    void Start()
+    
+    private void Start()
     {
 
         GameObject playerController = GameObject.Find("PlayerController");
         _playerModel = playerController.GetComponent<PlayerModel>();
 
+        StartCoroutine(IncreaseIP());
     }
 
-    void Update()
+    private IEnumerator IncreaseIP()
     {
-        IncreaseIP();
-    }
-
-    void IncreaseIP()
-    {
-        if(_playerModel.influencePoints < _playerModel.maxIP)
+        while (true)
         {
-            _playerModel.influencePoints++;
+            yield return new WaitForSeconds(1f);
+
+            if (_playerModel.influencePoints < _playerModel.maxIP)
+            {
+                _playerModel.influencePoints += 10;
+            }
         }
     }
 }
