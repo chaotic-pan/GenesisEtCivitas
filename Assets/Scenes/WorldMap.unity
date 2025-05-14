@@ -321,6 +321,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2535278404786301882, guid: 78968c358a31f79428f5a960b81155d3, type: 3}
+      propertyPath: influencePoints
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5297270725674577852, guid: 78968c358a31f79428f5a960b81155d3, type: 3}
       propertyPath: m_Name
       value: PlayerController
@@ -4099,7 +4103,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5947075810016712818, guid: 5405eb00034adce4db02e8581c26b324, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
