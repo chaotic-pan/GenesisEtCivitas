@@ -5,7 +5,6 @@ namespace Animals
         private void Start()
         {
             Walk();   
-            Idle();
         }
 
         protected override void Walk()

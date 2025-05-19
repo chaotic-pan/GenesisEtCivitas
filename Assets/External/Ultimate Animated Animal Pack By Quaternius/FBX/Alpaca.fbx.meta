@@ -33,7 +33,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Light
-    second: {fileID: 5056954842840808523, guid: 96ada907fa7a03b47951f69b8c70c4e8, type: 3}
+    second: {fileID: 2100000, guid: a5110ba6dcfd4a04c8335cd5813a6db6, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
