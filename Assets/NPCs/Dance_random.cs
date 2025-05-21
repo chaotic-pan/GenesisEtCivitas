@@ -9,7 +9,7 @@ public class Dance_random : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         danceAnim = Random.Range(0, numberOfDances);
-        Debug.Log(danceAnim);
+        // Debug.Log(danceAnim);
         
     }
 

@@ -23,4 +23,9 @@ public class AnimManager : MonoBehaviour
             }
         }
     }
+
+    public void SetIsMoving(bool isMoving)
+    {
+        mAnimator.SetBool("isMoving", isMoving);
+    }
 }

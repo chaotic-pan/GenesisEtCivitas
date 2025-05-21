@@ -327,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileManager: {fileID: 541740374}
   npc: {fileID: 919132148972592038}
-  speed: 5
+  speed: 3
 --- !u!4 &705908278
 Transform:
   m_ObjectHideFlags: 0
@@ -3952,7 +3952,7 @@ Transform:
   m_GameObject: {fileID: 919132148972592038}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -5.59, y: 0.029760838, z: 4.24}
+  m_LocalPosition: {x: -5.59, y: 0, z: 4.24}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
