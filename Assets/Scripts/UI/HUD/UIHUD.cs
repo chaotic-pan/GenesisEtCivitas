@@ -1,15 +1,14 @@
+using System;
+using UI.Test;
 using UnityEngine;
 
 namespace UI.HUD
 {
     public class HUD : MonoBehaviour
     {
-        private int _testIP;
-        
-        public void OnGetIP()
+        public void OnGetInfluencePoints()
         {
-            _testIP += 50;
-            GameEvents.InfluencePoints.OnChangeInfluencePoints.Invoke(_testIP);
+            GameEvents.InfluencePoints.OnGetInfluencePoints.Invoke(50);
         }
     }
 }
