@@ -74,3 +74,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 .idea
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/settings.json
