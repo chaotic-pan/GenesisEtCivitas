@@ -8,7 +8,6 @@ namespace UI
     {
         [SerializeField] private TextMeshProUGUI cityNameText;
         [SerializeField] private TextMeshProUGUI populationText;
-        [SerializeField] private TextMeshProUGUI otherInfoText;
         
         public override void Initialize()
         {
@@ -19,7 +18,6 @@ namespace UI
         {
             cityNameText.text = cityModel.CityName;
             populationText.text = cityModel.Population.ToString();
-            otherInfoText.text = cityModel.OtherInfo.ToString();
         }
     }
 }

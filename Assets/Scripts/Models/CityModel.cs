@@ -9,7 +9,6 @@ namespace Models
 
         private int _population;
         private string _cityName;
-        private int _otherInfo;
 
         public int Population
         {
@@ -30,16 +29,5 @@ namespace Models
                 OnUpdateData?.Invoke(this);
             }
         }
-        
-        public int OtherInfo {
-            get => _otherInfo;
-            set
-            {
-                _otherInfo = value; 
-                OnUpdateData?.Invoke(this);
-            }
-        }
-
-        
     }
 }

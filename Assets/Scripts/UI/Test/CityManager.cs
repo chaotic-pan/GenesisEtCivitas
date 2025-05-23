@@ -17,14 +17,12 @@ namespace UI.Test
             var cityData1 = new CityModel()
             {
                 CityName = "Bravil",
-                OtherInfo = 123,
                 Population = city1PopulationTest
             };
             
             var cityData2 = new CityModel()
             {
                 CityName = "City2",
-                OtherInfo = 9756,
                 Population = city2PopulationTest
             };
             
