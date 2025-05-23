@@ -1,3 +1,4 @@
+using Models;
 using Player.Abilities;
 using UnityEngine;
 
@@ -34,12 +35,12 @@ namespace Player
 
             ability.CastAbility();
 
-            if (_playerModel.influencePoints < ability.Cost)
+            if (_playerModel.InfluencePoints < ability.Cost)
             {
                 Debug.Log("Too little CASH dumb ass");
                 return;
             }
-            _playerModel.influencePoints -= ability.Cost;
+            _playerModel.InfluencePoints -= ability.Cost;
             
             Debug.Log("Cost: " + ability.Cost);
 

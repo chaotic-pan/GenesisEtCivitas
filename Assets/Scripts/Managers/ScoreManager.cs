@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Models;
 using UnityEngine;
 using Player;
 
@@ -7,7 +9,12 @@ namespace Managers
     public class ScoreManager : MonoBehaviour
     {
         private PlayerModel _playerModel;
-        
+
+        private void Awake()
+        {
+            GameEvents.InfluencePoints.GainInfluencePoints += OnGainInfluencePoints;
+        }
+
         private void Start()
         {
 
@@ -23,11 +30,13 @@ namespace Managers
             {
                 yield return new WaitForSeconds(1f);
 
-                if (_playerModel.influencePoints < _playerModel.maxIP)
+                if (_playerModel.InfluencePoints < _playerModel.MaxIP)
                 {
-                    _playerModel.influencePoints += 10;
+                    _playerModel.InfluencePoints += 10;
                 }
             }
         }
+        
+        private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints += points;
     }
 }

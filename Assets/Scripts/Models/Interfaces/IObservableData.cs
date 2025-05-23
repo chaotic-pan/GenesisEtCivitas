@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Events;
 
-namespace UI.Test
+namespace Models.Interfaces
 {
     public interface IObservableData<T>
     {

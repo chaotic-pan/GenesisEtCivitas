@@ -1,10 +1,11 @@
+using Models.Interfaces;
 using UnityEngine.Events;
 
-namespace UI.Test
+namespace Models
 {
-    public class CityData : IObservableData<CityData>
+    public class CityModel : IObservableData<CityModel>
     {
-        public UnityEvent<CityData> OnUpdateData { get; } = new();
+        public UnityEvent<CityModel> OnUpdateData { get; } = new();
 
         private int _population;
         private string _cityName;

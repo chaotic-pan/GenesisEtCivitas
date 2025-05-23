@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,11 +9,11 @@ namespace UI.Test
 {
     public class CityTest : MonoBehaviour, IPointerClickHandler
     {
-        private CityData _cityData;
+        private CityModel _cityModel;
 
-        public void Initialize(CityData cityData)
+        public void Initialize(CityModel cityModel)
         {
-            _cityData = cityData;
+            _cityModel = cityModel;
             
             var coroutine = SpawnNewPop();
             StartCoroutine(coroutine);
@@ -22,7 +23,7 @@ namespace UI.Test
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                GameEvents.UI.OnOpenCityMenu.Invoke(_cityData);
+                UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);
             }
         }
 
@@ -31,7 +32,7 @@ namespace UI.Test
             while (true)
             {
                 yield return new WaitForSeconds(2);
-                _cityData.Population += 1;
+                _cityModel.Population += 1;
             }
         }
     }

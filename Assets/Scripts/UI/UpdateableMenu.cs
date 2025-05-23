@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using Models.Interfaces;
+using UnityEngine;
 using UnityEngine.Events;
 
-namespace UI.Test
+namespace UI
 {
     public abstract class UpdateableMenu<TData> : MonoBehaviour where TData : IObservableData<TData>
     {
         private UnityEvent<TData> _tDataEvent;
-
+        
         private void RegisterData(UnityEvent<TData> dataEvent)
         {
             _tDataEvent?.RemoveListener(UpdateData);

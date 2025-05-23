@@ -1,4 +1,5 @@
 using System;
+using Models;
 using UnityEngine;
 
 namespace UI.Test
@@ -13,14 +14,14 @@ namespace UI.Test
 
         private void Start()
         {
-            var cityData1 = new CityData()
+            var cityData1 = new CityModel()
             {
                 CityName = "Bravil",
                 OtherInfo = 123,
                 Population = city1PopulationTest
             };
             
-            var cityData2 = new CityData()
+            var cityData2 = new CityModel()
             {
                 CityName = "City2",
                 OtherInfo = 9756,
