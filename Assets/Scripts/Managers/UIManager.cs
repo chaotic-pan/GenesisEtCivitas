@@ -10,6 +10,7 @@ namespace Managers
     {
         private PlayerModel _playerModel;
         [SerializeField] private TMP_Text _IpText;
+        [SerializeField] private TMP_Text vpText;
         [SerializeField] private GameObject _SkillTreeMenu;
         private void Start()
         {
@@ -20,6 +21,7 @@ namespace Managers
         private void Update()
         {
             _IpText.text = _playerModel.influencePoints.ToString();
+            vpText.text = _playerModel.virtuePoints.ToString();
         }
 
         public void LoadSkillTree()
@@ -27,6 +29,9 @@ namespace Managers
             _SkillTreeMenu.SetActive(!_SkillTreeMenu.activeSelf);
         }
 
-
+        private void ToggleButton()
+        {
+            
+        }
     }
 }

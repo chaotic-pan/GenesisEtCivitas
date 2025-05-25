@@ -1,4 +1,5 @@
 using Player.Abilities;
+using Player.Skills;
 using UnityEngine;
 
 namespace Player
@@ -6,10 +7,12 @@ namespace Player
     public class PlayerController : MonoBehaviour
     {
         private PlayerModel _playerModel;
+        private PlayerSkillSet _playerSkillSet;
 
         private void Start()
         {
             _playerModel = GetComponent<PlayerModel>();
+            _playerSkillSet = new PlayerSkillSet();
         }
 
         public void CastRainAbility()
@@ -44,6 +47,11 @@ namespace Player
             Debug.Log("Cost: " + ability.Cost);
 
             Destroy(ability);
+        }
+
+        public bool CanUseWaterOne()
+        {
+            return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterOne);
         }
     }
 }
