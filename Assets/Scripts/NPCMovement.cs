@@ -16,6 +16,7 @@ public class NPCMovement : MonoBehaviour
 
     [SerializeField] private float speed = 5f;
     private Vector3 destination;
+    private Stack<Tile> path = new Stack<Tile>();
     private Plane clickPlane;
     private AnimManager npcAnim;
     
@@ -27,21 +28,11 @@ public class NPCMovement : MonoBehaviour
         destination = npc.transform.position;
         clickPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
         npcAnim = npc.GetComponent<AnimManager>();
-
-        var p = dijkstra(new Vector2Int(0, 0), new Vector2Int(0, 2));
-        print(p.Count);
-        
-        foreach (var tile in p)
-        {
-            print(tile.positions);
-            
-        }
     }
 
     void Update()
     {
         // Click on tile moves NPC there
-        Stack<Tile> path = null;
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -49,11 +40,17 @@ public class NPCMovement : MonoBehaviour
             {
                 var clickPos = ray.GetPoint(enter);
                 var gridPos = map.WorldToCell(clickPos);
-                path = dijkstra(new Vector2Int(map.WorldToCell(npc.transform.position).x, map.WorldToCell(npc.transform.position).y), new Vector2Int(gridPos.x, gridPos.y));
-                var pather = path.Pop();
-                destination = new Vector3Int(pather.positions.x, pather.positions.y, 0);
-
-                tileManager.printTileData(gridPos);
+                var npcGridPos = map.WorldToCell(npc.transform.position);
+                path = dijkstra(new Vector2Int(npcGridPos.x, npcGridPos.y), new Vector2Int(gridPos.x, gridPos.y));
+                if (path.TryPop(out var pather))
+                {
+                    // double po bc the first path point is the current pos
+                    if (path.TryPop(out pather))
+                    {
+                        destination = map.CellToWorld(new Vector3Int(pather.pos.x, pather.pos.y, 0));;
+                        print(destination);
+                    }  
+                }
                 npcAnim.SetIsMoving(true);
             }
         }
@@ -70,11 +67,14 @@ public class NPCMovement : MonoBehaviour
         }
         else
         {
-            npcAnim.SetIsMoving(false);
-            if (path != null)
+            if (path.TryPop(out var pather))
             {
-                var pather = path.Pop();
-                destination = new Vector3Int(pather.positions.x, pather.positions.y, 0);
+                destination = map.CellToWorld(new Vector3Int(pather.pos.x, pather.pos.y, 0));;
+                print(destination);
+            }
+            else
+            {
+                npcAnim.SetIsMoving(false);
             }
         }
     }
@@ -109,10 +109,10 @@ public class NPCMovement : MonoBehaviour
 
             foreach (var neig in u.tile.neighbors)
             {
-                if (Q.ContainsKey(neig.Key.positions))
+                if (Q.ContainsKey(neig.Key.pos))
                 {
                     var newDist = neig.Value + u.distance;
-                    var v = Q[neig.Key.positions];
+                    var v = Q[neig.Key.pos];
 
                     if (newDist < v.distance)
                     {
@@ -130,12 +130,8 @@ public class NPCMovement : MonoBehaviour
             
         }
 
-
         Stack<Tile> path = new Stack<Tile>();
 
-        print(Q.Count);
-        print(W.Count);
-        
         if (W.ContainsKey(destination))
         {
             var v = W[destination];

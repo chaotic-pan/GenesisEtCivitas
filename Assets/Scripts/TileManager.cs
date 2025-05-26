@@ -6,10 +6,10 @@ public class Tile
 {
     public Tile(int x, int y)
     {
-        positions = new Vector2Int(x, y);
+        pos = new Vector2Int(x, y);
     }
     
-    public Vector2Int positions;
+    public Vector2Int pos;
     public Dictionary<Tile, float> neighbors = new Dictionary<Tile, float>();
 }
 
@@ -45,6 +45,7 @@ public class TileManager : MonoBehaviour
                 if (tiles.ContainsKey(new Vector2Int(x - 1, y)))
                 {
                     var neighbor = tiles[new Vector2Int(x - 1, y)];
+                    // neighbor.neighbors.Add(tile, dataFromTiles[map.GetTile(new Vector3Int(tile.pos.x, tile.pos.y, 0))].travelCost);
                     neighbor.neighbors.Add(tile, 1);
                     tile.neighbors.Add(neighbor, 1);
                 }
