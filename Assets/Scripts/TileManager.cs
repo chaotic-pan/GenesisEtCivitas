@@ -1,8 +1,17 @@
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+
+public class Tile
+{
+    public Tile(int x, int y)
+    {
+        positions = new Vector2Int(x, y);
+    }
+    
+    public Vector2Int positions;
+    public Dictionary<Tile, float> neighbors = new Dictionary<Tile, float>();
+}
 
 public class TileManager : MonoBehaviour
 {
@@ -10,6 +19,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] private List<TileData> tileDatas;
     private Dictionary<TileBase, TileData> dataFromTiles;
 
+    public Dictionary<Vector2Int, Tile> tiles = new Dictionary<Vector2Int, Tile>();
     private void Awake()
     {
         dataFromTiles = new Dictionary<TileBase, TileData>();
@@ -19,6 +29,33 @@ public class TileManager : MonoBehaviour
             foreach (var tile in tileData.tiles)
             {
                 dataFromTiles.Add(tile, tileData);
+            }
+        }
+
+        for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
+        {
+            for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
+            {
+                
+                if (map.GetTile(new Vector3Int(x, y, 0)) == null) continue;
+                var tile = new Tile(x, y);
+                tiles.Add(new Vector2Int(x,y), tile);
+                
+                // -1 -1
+                if (tiles.ContainsKey(new Vector2Int(x - 1, y - 1)))
+                {
+                    var neighbor = tiles[new Vector2Int(x - 1, y - 1)];
+                    neighbor.neighbors.Add(tile, 1);
+                    tile.neighbors.Add(neighbor, 1);
+                }
+
+                // -1 0
+                if (tiles.ContainsKey(new Vector2Int(x - 1, y)))
+                {
+                    var neighbor = tiles[new Vector2Int(x - 1, y)];
+                    neighbor.neighbors.Add(tile, 1);
+                    tile.neighbors.Add(neighbor, 1);
+                }
             }
         }
     }
@@ -51,13 +88,15 @@ public class TileManager : MonoBehaviour
         // }
     }
 
-    public TileData getTileDataByCoords(Vector3 coordinates)
+    public Tile getTileByGridCoords(Vector2Int coordinates)
     {
-        //print(coordinates);
-        Vector3Int gridPos = map.WorldToCell(coordinates);
-        
-        // print(gridPos);
-        
+        return tiles[coordinates];
+    }
+    
+    public TileData getTileDataByWorldCoords(Vector2Int coordinates)
+    {
+        Vector3Int gridPos = map.WorldToCell(new Vector3(coordinates.x, coordinates.y, 0));
+
         var tile = map.GetTile(gridPos);
         return tile != null ? dataFromTiles[tile] : null;
     }
@@ -80,13 +119,5 @@ public class TileManager : MonoBehaviour
                 
         print("At position " + gridPos + " there is a " + tileType 
               + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
-    }
-
-    public Vector3 getWorldPositionOnPlane(Vector3 screenPosition) {
-        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-        Plane xy = new Plane(Vector3.forward, new Vector3(0, 0.78f, 0));
-        float distance;
-        xy.Raycast(ray, out distance);
-        return ray.GetPoint(distance);
     }
 }
