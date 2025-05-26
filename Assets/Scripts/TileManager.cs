@@ -41,18 +41,32 @@ public class TileManager : MonoBehaviour
                 var tile = new Tile(x, y);
                 tiles.Add(new Vector2Int(x,y), tile);
                 
-                // -1 -1
-                if (tiles.ContainsKey(new Vector2Int(x - 1, y - 1)))
-                {
-                    var neighbor = tiles[new Vector2Int(x - 1, y - 1)];
-                    neighbor.neighbors.Add(tile, 1);
-                    tile.neighbors.Add(neighbor, 1);
-                }
-
-                // -1 0
+                // -1 0 (LEFT)
                 if (tiles.ContainsKey(new Vector2Int(x - 1, y)))
                 {
                     var neighbor = tiles[new Vector2Int(x - 1, y)];
+                    neighbor.neighbors.Add(tile, 1);
+                    tile.neighbors.Add(neighbor, 1);
+                }
+                
+                // (LEFT DOWN)
+                    // -1 -1 on even y 
+                    //  0 -1 on odd y
+                var q = y % 2 == 0 ? -1 : 0;
+                if (tiles.ContainsKey(new Vector2Int(x + q, y - 1)))
+                {
+                    var neighbor = tiles[new Vector2Int(x + q, y - 1)];
+                    neighbor.neighbors.Add(tile, 1);
+                    tile.neighbors.Add(neighbor, 1);
+                }
+                
+                // (RIGHT DOWN) 
+                    // 0 -1 on even y 
+                    // 1 -1 on odd y
+                q = y % 2 == 0 ? 0 : 1;
+                if (tiles.ContainsKey(new Vector2Int(x + q, y - 1)))
+                {
+                    var neighbor = tiles[new Vector2Int(x + q, y - 1)];
                     neighbor.neighbors.Add(tile, 1);
                     tile.neighbors.Add(neighbor, 1);
                 }
