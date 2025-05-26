@@ -41,6 +41,7 @@ public class NPCMovement : MonoBehaviour
     void Update()
     {
         // Click on tile moves NPC there
+        Stack<Tile> path = null;
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -48,15 +49,17 @@ public class NPCMovement : MonoBehaviour
             {
                 var clickPos = ray.GetPoint(enter);
                 var gridPos = map.WorldToCell(clickPos);
-                destination = map.CellToWorld(gridPos);
-                
-               tileManager.printTileData(gridPos);
-               npcAnim.SetIsMoving(true);
+                path = dijkstra(new Vector2Int(map.WorldToCell(npc.transform.position).x, map.WorldToCell(npc.transform.position).y), new Vector2Int(gridPos.x, gridPos.y));
+                var pather = path.Pop();
+                destination = new Vector3Int(pather.positions.x, pather.positions.y, 0);
+
+                tileManager.printTileData(gridPos);
+                npcAnim.SetIsMoving(true);
             }
         }
-        
+
         var dist = Vector3.Distance(npc.transform.position, destination);
-        
+
         if (dist > 0.05f)
         {
             var position = npc.transform.position;
@@ -68,8 +71,15 @@ public class NPCMovement : MonoBehaviour
         else
         {
             npcAnim.SetIsMoving(false);
+            if (path != null)
+            {
+                var pather = path.Pop();
+                destination = new Vector3Int(pather.positions.x, pather.positions.y, 0);
+            }
         }
     }
+
+
 
     private Stack<Tile> dijkstra(Vector2Int start, Vector2Int destination)
     {
