@@ -15,6 +15,7 @@ public class Tile
 
 public class TileManager : MonoBehaviour
 {
+    public static TileManager Instance;
     [SerializeField] public Tilemap map;
     [SerializeField] private List<TileData> tileDatas;
     private Dictionary<TileBase, TileData> dataFromTiles;
@@ -22,6 +23,8 @@ public class TileManager : MonoBehaviour
     public Dictionary<Vector2Int, Tile> tiles = new Dictionary<Vector2Int, Tile>();
     private void Awake()
     {
+        Instance = this;
+
         dataFromTiles = new Dictionary<TileBase, TileData>();
 
         foreach (var tileData in tileDatas)

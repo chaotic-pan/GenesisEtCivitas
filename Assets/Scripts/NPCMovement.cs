@@ -5,8 +5,6 @@ using Plane = UnityEngine.Plane;
 
 public class NPCMovement : MonoBehaviour
 {
-    [SerializeField] private TileManager tileManager;
-    [SerializeField] private GameObject npc;
     private Tilemap map;
     private Dictionary<Vector2Int, Tile> tiles;
 
@@ -18,12 +16,12 @@ public class NPCMovement : MonoBehaviour
     
     void Start()
     {
-        map = tileManager.map;
-        tiles = tileManager.tiles;
+        map = TileManager.Instance.map;
+        tiles = TileManager.Instance.tiles;
         
-        destination = npc.transform.position;
+        destination = transform.position;
         clickPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
-        npcAnim = npc.GetComponent<AnimManager>();
+        npcAnim = transform.GetComponentInChildren<AnimManager>();
     }
 
     void Update()
@@ -36,7 +34,7 @@ public class NPCMovement : MonoBehaviour
             {
                 var clickPos = ray.GetPoint(enter);
                 var gridPos = map.WorldToCell(clickPos);
-                var npcGridPos = map.WorldToCell(npc.transform.position);
+                var npcGridPos = map.WorldToCell(transform.position);
                 path = dijkstra(new Vector2Int(npcGridPos.x, npcGridPos.y), new Vector2Int(gridPos.x, gridPos.y));
                 if (path.TryPop(out var pather))
                 {
@@ -51,16 +49,16 @@ public class NPCMovement : MonoBehaviour
             }
         }
 
-        var dist = Vector3.Distance(npc.transform.position, destination);
+        var dist = Vector3.Distance(transform.position, destination);
 
         if (dist > 0.05f)
         {
-            var position = npc.transform.position;
+            var position = transform.position;
             Vector3 direction = (destination - position).normalized;
             position += direction * speed * Time.deltaTime;
-            npc.transform.position = position;
-            npc.transform.rotation = Quaternion.LookRotation (direction);
-            speed = 5f - (tileManager.getTileDataByWorldCoords(position).travelCost/2);
+            transform.position = position;
+            transform.rotation = Quaternion.LookRotation (direction);
+            speed = 5f - (TileManager.Instance.getTileDataByWorldCoords(position).travelCost/2);
             speed = speed < 1 ? 1 : speed;
         }
         else
