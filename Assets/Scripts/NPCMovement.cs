@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Plane = UnityEngine.Plane;
@@ -6,7 +7,7 @@ using Plane = UnityEngine.Plane;
 public class NPCMovement : MonoBehaviour
 {
     private Tilemap map;
-    private Dictionary<Vector2Int, Tile> tiles;
+    private Dictionary<Vector3Int, Tile> tiles;
 
     [SerializeField] private float speed = 5f;
     private Vector3 destination;
@@ -35,7 +36,7 @@ public class NPCMovement : MonoBehaviour
                 var clickPos = ray.GetPoint(enter);
                 var gridPos = map.WorldToCell(clickPos);
                 var npcGridPos = map.WorldToCell(transform.position);
-                path = dijkstra(new Vector2Int(npcGridPos.x, npcGridPos.y), new Vector2Int(gridPos.x, gridPos.y));
+                path = dijkstra(npcGridPos, gridPos);
                 if (path.TryPop(out var pather))
                 {
                     // double pop bc the first path point is the current pos
@@ -77,10 +78,10 @@ public class NPCMovement : MonoBehaviour
 
 
 
-    private Stack<Tile> dijkstra(Vector2Int start, Vector2Int destination)
+    private Stack<Tile> dijkstra(Vector3Int start, Vector3Int destination)
     {
-        var Q = new Dictionary<Vector2Int, Node>(); //the unvisited set
-        var W = new Dictionary<Vector2Int, Node>(); //the visited set
+        var Q = new Dictionary<Vector3Int, Node>(); //the unvisited set
+        var W = new Dictionary<Vector3Int, Node>(); //the visited set
 
         foreach (var gridPos in tiles.Keys)
         {
@@ -146,18 +147,14 @@ public class NPCMovement : MonoBehaviour
         return path;
     }
 
-    private Node getMinDist(Dictionary<Vector2Int, Node> Q)
+    private Node getMinDist(Dictionary<Vector3Int, Node> Q)
     {
         var minDist = float.MaxValue;
         Node minNode = null;
-        foreach (var node in Q.Values)
+        foreach (var node in Q.Values.Where(node => minDist > node.distance))
         {
-            if (minDist > node.distance)
-            {
-                minDist = node.distance;
-                minNode = node;
-            }
-            
+            minDist = node.distance;
+            minNode = node;
         }
        
         return minNode;
@@ -165,13 +162,13 @@ public class NPCMovement : MonoBehaviour
     
     private class Node
     {
-        public Vector2Int gridPos;
-        public Tile tile;
+        public readonly Vector3Int gridPos;
+        public readonly Tile tile;
         
         public float distance;
         public Node prev;
 
-        public Node(Vector2Int gridPos, Tile tile)
+        public Node(Vector3Int gridPos, Tile tile)
         {
             this.gridPos = gridPos;
             this.tile = tile;
