@@ -42,36 +42,31 @@ public class TileManager : MonoBehaviour
                 tiles.Add(new Vector2Int(x,y), tile);
                 
                 // -1 0 (LEFT)
-                if (tiles.ContainsKey(new Vector2Int(x - 1, y)))
-                {
-                    var neighbor = tiles[new Vector2Int(x - 1, y)];
-                    // neighbor.neighbors.Add(tile, dataFromTiles[map.GetTile(new Vector3Int(tile.pos.x, tile.pos.y, 0))].travelCost);
-                    neighbor.neighbors.Add(tile, 1);
-                    tile.neighbors.Add(neighbor, 1);
-                }
+                addNeighborRelation(x,y,-1,0,tile);
                 
                 // (LEFT DOWN)
                     // -1 -1 on even y 
                     //  0 -1 on odd y
                 var q = y % 2 == 0 ? -1 : 0;
-                if (tiles.ContainsKey(new Vector2Int(x + q, y - 1)))
-                {
-                    var neighbor = tiles[new Vector2Int(x + q, y - 1)];
-                    neighbor.neighbors.Add(tile, 1);
-                    tile.neighbors.Add(neighbor, 1);
-                }
+                addNeighborRelation(x,y,q,-1,tile);
                 
                 // (RIGHT DOWN) 
                     // 0 -1 on even y 
                     // 1 -1 on odd y
                 q = y % 2 == 0 ? 0 : 1;
-                if (tiles.ContainsKey(new Vector2Int(x + q, y - 1)))
-                {
-                    var neighbor = tiles[new Vector2Int(x + q, y - 1)];
-                    neighbor.neighbors.Add(tile, 1);
-                    tile.neighbors.Add(neighbor, 1);
-                }
+                addNeighborRelation(x,y,q,-1,tile);
+               
             }
+        }
+    }
+
+    private void addNeighborRelation(int x, int y, int q, int w, Tile tile)
+    {
+        if (tiles.ContainsKey(new Vector2Int(x + q, y + w)))
+        {
+            var neighbor = tiles[new Vector2Int(x + q, y + w)];
+            neighbor.neighbors.Add(tile, dataFromTiles[map.GetTile(new Vector3Int(tile.pos.x, tile.pos.y, 0))].travelCost);
+            tile.neighbors.Add(neighbor, dataFromTiles[map.GetTile(new Vector3Int(neighbor.pos.x, neighbor.pos.y, 0))].travelCost);
         }
     }
 
