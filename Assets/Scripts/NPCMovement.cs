@@ -1,10 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Math = System.Math;
 using Plane = UnityEngine.Plane;
 
 public class NPCMovement : MonoBehaviour
@@ -44,10 +40,10 @@ public class NPCMovement : MonoBehaviour
                 path = dijkstra(new Vector2Int(npcGridPos.x, npcGridPos.y), new Vector2Int(gridPos.x, gridPos.y));
                 if (path.TryPop(out var pather))
                 {
-                    // double po bc the first path point is the current pos
+                    // double pop bc the first path point is the current pos
                     if (path.TryPop(out pather))
                     {
-                        destination = map.CellToWorld(new Vector3Int(pather.pos.x, pather.pos.y, 0));;
+                        destination = map.CellToWorld(new Vector3Int(pather.pos.x, pather.pos.y, 0));
                         print(destination);
                     }  
                 }
@@ -64,6 +60,8 @@ public class NPCMovement : MonoBehaviour
             position += direction * speed * Time.deltaTime;
             npc.transform.position = position;
             npc.transform.rotation = Quaternion.LookRotation (direction);
+            speed = 5f - (tileManager.getTileDataByWorldCoords(position).travelCost/2);
+            speed = speed < 1 ? 1 : speed;
         }
         else
         {
@@ -85,7 +83,6 @@ public class NPCMovement : MonoBehaviour
     {
         var Q = new Dictionary<Vector2Int, Node>(); //the unvisited set
         var W = new Dictionary<Vector2Int, Node>(); //the visited set
-        
 
         foreach (var gridPos in tiles.Keys)
         {

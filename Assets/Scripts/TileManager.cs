@@ -103,11 +103,18 @@ public class TileManager : MonoBehaviour
         return tiles[coordinates];
     }
     
-    public TileData getTileDataByWorldCoords(Vector2Int coordinates)
+    public TileData getTileDataByWorldCoords(Vector3 coordinates)
     {
-        Vector3Int gridPos = map.WorldToCell(new Vector3(coordinates.x, coordinates.y, 0));
+        Vector3Int gridPos = map.WorldToCell(coordinates);
 
         var tile = map.GetTile(gridPos);
+        return tile != null ? dataFromTiles[tile] : null;
+    }
+    
+    public TileData getTileDataByGridCoords(Vector2Int gridPos)
+    {
+
+        var tile = map.GetTile(new Vector3Int(gridPos.x, gridPos.y, 0));
         return tile != null ? dataFromTiles[tile] : null;
     }
 
