@@ -1,3 +1,4 @@
+using Models;
 using UnityEngine;
 using TMPro;
 using Player;
@@ -20,7 +21,7 @@ namespace Managers
 
         private void Update()
         {
-            _IpText.text = _playerModel.influencePoints.ToString();
+            _IpText.text = _playerModel.InfluencePoints.ToString();
             vpText.text = _playerModel.virtuePoints.ToString();
         }
 
