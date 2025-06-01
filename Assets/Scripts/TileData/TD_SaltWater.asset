@@ -15,6 +15,6 @@ MonoBehaviour:
   tiles:
   - {fileID: 11400000, guid: 057fe75eb1d486348b7714e281adb84a, type: 2}
   tileType: Salt Water
-  travelCost: 2
+  travelCost: 10
   waterValue: 0
   landFertility: 0

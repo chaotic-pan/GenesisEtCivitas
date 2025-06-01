@@ -1,17 +1,31 @@
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+public class Tile
+{
+    public Tile(int x, int y)
+    {
+        pos = new Vector3Int(x, y);
+    }
+    
+    public Vector3Int pos;
+    public Dictionary<Tile, float> neighbors = new Dictionary<Tile, float>();
+}
+
 public class TileManager : MonoBehaviour
 {
-    [SerializeField] private Tilemap map;
+    public static TileManager Instance;
+    [SerializeField] public Tilemap map;
     [SerializeField] private List<TileData> tileDatas;
     private Dictionary<TileBase, TileData> dataFromTiles;
 
+    public Dictionary<Vector3Int, Tile> tiles = new Dictionary<Vector3Int, Tile>();
     private void Awake()
     {
+        Instance = this;
+
         dataFromTiles = new Dictionary<TileBase, TileData>();
 
         foreach (var tileData in tileDatas)
@@ -21,53 +35,77 @@ public class TileManager : MonoBehaviour
                 dataFromTiles.Add(tile, tileData);
             }
         }
-    }
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
         {
-            var mousePos = Input.mousePosition;
-            var worldPos = getWorldPositionOnPlane(mousePos);
-
-            
-            var clickedTileData = getTileDataByCoords(worldPos);
-
-            Vector3Int gridPos = map.WorldToCell(worldPos);
-            
-            if (clickedTileData == null)
+            for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
             {
-                print("At position " + gridPos + " there is no tile ");
-                return;
+                
+                if (map.GetTile(new Vector3Int(x, y, 0)) == null) continue;
+                var tile = new Tile(x, y);
+                tiles.Add(new Vector3Int(x,y), tile);
+                
+                // -1 0 (LEFT)
+                addNeighborRelation(x,y,-1,0,tile);
+                
+                // (LEFT DOWN)
+                    // -1 -1 on even y 
+                    //  0 -1 on odd y
+                var q = y % 2 == 0 ? -1 : 0;
+                addNeighborRelation(x,y,q,-1,tile);
+                
+                // (RIGHT DOWN) 
+                    // 0 -1 on even y 
+                    // 1 -1 on odd y
+                q = y % 2 == 0 ? 0 : 1;
+                addNeighborRelation(x,y,q,-1,tile);
+               
             }
-            
-            string tileType = clickedTileData.tileType;
-            float travelCost = clickedTileData.travelCost;
-            float waterValue = clickedTileData.waterValue;
-            float landFertility = clickedTileData.landFertility;
-            
-            print("At position " + gridPos + " there is a " + tileType 
-                + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
         }
     }
 
-    public TileData getTileDataByCoords(Vector3 coordinates)
+    private void addNeighborRelation(int x, int y, int q, int w, Tile tile)
     {
-        print(coordinates);
-        Vector3Int gridPos = map.WorldToCell(new Vector3(coordinates.x, coordinates.z, coordinates.y));
-        
-        print(gridPos);
-        
+        if (tiles.ContainsKey(new Vector3Int(x + q, y + w)))
+        {
+            var neighbor = tiles[new Vector3Int(x + q, y + w)];
+            neighbor.neighbors.Add(tile, dataFromTiles[map.GetTile(new Vector3Int(tile.pos.x, tile.pos.y, 0))].travelCost);
+            tile.neighbors.Add(neighbor, dataFromTiles[map.GetTile(new Vector3Int(neighbor.pos.x, neighbor.pos.y, 0))].travelCost);
+        }
+    }
+
+    public TileData getTileDataByWorldCoords(Vector3 coordinates)
+    {
+        Vector3Int gridPos = map.WorldToCell(coordinates);
+
+        var tile = map.GetTile(gridPos);
+        return tile != null ? dataFromTiles[tile] : null;
+    }
+    
+    public TileData getTileDataByGridCoords(Vector3Int gridPos)
+    {
+
         var tile = map.GetTile(gridPos);
         return tile != null ? dataFromTiles[tile] : null;
     }
 
-    
-    public Vector3 getWorldPositionOnPlane(Vector3 screenPosition) {
-        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-        Plane xy = new Plane(Vector3.forward, new Vector3(0, 0.78f, 0));
-        float distance;
-        xy.Raycast(ray, out distance);
-        return ray.GetPoint(distance);
+    public void printTileData(Vector3Int gridPos)
+    {
+        var tile = map.GetTile(gridPos);
+        var clickedTileData = tile != null ? dataFromTiles[tile] : null;
+        
+        if (clickedTileData == null)
+        {
+            print("At position " + gridPos + " there is no tile ");
+            return;
+        }
+                
+        string tileType = clickedTileData.tileType;
+        float travelCost = clickedTileData.travelCost;
+        float waterValue = clickedTileData.waterValue;
+        float landFertility = clickedTileData.landFertility;
+                
+        print("At position " + gridPos + " there is a " + tileType 
+              + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
     }
 }
