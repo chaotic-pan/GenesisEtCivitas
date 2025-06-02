@@ -10,23 +10,34 @@ using Utilities;
 
 public class MapExtractor : MonoBehaviour
 {
+    public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private float mapHeightMultipier = 50f;
     [SerializeField] private TerrainType[] regions;
-    //1913*1913 Punkte für die Gesamtmap
+    //1913*1913 Punkte fï¿½r die Gesamtmap
     private const int points = 1913;
     private const int totalPoints = 1913*1913;
     public AnimationCurve meshHeightCurve;
+    
+    public float[,] heightMap = new float[points, points];
+    public int[,] fertility = new int[points, points];
+    public int[,] firmness = new int[points, points];
+    public int[,] ore = new int[points, points];
+    public int[,] vegetation = new int[points, points];
+    public int[,] animalPopulation = new int[points, points];
+    public int[,] animalHostility = new int[points, points];
+    public int[,] climate = new int[points, points];
 
     void Start()
     {
-        // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
+        Instance = this;
+        // Um gewï¿½nschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/"+ fileName;
         byte[] byteArray = File.ReadAllBytes(path);
 
-        // Überall wo 0 ist, ist Wasser
-        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
+        // ï¿½berall wo 0 ist, ist Wasser
+        // Werte von 0-1 fï¿½r Heightmap, 0-15 fï¿½r alles andere, climate 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
         float[] floatArrayHeightMap = new float[totalPoints];
         byte[] fertilityFirmnessMap = new byte[totalPoints];
@@ -34,17 +45,8 @@ public class MapExtractor : MonoBehaviour
         byte[] animalPopulationHostilityMap = new byte[totalPoints];
         byte[] climateMap = new byte[totalPoints];
 
-        float[,] heightMap = new float[points, points];
-        int[,] fertility = new int[points, points];
-        int[,] firmness = new int[points, points];
-        int[,] ore = new int[points, points];
-        int[,] vegetation = new int[points, points];
-        int[,] animalPopulation = new int[points, points];
-        int[,] animalHostility = new int[points, points];
-        int[,] climate = new int[points, points];
-
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
-        // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
+        // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Grï¿½ï¿½e
         // Byte array ist 4* so lang wie float array (4 bytes = 1 float)
         Buffer.BlockCopy(byteArray, 0, floatArrayHeightMap, 0, floatArrayHeightMap.Length*sizeof(float)); 
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 0), fertilityFirmnessMap, 0, fertilityFirmnessMap.Length);

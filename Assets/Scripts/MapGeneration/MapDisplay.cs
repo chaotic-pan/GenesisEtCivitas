@@ -15,7 +15,10 @@ namespace Terrain
         {
             foreach (var chunkCoordinate in meshDataDict.Keys)
             {
-                var newMesh = Instantiate(meshRendererPrefab, new Vector3(scale * size * chunkCoordinate.x, 0, -scale * size * chunkCoordinate.y), Quaternion.identity);
+                var newMesh = Instantiate(meshRendererPrefab, 
+                    new Vector3(scale * size * chunkCoordinate.x, 0, -scale * size * chunkCoordinate.y), 
+                    Quaternion.identity, 
+                    transform);
                 
                 var meshData = meshDataDict[chunkCoordinate];
                 newMesh.GetComponent<MeshFilter>().sharedMesh = meshData.CreateMesh();
