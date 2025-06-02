@@ -32,12 +32,12 @@ public class MapExtractor : MonoBehaviour
     void Start()
     {
         Instance = this;
-        // Um gew�nschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
+        // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/"+ fileName;
         byte[] byteArray = File.ReadAllBytes(path);
 
-        // �berall wo 0 ist, ist Wasser
-        // Werte von 0-1 f�r Heightmap, 0-15 f�r alles andere, climate 0-255
+        // überall wo 0 ist, ist Wasser
+        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
         float[] floatArrayHeightMap = new float[totalPoints];
         byte[] fertilityFirmnessMap = new byte[totalPoints];
@@ -46,7 +46,7 @@ public class MapExtractor : MonoBehaviour
         byte[] climateMap = new byte[totalPoints];
 
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
-        // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Gr��e
+        // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
         // Byte array ist 4* so lang wie float array (4 bytes = 1 float)
         Buffer.BlockCopy(byteArray, 0, floatArrayHeightMap, 0, floatArrayHeightMap.Length*sizeof(float)); 
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 0), fertilityFirmnessMap, 0, fertilityFirmnessMap.Length);

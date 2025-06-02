@@ -29,6 +29,10 @@ public class NPCMovement : MonoBehaviour
         
         //DEBUG
         clickPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
+
+        var p = transform.position;
+       
+        transform.position = new Vector3(p.x,Math.Max(ME.heightMap[(int)p.x+120, -(int)p.z+120]*50f,0) , p.z);
     }
 
     void Update()
@@ -49,28 +53,28 @@ public class NPCMovement : MonoBehaviour
 
         var dist = Vector3.Distance(transform.position, pathPoint);
 
-        if (dist > 0.05f)
-        {
-            var position = transform.position;
-            Vector3 direction = (pathPoint - position).normalized;
-            position += direction * (movementSpeed * Time.deltaTime);
-            transform.position = position;
-            //ME.heightMap[(int)position.x, (int)position.y]
-            transform.rotation = Quaternion.LookRotation (direction);
-            movementSpeed = 5f - (TM.getTileDataByWorldCoords(position).travelCost/2);
-            movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
-        }
-        else
-        {
-            if (path.TryPop(out var pather))
-            {
-                pathPoint = map.CellToWorld(pather);
-            }
-            else
-            {
-                npcAnim.SetIsMoving(false);
-            }
-        }
+        // if (dist > 0.05f)
+        // {
+        //     var position = transform.position;
+        //     Vector3 direction = (pathPoint - position).normalized;
+        //     position += direction * (movementSpeed * Time.deltaTime);
+        //     transform.position = position;
+        //     //ME.heightMap[(int)position.x, (int)position.y]
+        //     // transform.rotation = Quaternion.LookRotation (direction);
+        //     movementSpeed = 5f - (TM.getTileDataByWorldCoords(position).travelCost/2);
+        //     movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
+        // }
+        // else
+        // {
+        //     if (path.TryPop(out var pather))
+        //     {
+        //         pathPoint = map.CellToWorld(pather);
+        //     }
+        //     else
+        //     {
+        //         npcAnim.SetIsMoving(false);
+        //     }
+        // }
     }
 
     public void calculateRange()
