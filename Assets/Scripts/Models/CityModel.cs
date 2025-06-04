@@ -1,3 +1,4 @@
+using CityStuff;
 using Models.Interfaces;
 using UnityEngine.Events;
 
@@ -10,6 +11,8 @@ namespace Models
         private int _population;
         private string _cityName;
 
+        public City City;
+        
         public int Population
         {
             get => _population;

@@ -1,7 +1,9 @@
+using System;
 using Models;
 using UnityEngine;
 using TMPro;
 using Player;
+using UI;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 
@@ -13,6 +15,15 @@ namespace Managers
         [SerializeField] private TMP_Text _IpText;
         [SerializeField] private TMP_Text vpText;
         [SerializeField] private GameObject _SkillTreeMenu;
+        
+        [SerializeField] private UICityMenu uiCityMenu;
+
+
+        private void Awake()
+        {
+            uiCityMenu.Initialize();
+        }
+
         private void Start()
         {
             var player = GameObject.Find("Player");

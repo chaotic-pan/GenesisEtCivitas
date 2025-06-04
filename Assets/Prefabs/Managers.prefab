@@ -9,7 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7987669606887509086}
-  - component: {fileID: 5947075810016712818}
+  - component: {fileID: 7264372961676253459}
+  - component: {fileID: 957147249992228136}
+  - component: {fileID: 3231224276502657812}
+  - component: {fileID: 6362208822355190539}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -32,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5947075810016712818
+--- !u!114 &7264372961676253459
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,3 +47,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 388560eee5d74344ea679306041374b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &957147249992228136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08db31fe7735be149b152e68a6b4727e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _IpText: {fileID: 0}
+  vpText: {fileID: 0}
+  _SkillTreeMenu: {fileID: 0}
+  uiCityMenu: {fileID: 0}
+--- !u!114 &3231224276502657812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f507bafdeec2359458571ef92986bddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDays: 7
+--- !u!114 &6362208822355190539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2f2b1add88527847b8229320fc613ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  light: {fileID: 0}
+  dayLengthInSeconds: 600
+  speed: 1
+  debugMode: 0

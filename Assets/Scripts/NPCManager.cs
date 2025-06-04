@@ -10,21 +10,23 @@ public class NPCManager : MonoBehaviour
 
     private void Start()
     {
+        var cellBounds = TileManager.Instance.map.cellBounds;
 
         for(int i=0; i< civilisationNumber; i++)
         {
-            int random = Random.Range(0, TileManager.Instance.tiles.Count-1);
-            Vector3Int tileLocation = TileManager.Instance.tiles.ElementAt(random).Key;
-            
+            int randomX = Random.Range(cellBounds.min.x, cellBounds.max.x);
+            int randomY = Random.Range(cellBounds.min.y, cellBounds.max.y);
+
             // re-roll location until you get a non-water tile
-            while (TileManager.Instance.getTileDataByGridCoords(tileLocation).tileType.Contains("Water"))
+            while (TileManager.Instance.map.GetTile(new Vector3Int(randomX, randomY, 0)) == null 
+                   || TileManager.Instance.getTileDataByGridCoords(randomX, randomY).tileType.Contains("Water"))
             {
-                random = Random.Range(0, TileManager.Instance.tiles.Count-1);
-                tileLocation = TileManager.Instance.tiles.ElementAt(random).Key;
+                randomX = Random.Range(cellBounds.min.x, cellBounds.max.x);
+                randomY = Random.Range(cellBounds.min.y, cellBounds.max.y);
             }
             
-            Vector3 spawnLocation = TileManager.Instance.map.CellToWorld(tileLocation);
-            var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity);
+            Vector3 spawnLocation = TileManager.Instance.map.CellToWorld(new Vector3Int(randomX,randomY));
+            var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
         }
     }

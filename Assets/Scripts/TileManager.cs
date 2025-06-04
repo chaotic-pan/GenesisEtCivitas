@@ -1,18 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
-public class Tile
-{
-    public Tile(int x, int y)
-    {
-        pos = new Vector3Int(x, y);
-    }
-    
-    public Vector3Int pos;
-    public Dictionary<Tile, float> neighbors = new Dictionary<Tile, float>();
-}
 
 public class TileManager : MonoBehaviour
 {
@@ -20,8 +8,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] public Tilemap map;
     [SerializeField] private List<TileData> tileDatas;
     private Dictionary<TileBase, TileData> dataFromTiles;
-
-    public Dictionary<Vector3Int, Tile> tiles = new Dictionary<Vector3Int, Tile>();
+    
     private void Awake()
     {
         Instance = this;
@@ -35,45 +22,12 @@ public class TileManager : MonoBehaviour
                 dataFromTiles.Add(tile, tileData);
             }
         }
-
-        for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
-        {
-            for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
-            {
-                
-                if (map.GetTile(new Vector3Int(x, y, 0)) == null) continue;
-                var tile = new Tile(x, y);
-                tiles.Add(new Vector3Int(x,y), tile);
-                
-                // -1 0 (LEFT)
-                addNeighborRelation(x,y,-1,0,tile);
-                
-                // (LEFT DOWN)
-                    // -1 -1 on even y 
-                    //  0 -1 on odd y
-                var q = y % 2 == 0 ? -1 : 0;
-                addNeighborRelation(x,y,q,-1,tile);
-                
-                // (RIGHT DOWN) 
-                    // 0 -1 on even y 
-                    // 1 -1 on odd y
-                q = y % 2 == 0 ? 0 : 1;
-                addNeighborRelation(x,y,q,-1,tile);
-               
-            }
-        }
     }
 
-    private void addNeighborRelation(int x, int y, int q, int w, Tile tile)
+    public TileData getTileDataByWorldCoords(float x, float y, float z)
     {
-        if (tiles.ContainsKey(new Vector3Int(x + q, y + w)))
-        {
-            var neighbor = tiles[new Vector3Int(x + q, y + w)];
-            neighbor.neighbors.Add(tile, dataFromTiles[map.GetTile(new Vector3Int(tile.pos.x, tile.pos.y, 0))].travelCost);
-            tile.neighbors.Add(neighbor, dataFromTiles[map.GetTile(new Vector3Int(neighbor.pos.x, neighbor.pos.y, 0))].travelCost);
-        }
+        return getTileDataByWorldCoords(new Vector3(x, y, z));
     }
-
     public TileData getTileDataByWorldCoords(Vector3 coordinates)
     {
         Vector3Int gridPos = map.WorldToCell(coordinates);
@@ -82,13 +36,21 @@ public class TileManager : MonoBehaviour
         return tile != null ? dataFromTiles[tile] : null;
     }
     
+    public TileData getTileDataByGridCoords(int gridX, int gridY)
+    {
+        return getTileDataByGridCoords(new Vector3Int(gridX,gridY));
+    }
     public TileData getTileDataByGridCoords(Vector3Int gridPos)
     {
 
         var tile = map.GetTile(gridPos);
         return tile != null ? dataFromTiles[tile] : null;
     }
-
+   
+    public void printTileData(int gridX, int gridY) 
+    {
+        printTileData(new Vector3Int(gridX, gridY));
+    }
     public void printTileData(Vector3Int gridPos)
     {
         var tile = map.GetTile(gridPos);
@@ -107,5 +69,65 @@ public class TileManager : MonoBehaviour
                 
         print("At position " + gridPos + " there is a " + tileType 
               + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
+    }
+    
+    
+    /// <summary>
+    /// qrs to xy(0)
+    /// </summary>
+    /// <param name="cubePos"></param>
+    /// <returns></returns>
+    public Vector3Int CubeToGrid(Vector3Int cubePos)
+    { 
+        var x = cubePos.x + (cubePos.y - (cubePos.y & 1)) / 2;
+        var y = cubePos.y;
+        return new Vector3Int(x, y);
+    }
+    /// <summary>
+    /// qrs to xy(0)
+    /// </summary>
+    /// <param name="q"></param>
+    /// <param name="r"></param>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public Vector3Int CubeToGrid(int q, int r, int s)
+    {
+        return CubeToGrid(new Vector3Int(q,r,s));
+    }
+    
+    /// <summary>
+    /// xy(0) to qrs
+    /// </summary>
+    /// <param name="gridPos"></param>
+    /// <returns></returns>
+    public Vector3Int GridToCube(Vector3Int gridPos)
+    { 
+        var q = gridPos.x - (gridPos.y - (gridPos.y & 1)) / 2;
+        var r = gridPos.y;
+        return new Vector3Int(q, r, -q - r);
+    }
+    /// <summary>
+    /// xy(0) to qrs
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public Vector3Int GridToCube(int x, int y)
+    {
+        return GridToCube(new Vector3Int(x, y));
+    }
+
+    public List<Vector3Int> getNeighbors(Vector3Int gridPos)
+    {
+        var cubePos = GridToCube(gridPos);
+        return new List<Vector3Int>
+        {
+            CubeToGrid(cubePos.x + 1, cubePos.y, cubePos.z - 1),
+            CubeToGrid(cubePos.x + 1, cubePos.y - 1, cubePos.z),
+            CubeToGrid(cubePos.x, cubePos.y-1, cubePos.z+1),
+            CubeToGrid(cubePos.x-1, cubePos.y, cubePos.z+1),
+            CubeToGrid(cubePos.x-1, cubePos.y+1, cubePos.z),
+            CubeToGrid(cubePos.x, cubePos.y+1, cubePos.z-1)
+        };
     }
 }
