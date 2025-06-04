@@ -10,7 +10,7 @@ namespace UI
         [SerializeField] private TextMeshProUGUI cityNameText;
         [SerializeField] private TextMeshProUGUI populationText;
         
-        private City city;
+        private City _city;
         
         public override void Initialize()
         {
@@ -20,11 +20,8 @@ namespace UI
 
         private void OnOpenGetCity(CityModel cityModel)
         {
-            Debug.Log(cityModel);
             OnOpen(cityModel);
-            
-            Debug.Log(cityModel.CityName);
-            city = cityModel.City;
+            _city = cityModel.City;
         }
 
         protected override void UpdateData(CityModel cityModel)
@@ -35,9 +32,8 @@ namespace UI
 
         public void OnBuildChurch()
         {
-            if (!city) return;
-            Debug.Log("BUild ");
-            city.BuildChurch();
+            if (!_city) return;
+            _city.BuildChurch();
         }
     }
 }

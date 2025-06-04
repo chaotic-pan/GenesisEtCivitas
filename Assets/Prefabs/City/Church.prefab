@@ -186,6 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb38ba74c8441f782c00b9b43ab3abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  influencePoints: 5
+  intervalInInGameMinutes: 10
 --- !u!1001 &842654601882670073
 PrefabInstance:
   m_ObjectHideFlags: 0

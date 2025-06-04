@@ -9,17 +9,17 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField] private float speed = 1;
     [SerializeField] private bool debugMode = false;
     
-    private int _minutesPerDay = 1440; 
     private float _elapsedRealTimeInSeconds;
     private float _currentSunAngle;
     
     private DayNightCycleModel _cycleModel;
-    
-    
+    private int _lastUpdatedElapsedMinutes = -1;
+
     public void Initialize()
     {
         GameEvents.Lifecycle.OnGameEnd += StopCycle;
         _cycleModel = new DayNightCycleModel();
+        
         StartCycle();
     }
 
@@ -47,22 +47,26 @@ public class DayNightCycle : MonoBehaviour
 
     private void CalculateTime()
     {
-        var elapsedInGameMinutes = (int) (_elapsedRealTimeInSeconds / dayLengthInSeconds * _minutesPerDay);
-
-        if (elapsedInGameMinutes <= _cycleModel.CurrentInGameMinute) 
+        var elapsedInGameMinutes = (int) (_elapsedRealTimeInSeconds / dayLengthInSeconds * 1440);
+        
+        if (elapsedInGameMinutes == _lastUpdatedElapsedMinutes) 
             return;
+        
+        _lastUpdatedElapsedMinutes = elapsedInGameMinutes;
         
         _cycleModel.CurrentInGameMinute = elapsedInGameMinutes % 60;
         _cycleModel.CurrentInGameHour = (elapsedInGameMinutes / 60) % 24;
         _cycleModel.CurrentInGameDay = elapsedInGameMinutes / 60 / 24;
+        
+        _cycleModel.ElapsedInGameMinutes = elapsedInGameMinutes;
+
     }
 
     private void RotateSun(float delta)
     {
         float deltaAngle = (360f / dayLengthInSeconds) * delta;
         _currentSunAngle += deltaAngle;
-
-        // Keep angle within 0-360 for clarity
+        
         if (_currentSunAngle >= 360f) _currentSunAngle -= 360f;
 
         light.transform.rotation = Quaternion.AngleAxis(_currentSunAngle, Vector3.right);

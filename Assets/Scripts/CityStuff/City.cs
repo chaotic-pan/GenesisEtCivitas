@@ -36,13 +36,8 @@ namespace CityStuff
 
         public void Initialize(string cityName)
         {
-            Debug.Log("init city: " + this);
-            Debug.Log(cityName);
-            
             _cityModel.City = this;
             _cityModel.CityName = cityName;
-            
-            Debug.Log(_cityModel.CityName);
             
             BuildHouse();
         }
@@ -52,6 +47,7 @@ namespace CityStuff
             if (_church) return;
             
             _church = InstantiateAtRandomPoint(churchGameObject).GetComponent<Church>();
+            _church.Initialize();
         }
 
         public void BuildWell()
@@ -84,8 +80,6 @@ namespace CityStuff
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log("Clicked on city: " + this);
-            Debug.Log(_cityModel.CityName);
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);

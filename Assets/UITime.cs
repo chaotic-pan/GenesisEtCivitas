@@ -16,8 +16,8 @@ public class UITime : MonoBehaviour
 
     private void UpdateData(DayNightCycleModel data)
     {
-        minuteText.text = data.CurrentInGameMinute.ToString();
-        hourText.text = data.CurrentInGameHour.ToString();
+        minuteText.text = data.CurrentInGameMinute.ToString("00");
+        hourText.text = data.CurrentInGameHour.ToString("00");
         dayText.text = data.CurrentInGameDay.ToString();
     }
 }
