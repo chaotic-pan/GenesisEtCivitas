@@ -1,54 +1,70 @@
-using System;
-using System.Collections;
+using Events;
 using Models;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DayNightCycle : MonoBehaviour
 {
     [SerializeField] private GameObject light;
-    [SerializeField] private float cycleSpeed;
+    [SerializeField] private float dayLengthInSeconds = 600f; // 10 irl minutes per day
+    [SerializeField] private float speed = 1;
+    [SerializeField] private bool debugMode = false;
+    
+    private int _minutesPerDay = 1440; 
+    private float _elapsedRealTimeInSeconds;
+    private float _currentSunAngle;
     
     private DayNightCycleModel _cycleModel;
-    private const float DayLengthInSeconds = 600f; // 10 irl minutes per day
-    private float _timePerMinute;
+    
     
     public void Initialize()
     {
-        // day length / hours / minutes = every in game minute
-        _timePerMinute = DayLengthInSeconds / 24 / 60;
-
+        GameEvents.Lifecycle.OnGameEnd += StopCycle;
         _cycleModel = new DayNightCycleModel();
-
         StartCycle();
     }
 
     public void StartCycle()
     {
         _cycleModel.AdvanceCycle = true;
-        StartCoroutine(CycleInGameMinutes());
     }
 
     public void StopCycle()
     {
         _cycleModel.AdvanceCycle = false;
-        StopCoroutine(CycleInGameMinutes());
     }
 
     private void Update()
     {
-        if (!_cycleModel.AdvanceCycle)
+        if (!_cycleModel.AdvanceCycle || debugMode)
             return;
+
+        var delta = (Time.deltaTime * speed);
+        _elapsedRealTimeInSeconds += delta;
         
-        _cycleModel.ElapsedRealTimeInSeconds += Time.deltaTime;
+        CalculateTime();
+        RotateSun(delta);
     }
 
-    private IEnumerator CycleInGameMinutes()
+    private void CalculateTime()
     {
-        while (_cycleModel.AdvanceCycle)
-        {
-            yield return new WaitForSeconds(_timePerMinute);
-            _cycleModel.CurrentInGameTimeInSeconds++;
-        }
+        var elapsedInGameMinutes = (int) (_elapsedRealTimeInSeconds / dayLengthInSeconds * _minutesPerDay);
+
+        if (elapsedInGameMinutes <= _cycleModel.CurrentInGameMinute) 
+            return;
+        
+        _cycleModel.CurrentInGameMinute = elapsedInGameMinutes % 60;
+        _cycleModel.CurrentInGameHour = (elapsedInGameMinutes / 60) % 24;
+        _cycleModel.CurrentInGameDay = elapsedInGameMinutes / 60 / 24;
+    }
+
+    private void RotateSun(float delta)
+    {
+        float deltaAngle = (360f / dayLengthInSeconds) * delta;
+        _currentSunAngle += deltaAngle;
+
+        // Keep angle within 0-360 for clarity
+        if (_currentSunAngle >= 360f) _currentSunAngle -= 360f;
+
+        light.transform.rotation = Quaternion.AngleAxis(_currentSunAngle, Vector3.right);
     }
 }

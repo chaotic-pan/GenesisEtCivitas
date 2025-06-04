@@ -1,11 +1,27 @@
+using Models;
 using UnityEngine.Events;
 
-public static class GameEvents
+namespace Events
 {
-    public static readonly InfluencePointsEvents InfluencePoints = new ();
-    
-    public class InfluencePointsEvents
+    public static class GameEvents
     {
-        public UnityAction<int> GainInfluencePoints;
+        public static readonly InfluencePointsEvents InfluencePoints = new ();
+        public static readonly DayNightCycleEvents DayNightCycle = new ();
+        public static readonly LifecycleEvents Lifecycle = new ();
+        
+        public class LifecycleEvents
+        {
+            public UnityAction OnGameEnd;
+        }
+        
+        public class InfluencePointsEvents
+        {
+            public UnityAction<int> GainInfluencePoints;
+        }
+
+        public class DayNightCycleEvents
+        {
+            public UnityAction<DayNightCycleModel> OnDayNightCycleUpdate;
+        }
     }
 }

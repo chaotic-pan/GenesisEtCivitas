@@ -1,24 +1,46 @@
-﻿using Models.Interfaces;
+﻿using Events;
+using Models.Interfaces;
 using UnityEngine.Events;
 
 namespace Models
 {
-    public class DayNightCycleModel : IObservableData<DayNightCycleModel>
+    public class DayNightCycleModel
     {
-        public UnityEvent<DayNightCycleModel> OnUpdateData { get; } = new();
-
-        private float _currentInGameTimeInSeconds;
+        private int _currentInGameDay;
+        private int _currentInGameHour;
+        private int _currentInGameMinute;
+        
+        private int _maxDays;
         private bool _advancedCycle;
         
-        public  float ElapsedRealTimeInSeconds;
 
-        public float CurrentInGameTimeInSeconds
+        public int CurrentInGameDay
         {
-            get => _currentInGameTimeInSeconds;
+            get => _currentInGameDay;
             set
             {
-                _currentInGameTimeInSeconds = value;
-                OnUpdateData.Invoke(this);
+                _currentInGameDay = value;
+                GameEvents.DayNightCycle.OnDayNightCycleUpdate.Invoke(this);
+            }
+        }
+        
+        public int CurrentInGameHour
+        {
+            get => _currentInGameHour;
+            set
+            {
+                _currentInGameHour = value;
+                GameEvents.DayNightCycle.OnDayNightCycleUpdate.Invoke(this);
+            }
+        }
+        
+        public int CurrentInGameMinute
+        {
+            get => _currentInGameMinute;
+            set
+            {
+                _currentInGameMinute = value;
+                GameEvents.DayNightCycle.OnDayNightCycleUpdate.Invoke(this);
             }
         }
         
@@ -28,7 +50,7 @@ namespace Models
             set
             {
                 _advancedCycle = value;
-                OnUpdateData.Invoke(this);
+                GameEvents.DayNightCycle.OnDayNightCycleUpdate.Invoke(this);
             }
         }
     }
