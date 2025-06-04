@@ -1,6 +1,8 @@
-﻿namespace CityStuff
+﻿using UnityEngine;
+
+namespace CityStuff
 {
-    public class Well : CityBuilding
+    public class Well : MonoBehaviour
     {
         
     }

@@ -1,6 +1,8 @@
-﻿namespace CityStuff
+﻿using UnityEngine;
+
+namespace CityStuff
 {
-    public class Church : CityBuilding
+    public class Church : MonoBehaviour
     {
     
     }

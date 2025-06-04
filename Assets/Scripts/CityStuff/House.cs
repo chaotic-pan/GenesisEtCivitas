@@ -1,6 +1,8 @@
+using UnityEngine;
+
 namespace CityStuff
 {
-    public class House : CityBuilding
+    public class House : MonoBehaviour
     {
     
     }

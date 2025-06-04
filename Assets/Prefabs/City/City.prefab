@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8334140665575610160}
   - component: {fileID: 8943149529231948454}
+  - component: {fileID: 6230919498672797800}
   m_Layer: 0
   m_Name: City
   m_TagString: Untagged
@@ -47,3 +48,24 @@ MonoBehaviour:
   houseGameObject: {fileID: 932326612820066371, guid: 05d3fe2a8b4bea34db886d4b836906c7, type: 3}
   wellGameObject: {fileID: 3933647680458739708, guid: 2ff603a0b29705541aa2fa54af6b38b4, type: 3}
   churchGameObject: {fileID: 8697916058072947503, guid: 84805b4b35bd29440a5a579cd5d6b886, type: 3}
+--- !u!65 &6230919498672797800
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419345410134529011}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

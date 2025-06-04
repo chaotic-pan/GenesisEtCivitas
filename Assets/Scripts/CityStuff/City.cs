@@ -1,14 +1,15 @@
-using System;
 using System.Collections.Generic;
 using Models;
+using UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
 namespace CityStuff
 {
-    public class City : MonoBehaviour
+    public class City : MonoBehaviour, IPointerClickHandler
     {
 
         [SerializeField] private GameObject houseGameObject;
@@ -31,29 +32,39 @@ namespace CityStuff
         private Well _well;
         private Church _church;
 
-        private CityModel _cityModel;
+        private readonly CityModel _cityModel = new();
 
-        private void Awake()
+        public void Initialize(string cityName)
         {
-            _cityModel = new CityModel()
-            {
-                City = this,
-                CityName = "City"
-            };
+            Debug.Log("init city: " + this);
+            Debug.Log(cityName);
+            
+            _cityModel.City = this;
+            _cityModel.CityName = cityName;
+            
+            Debug.Log(_cityModel.CityName);
+            
+            BuildHouse();
         }
 
         public void BuildChurch()
         {
+            if (_church) return;
+            
             _church = InstantiateAtRandomPoint(churchGameObject).GetComponent<Church>();
         }
 
         public void BuildWell()
         {
+            if (_well) return;
+            
             _well = InstantiateAtRandomPoint(wellGameObject).GetComponent<Well>();
         }
     
-        public void BuildHouse()
+        private void BuildHouse()
         {
+            if (_house) return;
+            
             _house = InstantiateAtRandomPoint(houseGameObject).GetComponent<House>();
         }
 
@@ -69,6 +80,16 @@ namespace CityStuff
             instance.SetActive(true);
         
             return instance;
+        }
+        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Debug.Log("Clicked on city: " + this);
+            Debug.Log(_cityModel.CityName);
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);
+            }
         }
     }
 }

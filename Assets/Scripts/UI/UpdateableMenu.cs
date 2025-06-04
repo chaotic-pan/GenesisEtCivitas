@@ -16,6 +16,7 @@ namespace UI
 
         protected void OnOpen(TData data)
         {
+            Debug.Log(data.ToString());
             RegisterData(data.OnUpdateData);
             _tDataEvent = data.OnUpdateData;
             
