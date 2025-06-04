@@ -9,6 +9,7 @@ namespace Player
 		[Header("RTS Camera Settings")]
 		[Header("Move")]
 		[SerializeField] private float moveSpeed = 200;
+		[Tooltip("0 = edgescroll disabled")]
 		[SerializeField] private float edgeThreshold = 5;
 		[SerializeField] private float rightMouseSpeedMultiplier = 10;
 		
@@ -30,7 +31,8 @@ namespace Player
 		private Vector3 _cameraForward;
 		private Vector3 _cameraRight;
 		private bool _isDragging;
-
+		private float heightMultiplyer;
+		
 		private void Awake()
 		{
 			_playerInput = FindAnyObjectByType<PlayerInput>();
@@ -59,6 +61,7 @@ namespace Player
 		private void LateUpdate()
 		{
 			UpdateRelativeCameraVectors();
+			heightMultiplyer = transform.position.y;
 			MoveCamera();
 			MoveCameraWithCursor();
 			MoveCameraWithRightMouse();
@@ -137,31 +140,33 @@ namespace Player
 		
 		private void MoveCamera()
 		{
-			Vector3 moveDirection = (_cameraRight * _moveInput.x + _cameraForward * _moveInput.y) * (moveSpeed * Time.deltaTime);
+			Vector3 moveDirection = (_cameraRight * _moveInput.x + _cameraForward * _moveInput.y) * 
+			                        (heightMultiplyer * moveSpeed * Time.deltaTime);
 			transform.position += moveDirection;
 		}
 
 		private void MoveCameraWithCursor()
 		{
-			if (_isDragging)
+			
+			if (_isDragging || edgeThreshold == 0)
 				return; 
 			
 			if (_mousePositionInput.x < edgeThreshold)
 			{
-				transform.position += _cameraRight * (Vector3.left.x * (moveSpeed * Time.deltaTime));
+				transform.position += _cameraRight * (Vector3.left.x * (heightMultiplyer * moveSpeed * Time.deltaTime));
 			}
 			else if (_mousePositionInput.x > Screen.width - edgeThreshold)
 			{
-				transform.position += _cameraRight * (Vector3.right.x * (moveSpeed * Time.deltaTime));
+				transform.position += _cameraRight * (Vector3.right.x * (heightMultiplyer * moveSpeed * Time.deltaTime));
 			}
 
 			if (_mousePositionInput.y < edgeThreshold)
 			{
-				transform.position += _cameraForward * (Vector3.back.z * (moveSpeed * Time.deltaTime));
+				transform.position += _cameraForward * (Vector3.back.z * (heightMultiplyer * moveSpeed * Time.deltaTime));
 			}
 			else if (_mousePositionInput.y > Screen.height - edgeThreshold)
 			{
-				transform.position += _cameraForward * (Vector3.forward.z * (moveSpeed * Time.deltaTime));
+				transform.position += _cameraForward * (Vector3.forward.z * (heightMultiplyer * moveSpeed * Time.deltaTime));
 			}
 		}
 
@@ -171,7 +176,8 @@ namespace Player
 
 			var mouseDelta = (_mousePositionInput - _initialMousePosition) * -1;
 
-			Vector3 moveDirection = (_cameraRight * mouseDelta.x + _cameraForward * mouseDelta.y) * ((moveSpeed * rightMouseSpeedMultiplier / Screen.width) * Time.deltaTime);
+			Vector3 moveDirection = (_cameraRight * mouseDelta.x + _cameraForward * mouseDelta.y) * 
+			                        ((heightMultiplyer * moveSpeed * rightMouseSpeedMultiplier / Screen.width) * Time.deltaTime);
 			transform.position += moveDirection;
 
 			_initialMousePosition = _mousePositionInput;
@@ -182,7 +188,7 @@ namespace Player
 			if (Mathf.Approximately(_scrollMouseInput, 0)) return;
 
 			var zoomDirection = transform.forward;
-			transform.position += zoomDirection * (_scrollMouseInput * zoomSpeed * Time.deltaTime);
+			transform.position += zoomDirection * (_scrollMouseInput * heightMultiplyer * zoomSpeed * Time.deltaTime);
 		}
 
 		private void RotateCamera()
