@@ -20,69 +20,69 @@ public class NPCMovement : MonoBehaviour
     private Vector3 pathPoint;
     private Plane clickPlane;
     
-    void Start()
+    public AnimationCurve meshHeightCurve;
+
+    private void Start()
     {
         map = TM.map;
 
-        pathPoint = transform.position;
         npcAnim = transform.GetComponentInChildren<AnimManager>();
         
         //DEBUG
-        clickPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
+        clickPlane = new Plane(Vector3.up, new Vector3(0, -1, 0));
 
-        var p = transform.position;
-       
-        transform.position = new Vector3(p.x,Math.Max(ME.heightMap[(int)p.x+120, -(int)p.z+120]*50f,0) , p.z);
+        pathPoint = AdjustCoordsForHeight(transform.position);
+        transform.position = pathPoint;
     }
 
-    void Update()
+    private void Update()
     {
         //DEBUG Click on tile moves NPC there
         if (Input.GetMouseButtonDown(0))
         {
             if (Camera.main is not null)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (clickPlane.Raycast(ray, out float enter))
                 {
                     var clickPos = ray.GetPoint(enter);
-                    movetoTile(map.WorldToCell(clickPos));
+                    MovetoTile(map.WorldToCell(clickPos));
                 }
             }
         }
 
         var dist = Vector3.Distance(transform.position, pathPoint);
 
-        // if (dist > 0.05f)
-        // {
-        //     var position = transform.position;
-        //     Vector3 direction = (pathPoint - position).normalized;
-        //     position += direction * (movementSpeed * Time.deltaTime);
-        //     transform.position = position;
-        //     //ME.heightMap[(int)position.x, (int)position.y]
-        //     // transform.rotation = Quaternion.LookRotation (direction);
-        //     movementSpeed = 5f - (TM.getTileDataByWorldCoords(position).travelCost/2);
-        //     movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
-        // }
-        // else
-        // {
-        //     if (path.TryPop(out var pather))
-        //     {
-        //         pathPoint = map.CellToWorld(pather);
-        //     }
-        //     else
-        //     {
-        //         npcAnim.SetIsMoving(false);
-        //     }
-        // }
+        if (dist > 0.05f)
+        {
+            Vector3 direction = (pathPoint - transform.position).normalized;
+            transform.position += direction * (movementSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.LookRotation (direction);
+            
+            // movementSpeed = 5f - (TM.getTileDataByWorldCoords(position).travelCost/2);
+            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
+        }
+        else
+        {
+            if (path.TryPop(out var pather))
+            {
+                pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
+            }
+            else
+            {
+                npcAnim.SetIsMoving(false);
+            }
+        }
     }
 
-    public void calculateRange()
+    public void CalculateRange()
     {
-        range = getSpecificRange(map.WorldToCell(transform.position), rangeRadius);
+        var p = transform.position;
+        p.y = -1;
+        range = GetSpecificRange(map.WorldToCell(p), rangeRadius);
     }
     
-    public List<Vector3Int> getSpecificRange(Vector3Int gridPos, int radius)
+    public List<Vector3Int> GetSpecificRange(Vector3Int gridPos, int radius)
     {
         var newRange = new List<Vector3Int>();
         for (int q = -radius; q <= radius; q++)
@@ -98,33 +98,40 @@ public class NPCMovement : MonoBehaviour
         return newRange;
     }
 
-    public void movetoTile(Vector3Int gridPos)
+    private Vector3 AdjustCoordsForHeight(Vector3 coord)
+    {
+        var height = meshHeightCurve.Evaluate(ME.heightMap[(int)coord.x+120,-(int)coord.z+120]) * 50f;
+        return new Vector3(coord.x,height , coord.z);
+    }
+
+    public void MovetoTile(Vector3Int gridPos)
     {
         // get current pos
         var npcGridPos = map.WorldToCell(transform.position);
         //calculate path between current and target pos
-        calculateRange();
-        path = dijkstra(npcGridPos, gridPos, range);
+        CalculateRange();
+        path = Dijkstra(npcGridPos, gridPos, range);
         
         if (path.TryPop(out var pather))
         {
             // double pop bc the first path point is the current pos
             if (path.TryPop(out pather))
             {
-                pathPoint = map.CellToWorld(pather);
+                pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
                 npcAnim.SetIsMoving(true);
             }  
         }
     }
     
-    private Stack<Vector3Int> dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
+    private Stack<Vector3Int> Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
     {
         if (!SearchRange.Contains(destination))
         {
             Debug.LogWarning("DESTINATION BEYOND SEARCH RANGE");
             return new Stack<Vector3Int>();
         }
-        
+
+        start.z = 0;
         var Q = new Dictionary<Vector3Int, Node>(); //the unvisited set
         var W = new Dictionary<Vector3Int, Node>(); //the visited set
 
@@ -140,7 +147,7 @@ public class NPCMovement : MonoBehaviour
 
         while (Q.Count != 0)
         {
-            var u = getMinDist(Q);
+            var u = GetMinDist(Q);
             if (u == null)
             {
                 break;
@@ -193,7 +200,7 @@ public class NPCMovement : MonoBehaviour
         return newPath;
     }
 
-    private Node getMinDist(Dictionary<Vector3Int, Node> Q)
+    private Node GetMinDist(Dictionary<Vector3Int, Node> Q)
     {
         var minDist = float.MaxValue;
         Node minNode = null;
