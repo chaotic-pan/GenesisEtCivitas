@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Plane = UnityEngine.Plane;
 
 public class NPCMovement : MonoBehaviour
 {
-    [SerializeField] private float movementSpeed = 5f;
+    [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
     
     private Tilemap map;
@@ -15,12 +16,11 @@ public class NPCMovement : MonoBehaviour
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
+    private float movementSpeed = 5f;
     private List<Vector3Int> range;
     private Stack<Vector3Int> path = new Stack<Vector3Int>();
     private Vector3 pathPoint;
     private Plane clickPlane;
-    
-    public AnimationCurve meshHeightCurve;
 
     private void Start()
     {
@@ -51,16 +51,22 @@ public class NPCMovement : MonoBehaviour
             }
         }
 
-        var dist = Vector3.Distance(transform.position, pathPoint);
+        var position = transform.position;
+        var dist = Vector3.Distance(position, pathPoint);
 
         if (dist > 0.05f)
         {
-            Vector3 direction = (pathPoint - transform.position).normalized;
-            transform.position += direction * (movementSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.LookRotation (direction);
+            var direction = (pathPoint - position).normalized;
+            var rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(direction), 
+                Time.deltaTime*movementSpeed);
+
+            transform.rotation = rotation;
+            position += transform.forward * (movementSpeed * Time.deltaTime);
+            transform.position = AdjustCoordsForHeight(position);
             
-            // movementSpeed = 5f - (TM.getTileDataByWorldCoords(position).travelCost/2);
-            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
+            var p = ME.CoordsToPoints(position);
+            movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
+            movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
         }
         else
         {
@@ -100,7 +106,7 @@ public class NPCMovement : MonoBehaviour
 
     private Vector3 AdjustCoordsForHeight(Vector3 coord)
     {
-        var height = meshHeightCurve.Evaluate(ME.heightMap[(int)coord.x+120,-(int)coord.z+120]) * 50f;
+        var height = ME.GetHeightByWorldCoord(coord);
         return new Vector3(coord.x,height , coord.z);
     }
 
@@ -139,8 +145,9 @@ public class NPCMovement : MonoBehaviour
         {
             var tileData = TM.getTileDataByGridCoords(gridPos);
             if (tileData == null) continue;
-            
-            var v = new Node(gridPos, tileData.travelCost);
+
+            var p = ME.CoordsToPoints(map.CellToWorld(gridPos));
+            var v = new Node(gridPos, ME.travelcost[p.x, p.y]);
             Q.Add(gridPos, v);
             if (gridPos == start) v.distance = 0;
         }

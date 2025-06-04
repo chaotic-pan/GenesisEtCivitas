@@ -211,7 +211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fileName: file2.txt
   mapDisplay: {fileID: 319485456}
-  mapHeightMultipier: 50
+  mapHeightMultiplier: 50
   regions:
   - height: 0.1
     color: {r: 0.10980393, g: 0.27450982, b: 0.48627454, a: 0}
