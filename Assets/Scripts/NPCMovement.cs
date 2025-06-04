@@ -64,9 +64,9 @@ public class NPCMovement : MonoBehaviour
             position += transform.forward * (movementSpeed * Time.deltaTime);
             transform.position = AdjustCoordsForHeight(position);
             
-            var p = ME.CoordsToPoints(position);
-            movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
-            movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
+            // var p = ME.CoordsToPoints(position);
+            // movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
+            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
         }
         else
         {

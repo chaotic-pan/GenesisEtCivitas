@@ -122,7 +122,8 @@ public class MapExtractor : MonoBehaviour
     {
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
-            travelcost[coord.x, coord.y] = 1;
+            travelcost[coord.x, coord.y] =  heightMap[coord.x, coord.y] <= 0.1f ? 20 :
+                heightMap[coord.x, coord.y]*mapHeightMultiplier;
         }
     }
 
