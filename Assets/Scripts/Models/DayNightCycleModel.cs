@@ -31,6 +31,8 @@ namespace Models
             get => _advancedCycle;
             set
             {
+                if (_advancedCycle == value) return;
+                
                 _advancedCycle = value;
                 GameEvents.DayNightCycle.OnDayNightCycleUpdate.Invoke(this);
             }

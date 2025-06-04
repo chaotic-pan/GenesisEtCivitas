@@ -22,11 +22,13 @@ public class GameManager : MonoBehaviour
         _dayNightCycle.Initialize();
     }
 
+    // Game ended
     void OnGameEnd(DayNightCycleModel dayNightCycleModel)
     {
-        if (dayNightCycleModel.CurrentInGameDay > maxDays)
+        if (dayNightCycleModel.CurrentInGameDay >= maxDays)
         {
             GameEvents.Lifecycle.OnGameEnd.Invoke();
+            
         }
     }
 }

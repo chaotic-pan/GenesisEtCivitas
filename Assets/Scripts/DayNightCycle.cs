@@ -7,7 +7,7 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField] private GameObject light;
     [SerializeField] private float dayLengthInSeconds = 600f; // 10 irl minutes per day
     [SerializeField] private float speed = 1;
-    [SerializeField] private bool debugMode = false;
+    [SerializeField] private bool debugMode;
     
     private float _elapsedRealTimeInSeconds;
     private float _currentSunAngle;
@@ -35,7 +35,7 @@ public class DayNightCycle : MonoBehaviour
 
     private void Update()
     {
-        if (!_cycleModel.AdvanceCycle || debugMode)
+        if (!_cycleModel.AdvanceCycle)
             return;
 
         var delta = (Time.deltaTime * speed);
@@ -59,11 +59,12 @@ public class DayNightCycle : MonoBehaviour
         _cycleModel.CurrentInGameDay = elapsedInGameMinutes / 60 / 24;
         
         _cycleModel.ElapsedInGameMinutes = elapsedInGameMinutes;
-
     }
 
     private void RotateSun(float delta)
     {
+        if (debugMode) return;
+        
         float deltaAngle = (360f / dayLengthInSeconds) * delta;
         _currentSunAngle += deltaAngle;
         
