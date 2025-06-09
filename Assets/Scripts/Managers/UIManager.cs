@@ -17,11 +17,13 @@ namespace Managers
         [SerializeField] private GameObject _SkillTreeMenu;
         
         [SerializeField] private UICityMenu uiCityMenu;
+        [SerializeField] private UINpcMenu uiNpcMenu;
 
 
         private void Awake()
         {
             uiCityMenu.Initialize();
+            uiNpcMenu.Initialize();
         }
 
         private void Start()
