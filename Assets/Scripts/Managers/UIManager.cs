@@ -22,8 +22,8 @@ namespace Managers
 
         private void Awake()
         {
-            uiCityMenu.Initialize();
-            uiNpcMenu.Initialize();
+            uiCityMenu?.Initialize();
+            uiNpcMenu?.Initialize();
         }
 
         private void Start()

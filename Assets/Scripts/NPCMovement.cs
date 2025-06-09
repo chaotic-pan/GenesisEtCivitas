@@ -37,7 +37,7 @@ public class NPCMovement : MonoBehaviour
 
     private void Update()
     {
-        return;
+        
         //DEBUG Click on tile moves NPC there
         if (Input.GetMouseButtonDown(0))
         {
