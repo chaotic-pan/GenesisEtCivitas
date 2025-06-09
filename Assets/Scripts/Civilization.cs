@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public class CIVManager : MonoBehaviour
+public class Civilization : MonoBehaviour
 {
     // base scores food, water, safety, shelter and energy go from 0 to 500
     // combined scores belief and happiness are calculated
@@ -13,10 +14,16 @@ public class CIVManager : MonoBehaviour
     [SerializeField] private int shelter = 250;
     [SerializeField] private int energy = 250;
 
+    public int population;
     private int belief;
     private int happiness;
 
     private int ressources;
+
+    private void Start()
+    {
+        throw new NotImplementedException();
+    }
 
     private void CalcValues()
     {

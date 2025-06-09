@@ -139,7 +139,8 @@ MonoBehaviour:
   _IpText: {fileID: 1684561931}
   vpText: {fileID: 887753147}
   _SkillTreeMenu: {fileID: 1461637821}
-  uiCityMenu: {fileID: 1732135329}
+  uiCityMenu: {fileID: 0}
+  uiNpcMenu: {fileID: 0}
 --- !u!114 &176131874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141685,7 +141686,7 @@ GameObject:
   - component: {fileID: 1884897874}
   - component: {fileID: 1884897873}
   m_Layer: 0
-  m_Name: NPCManager
+  m_Name: CivSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141705,7 +141706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   civilisationPrefab: {fileID: 4618963362583421363, guid: a48c9f2aec3698e4c872d19b3a8d68df, type: 3}
   civilisations: []
-  civilisationNumber: 1
+  civilisationCount: 4
 --- !u!4 &1884897874
 Transform:
   m_ObjectHideFlags: 0
