@@ -11,7 +11,7 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
     
-    private Tilemap map;
+    public Tilemap map;
     // private AnimManager npcAnim;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
@@ -35,7 +35,7 @@ public class NPCMovement : MonoBehaviour
     private float restTimer = 5;
     private void Update()
     {
-        if (restTimer > 0) restTimer -= Time.deltaTime;
+        /*if (restTimer > 0) restTimer -= Time.deltaTime;
         else if (restTimer != -1)
         {
             restTimer = -1;
@@ -46,7 +46,7 @@ public class NPCMovement : MonoBehaviour
             var range = GetSpecificRange(gridPos, rangeRadius);
             MovetoTile(range[Random.Range(0, range.Count-1)]);
         }
-
+        */
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
         
