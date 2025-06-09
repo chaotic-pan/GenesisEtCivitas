@@ -20,9 +20,12 @@ public class Civilization : MonoBehaviour
 
     private int ressources;
 
-    private void Start()
+    public void setPopulation(int population)
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < population; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(true);
+        }
     }
 
     private void CalcValues()

@@ -141706,7 +141706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   civilisationPrefab: {fileID: 4618963362583421363, guid: a48c9f2aec3698e4c872d19b3a8d68df, type: 3}
   civilisations: []
-  civilisationCount: 4
+  civilisationCount: 1
 --- !u!4 &1884897874
 Transform:
   m_ObjectHideFlags: 0

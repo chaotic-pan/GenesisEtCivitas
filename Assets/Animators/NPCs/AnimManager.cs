@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class AnimManager : MonoBehaviour
 {
@@ -33,47 +35,62 @@ public class AnimManager : MonoBehaviour
 
     private void Update()
     {
-        if (mAnimator != null)
-        {
-            if (Input.GetKeyDown(KeyCode.Keypad0))
-            {
-                TriggerDeath();
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                bool isdoing = mAnimator.GetBool(IsMining);
-                SetIsMining(!isdoing);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad2))
-            {
-                bool isdoing = mAnimator.GetBool(IsFarming);
-                SetIsFarming(!isdoing);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad3))
-            {
-                bool isdoing = mAnimator.GetBool(IsTreeCutting);
-                SetIsTreeCutting(!isdoing);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                bool isdoing = mAnimator.GetBool(IsFishing);
-                SetIsFishing(!isdoing);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad5))
-            {
-                bool isdoing = mAnimator.GetBool(IsPreaching);
-                SetIsPreaching(!isdoing);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad6))
-            {
-                bool isdoing = mAnimator.GetBool(IsDancing);
-                SetIsDancing(!isdoing);
-            }
-        }
+        // DEBUG
+        // if (mAnimator != null)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.Keypad0))
+        //     {
+        //         TriggerDeath();
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad1))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsMining);
+        //         SetIsMining(!isdoing);
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad2))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsFarming);
+        //         SetIsFarming(!isdoing);
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad3))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsTreeCutting);
+        //         SetIsTreeCutting(!isdoing);
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad4))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsFishing);
+        //         SetIsFishing(!isdoing);
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad5))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsPreaching);
+        //         SetIsPreaching(!isdoing);
+        //     }
+        //     if (Input.GetKeyDown(KeyCode.Keypad6))
+        //     {
+        //         bool isdoing = mAnimator.GetBool(IsDancing);
+        //         SetIsDancing(!isdoing);
+        //     }
+        // }
     }
 
     public void SetIsMoving(bool isMoving)
     {
+        resetBools(); 
+        mAnimator.SetBool(IsMoving, isMoving);
+    }
+    
+    public void SetIsMovingDelayed(bool isMoving)
+    {
+        resetBools();
+        float randTime = Random.Range(1,50);
+        StartCoroutine(delayedWalk(randTime/100f, isMoving));
+    }
+    
+    IEnumerator delayedWalk(float wait, bool isMoving)
+    {
+        yield return new WaitForSecondsRealtime(wait);
         mAnimator.SetBool(IsMoving, isMoving);
     }
     
@@ -135,11 +152,11 @@ public class AnimManager : MonoBehaviour
         mAnimator.SetBool(IsPreaching, false);
         mAnimator.SetBool(IsFishing, false);
         
-        FishingPole.SetActive(false);
-        Stool.SetActive(false);
-        Podium.SetActive(false);
-        Axe.SetActive(false);
-        Hoe.SetActive(false);
-        Pickaxe.SetActive(false);
+        // FishingPole.SetActive(false);
+        // Stool.SetActive(false);
+        // Podium.SetActive(false);
+        // Axe.SetActive(false);
+        // Hoe.SetActive(false);
+        // Pickaxe.SetActive(false);
     }
 }

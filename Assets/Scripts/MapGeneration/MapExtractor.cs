@@ -136,7 +136,6 @@ public class MapExtractor : MonoBehaviour
     public Vector2Int CoordsToPoints(Vector3 coord)
     {
         return new Vector2Int((int)coord.x + chunkSize / 2, -(int)coord.z + chunkSize / 2);
-        
     }
 
 }

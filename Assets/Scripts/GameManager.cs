@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int maxDays = 7;
     
     private DayNightCycle _dayNightCycle;
-    
+
     private void Awake()
     {
         GameEvents.DayNightCycle.OnDayNightCycleUpdate += OnGameEnd;
