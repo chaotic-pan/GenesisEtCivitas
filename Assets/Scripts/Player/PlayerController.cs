@@ -13,7 +13,7 @@ namespace Player
         private void Awake()
         {
             _playerModel = GetComponent<PlayerModel>();
-            _playerSkillSet = new PlayerSkillSet();
+            _playerSkillSet = new PlayerSkillSet(_playerModel);
             _playerSkillSet.OnSkillUnlocked += PlayerSkillSet_OnSkillUnlocked;
         }
 

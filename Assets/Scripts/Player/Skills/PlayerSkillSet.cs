@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Models;
+using UnityEngine;
 
 namespace Player.Skills
 {
     public class PlayerSkillSet
     {
+        private PlayerModel _playerModel;
 
         public event EventHandler<OnSkillUnlockedEventArgs> OnSkillUnlocked;
         public class OnSkillUnlockedEventArgs : EventArgs
@@ -20,8 +23,9 @@ namespace Player.Skills
             DeathTwo
         }
 
-        public PlayerSkillSet()
+        public PlayerSkillSet(PlayerModel playerModel)
         {
+            _playerModel = playerModel;
             _unlockedSkills = new List<Skill>();
         }
 
@@ -57,26 +61,67 @@ namespace Player.Skills
             return Skill.None;
         }
 
+        public int GetSkillCosts(Skill skill)
+        {
+            switch (skill)
+            {
+                case Skill.WaterOne: return 1;
+                case Skill.WaterTwo: return 2;
+                case Skill.DeathOne: return 1;
+                case Skill.DeathTwo: return 2;
+            }
+            return 0;
+        }
+
         public bool TryUnlockSkill(Skill skill)
         {
             Skill skillRequirement = GetSkillRequirement(skill);
+            int skillCost = GetSkillCosts(skill);
 
-            if (skillRequirement != Skill.None)
+            if (!IsSkillUnlocked(skill))
             {
-                if (IsSkillUnlocked(skillRequirement))
+                if (skillRequirement != Skill.None)
                 {
-                    UnlockSkill(skill);
-                    return true;
+                    if (IsSkillUnlocked(skillRequirement))
+                    {
+
+                        if (skillCost <= _playerModel.virtuePoints)
+                        {
+                            UnlockSkill(skill);
+                            _playerModel.virtuePoints -= skillCost;
+                            return true;
+                        }
+                        else
+                        {
+                            Debug.LogError("Not Enough Virtue Points!");
+                            return false;
+                        }
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    return false;
+                    if (skillCost <= _playerModel.virtuePoints)
+                    {
+                        UnlockSkill(skill);
+                        _playerModel.virtuePoints -= skillCost;
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogError("Not Enough Virtue Points!");
+                        return false;
+                    }
                 }
             }
             else
             {
-                UnlockSkill(skill);
-                return true;
+                Debug.LogError("Already Unlocked!");
+                return false;
             }
         }
     }

@@ -12,7 +12,7 @@ public class UISkillTree : MonoBehaviour
     {
         if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.WaterOne))
         {
-            Debug.LogError("Cannot Unlock Yet!");
+            Debug.LogError("Cannot Unlock");
         }
     }
 
@@ -20,7 +20,7 @@ public class UISkillTree : MonoBehaviour
     {
         if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.WaterTwo))
         {
-            Debug.LogError("Cannot Unlock Yet!");
+            Debug.LogError("Cannot Unlock");
         }
     }
 
@@ -29,7 +29,7 @@ public class UISkillTree : MonoBehaviour
     {
         if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.DeathOne))
         {
-            Debug.LogError("Cannot Unlock Yet!");
+            Debug.LogError("Cannot Unlock");
         }
     }
 
@@ -37,7 +37,7 @@ public class UISkillTree : MonoBehaviour
     {
          if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.DeathTwo))
         {
-            Debug.LogError("Cannot Unlock Yet!");
+            Debug.LogError("Cannot Unlock");
         }
     }
 
