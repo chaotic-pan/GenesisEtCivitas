@@ -24,7 +24,7 @@ namespace Player
         {
             if (_isWaitingForTileClick)
             {
-                ShowHoverEffect();
+                // ShowHoverEffect();
 
                 if (Input.GetMouseButtonDown(0))
                 {
