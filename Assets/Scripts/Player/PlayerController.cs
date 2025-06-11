@@ -9,45 +9,109 @@ namespace Player
     {
         private PlayerModel _playerModel;
         private PlayerSkillSet _playerSkillSet;
+        private PlayerAbility _activeAbility;
+        
+        private bool _isWaitingForTileClick;
 
         private void Start()
         {
             _playerModel = GetComponent<PlayerModel>();
             _playerSkillSet = new PlayerSkillSet();
         }
-
-        public void CastRainAbility()
+        
+        private void Update()
         {
-            CastAbility(AbilityType.Rain);
+            if (_isWaitingForTileClick)
+            {
+                ShowHoverEffect();
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    HandleTileClick();
+                }
+            }
         }
 
-        public void CastEarthquakeAbility()
+        private void ShowHoverEffect()
         {
-            CastAbility(AbilityType.Earthquake);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var plane = new Plane(Vector3.up, Vector3.zero);
+            if (!plane.Raycast(ray, out var distance)) return;
+            
+            var point = ray.GetPoint(distance);
+            var tileGridPos = TileManager.Instance.GetTileGridPositionByWorldCoords(point);
+
+            if (TileManager.Instance.getTileDataByGridCoords(tileGridPos) != null)
+            {
+                VisualizeAreaOfEffect(tileGridPos);
+            }
         }
 
-        private void CastAbility(AbilityType type)
+        private void VisualizeAreaOfEffect(Vector3Int tileGridPos)
         {
-            PlayerAbility ability = type switch
+            throw new System.NotImplementedException();
+        }
+
+        private void HandleTileClick()
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var plane = new Plane(Vector3.up, Vector3.zero);
+            if (plane.Raycast(ray, out var distance))
+            {
+                var point = ray.GetPoint(distance);
+                var tileGridPos = TileManager.Instance.GetTileGridPositionByWorldCoords(point);
+                var tileData = TileManager.Instance.getTileDataByGridCoords(tileGridPos);
+                if (!tileData)
+                {
+                    Debug.Log("No Tile Data!");
+                    return;
+                }
+                Debug.Log("Tile grid pos: " + tileGridPos);
+                Debug.Log("Tile water value: " + tileData.waterValue);
+                
+                CastAbility(tileGridPos);
+                Debug.Log("New tile water value: " + tileData.waterValue);
+            }
+
+            _isWaitingForTileClick = false;
+        }
+
+        public void EnterRainAbility()
+        {
+            EnterAbility(AbilityType.Rain);
+        }
+
+        public void EnterEarthquakeAbility()
+        {
+            EnterAbility(AbilityType.Earthquake);
+        }
+
+        private void EnterAbility(AbilityType type)
+        {
+            _activeAbility  = type switch
             {
                 AbilityType.Rain => gameObject.AddComponent<RainAbility>(),
                 AbilityType.Earthquake => gameObject.AddComponent<EarthquakeAbility>(),
                 _ => null
             };
-            if (!ability) return;
+            if (!_activeAbility) return;
+            
+            _activeAbility.EnterAbility();
+            _isWaitingForTileClick = true;
+        }
 
-            ability.CastAbility();
-
-            if (_playerModel.InfluencePoints < ability.Cost)
+        private void CastAbility(Vector3Int tileGridPos)
+        {
+            if (_playerModel.InfluencePoints < _activeAbility.Cost)
             {
-                Debug.Log("Too little CASH dumb ass");
+                // Debug.Log("Too little CASH");
                 return;
             }
-            _playerModel.InfluencePoints -= ability.Cost;
+            _playerModel.InfluencePoints -= _activeAbility.Cost;
+            _activeAbility.CastAbility(tileGridPos);
+            // Debug.Log("Cost: " + _activeAbility.Cost);
             
-            Debug.Log("Cost: " + ability.Cost);
-
-            Destroy(ability);
+            _activeAbility = null;
         }
 
         public bool CanUseWaterOne()

@@ -7,10 +7,18 @@ namespace Player.Abilities
         public override int Cost => 100;
 
         public override AbilityType Type => AbilityType.Earthquake;
+        
+        public int effectDiameter = 5;
 
-        public override void CastAbility()
+        public override void EnterAbility()
         {
-            Debug.Log("Casted Earthquake Ability");
+            Debug.Log("Entered Earthquake Ability");
+        }
+        
+        public override void CastAbility(Vector3Int tileGridPos)
+        {
+            // Debug.Log("Casted Earthquake Ability");
+            
         }
     }
 }

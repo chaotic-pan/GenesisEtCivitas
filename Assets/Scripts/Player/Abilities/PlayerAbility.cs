@@ -14,6 +14,8 @@ namespace Player.Abilities
 
         public virtual AbilityType Type { get; set; }
 
-        public virtual void CastAbility() {}
+        public virtual void EnterAbility() {}
+        
+        public virtual void CastAbility(Vector3Int tileGridPos) {}
     }
 }
