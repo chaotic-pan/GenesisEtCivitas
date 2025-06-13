@@ -1,4 +1,5 @@
 ﻿using Models;
+using Terrain;
 using UnityEngine.Events;
 
 namespace UI
@@ -7,7 +8,13 @@ namespace UI
     {
         public static readonly UIUpdateEvents UIUpdate = new ();
         public static readonly UIOpenEvents UIOpen = new ();
-    
+        public static readonly UIMapEvents UIMap = new ();
+
+        public class UIMapEvents
+        {
+            public UnityAction<MapDisplay.MapOverlay> OnOpenTest;
+        }
+        
         public class UIUpdateEvents
         {
             public UnityAction<PlayerModel> OnUpdatePlayerData;

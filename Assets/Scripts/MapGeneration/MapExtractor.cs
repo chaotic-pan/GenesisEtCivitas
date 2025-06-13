@@ -32,7 +32,7 @@ public class MapExtractor : MonoBehaviour
     public readonly int[,] animalHostility = new int[points, points];
     public readonly int[,] climate = new int[points, points];
 
-    void Start()
+    public void Awake()
     {
         Instance = this;
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
@@ -79,14 +79,18 @@ public class MapExtractor : MonoBehaviour
 
         // Map wird generiert
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);
-        mapDisplay.DrawMeshes(
+        var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
+        
+        mapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
+        
+        mapDisplay.DrawMeshes_(
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot), 
-            TextureGenerator.TextureFromColorMaps(colorMap, chunkSize));
+            textures);
 
         CalculateTravelCost();
     }
-    
+
     public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks)
     {
         var colorMaps = new Dictionary<Vector2, Color[]>();
@@ -104,11 +108,70 @@ public class MapExtractor : MonoBehaviour
                 var colorMapCoordinate = coord.y * chunkSize + coord.x;
 
                 var currentHeight = noiseMap[offsetX, offsetY];
+                
                 if (!regions.Any(region => region.height > currentHeight))
                     continue;
                 var matchingRegion = regions.First(region => region.height > currentHeight);
 
                 colorMap[colorMapCoordinate] = matchingRegion.color * 1f;
+
+            }
+
+            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
+        }
+
+        return colorMaps;
+    }
+    
+    public Dictionary<Vector2, Color[]> GetColorData(float[,] noiseMap, Heatmap heatmap)
+    {
+        var colorMaps = new Dictionary<Vector2, Color[]>();
+        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
+        {
+            //Reduce Offsets by 1 to have same values at seams
+            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
+            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
+
+            var colorMap = new Color[chunkSize * chunkSize];
+            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
+            {
+                var offsetX = coord.x + chunkXOffset;
+                var offsetY = coord.y + chunkYOffset;
+                var colorMapCoordinate = coord.y * chunkSize + coord.x;
+
+                var currentHeight = noiseMap[offsetX, offsetY];
+                
+
+                colorMap[colorMapCoordinate] = mapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
+
+            }
+
+            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
+        }
+
+        return colorMaps;
+    }
+    
+    public Dictionary<Vector2, Color[]> GetColorData(int[,] noiseMap, Heatmap heatmap)
+    {
+        var colorMaps = new Dictionary<Vector2, Color[]>();
+        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
+        {
+            //Reduce Offsets by 1 to have same values at seams
+            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
+            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
+
+            var colorMap = new Color[chunkSize * chunkSize];
+            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
+            {
+                var offsetX = coord.x + chunkXOffset;
+                var offsetY = coord.y + chunkYOffset;
+                var colorMapCoordinate = coord.y * chunkSize + coord.x;
+
+                var currentHeight = noiseMap[offsetX, offsetY];
+                
+
+                colorMap[colorMapCoordinate] = mapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
 
             }
 
