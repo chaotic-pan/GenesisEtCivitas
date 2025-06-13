@@ -30,11 +30,14 @@ public class TileManager : MonoBehaviour
     }
     public TileData getTileDataByWorldCoords(Vector3 coordinates)
     {
-        Vector3Int gridPos = map.WorldToCell(coordinates);
+        var gridPos = GetTileGridPositionByWorldCoords(coordinates);
 
         var tile = map.GetTile(gridPos);
         return tile != null ? dataFromTiles[tile] : null;
     }
+
+    public Vector3Int GetTileGridPositionByWorldCoords(Vector3 coordinates)
+        => map.WorldToCell(coordinates);
     
     public TileData getTileDataByGridCoords(int gridX, int gridY)
     {
