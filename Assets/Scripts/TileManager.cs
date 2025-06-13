@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -132,5 +133,21 @@ public class TileManager : MonoBehaviour
             CubeToGrid(cubePos.x-1, cubePos.y+1, cubePos.z),
             CubeToGrid(cubePos.x, cubePos.y+1, cubePos.z-1)
         };
+    }
+
+    public List<Vector3Int> GetSpecificRange(Vector3Int gridPos, int radius)
+    {
+        var newRange = new List<Vector3Int>();
+        for (int q = -radius; q <= radius; q++)
+        {
+            for (int r = Math.Max(-radius, -q - radius); r <= Math.Min(radius, -q + radius); r++)
+            {
+                var s = -q - r;
+                var cubePos = GridToCube(gridPos);
+                newRange.Add(CubeToGrid(cubePos.x + q, cubePos.y + r, gridPos.z + s));
+            }
+        }
+
+        return newRange;
     }
 }

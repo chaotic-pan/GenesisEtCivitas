@@ -35,7 +35,7 @@ public class NPCMovement : MonoBehaviour
     private float restTimer = 5;
     private void Update()
     {
-        /*if (restTimer > 0) restTimer -= Time.deltaTime;
+        if (restTimer > 0) restTimer -= Time.deltaTime;
         else if (restTimer != -1)
         {
             restTimer = -1;
@@ -43,10 +43,10 @@ public class NPCMovement : MonoBehaviour
             var p = transform.position;
             p.y = -1;
             var gridPos = map.WorldToCell(p);
-            var range = GetSpecificRange(gridPos, rangeRadius);
+            var range = TM.GetSpecificRange(gridPos, rangeRadius);
             MovetoTile(range[Random.Range(0, range.Count-1)]);
         }
-        */
+        
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
         
@@ -90,23 +90,7 @@ public class NPCMovement : MonoBehaviour
     {
         var p = transform.position;
         p.y = -1;
-        range = GetSpecificRange(map.WorldToCell(p), rangeRadius);
-    }
-    
-    public List<Vector3Int> GetSpecificRange(Vector3Int gridPos, int radius)
-    {
-        var newRange = new List<Vector3Int>();
-        for (int q = -radius; q <= radius; q++)
-        {
-            for (int r = Math.Max(-radius, -q-radius); r <= Math.Min(radius, -q+radius); r++)
-            {
-                var s = -q - r;
-                var cubePos = TM.GridToCube(gridPos);
-                newRange.Add(TM.CubeToGrid(cubePos.x + q, cubePos.y + r, gridPos.z + s));
-            }
-        }
-
-        return newRange;
+        range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
     }
 
     private Vector3 AdjustCoordsForHeight(Vector3 coord)

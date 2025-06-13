@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 957147249992228136}
   - component: {fileID: 3231224276502657812}
   - component: {fileID: 6362208822355190539}
+  - component: {fileID: 3429691633098140387}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -63,6 +64,7 @@ MonoBehaviour:
   vpText: {fileID: 0}
   _SkillTreeMenu: {fileID: 0}
   uiCityMenu: {fileID: 0}
+  uiNpcMenu: {fileID: 0}
 --- !u!114 &3231224276502657812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,3 +94,17 @@ MonoBehaviour:
   dayLengthInSeconds: 600
   speed: 1
   debugMode: 0
+--- !u!114 &3429691633098140387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61e9dd3a71b0770499c8d78d5cb10065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
+  uiSkillTree: {fileID: 0}

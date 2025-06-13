@@ -32,14 +32,14 @@ public class NPCSpawner : MonoBehaviour
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
             civ.GetComponent<Civilization>().setPopulation(Random.Range(1,8));
-            FindSettlingLocation(civ);
+            //FindSettlingLocation(civ);
         }
     }
     private void FindSettlingLocation(GameObject civ)
     {
         NPCMovement move = GetComponent<NPCMovement>();
         Vector3Int curGridPos = TM.map.WorldToCell(civ.transform.position);
-        List<Vector3Int> locations = move.GetSpecificRange(curGridPos, range);
+        List<Vector3Int> locations = TM.GetSpecificRange(curGridPos, range);
 
         Vector3Int settlingVec = new Vector3Int();
         float winValue = 0;

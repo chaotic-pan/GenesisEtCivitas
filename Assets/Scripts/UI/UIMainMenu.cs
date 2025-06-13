@@ -6,7 +6,7 @@ public class UIMainMenu : MonoBehaviour
 
     public void OnStart()
     {
-        SceneManager.LoadScene("DJTestScene2");
+        SceneManager.LoadScene("WorldMap");
     }
 
     public void OnQuit()
