@@ -21,9 +21,16 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        int layerMask = ~(1 << LayerMask.NameToLayer("Ability"));
+        Ray ray = Camera.main.ScreenPointToRay(eventData.position);
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
-            UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+            if (hit.collider.gameObject == gameObject)
+            {
+                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+            }
         }
+
     }
 }

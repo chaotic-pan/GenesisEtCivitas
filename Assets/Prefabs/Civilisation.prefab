@@ -7963,7 +7963,7 @@ GameObject:
   - component: {fileID: 2262859333894314953}
   - component: {fileID: 3540698270169247504}
   - component: {fileID: 2292834795574306297}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: InfluenceSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9984,6 +9984,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 10
   rangeRadius: 20
+  map: {fileID: 0}
 --- !u!114 &7232340983693077581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10016,7 +10017,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Height: 1.2
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0}
