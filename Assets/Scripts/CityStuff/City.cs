@@ -1,0 +1,89 @@
+using System.Collections.Generic;
+using Models;
+using UI;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using Random = UnityEngine.Random;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+
+namespace CityStuff
+{
+    public class City : MonoBehaviour, IPointerClickHandler
+    {
+
+        [SerializeField] private GameObject houseGameObject;
+        [SerializeField] private GameObject wellGameObject;
+        [SerializeField] private GameObject churchGameObject;
+    
+        private readonly List<Vector2> _buildingPoints = new ()
+        {
+            new Vector2(0.25f, 0f),
+            new Vector2(0.25f, 0.25f),
+            new Vector2(0f, 0.25f),
+            new Vector2(-0.25f, 0.25f),
+            new Vector2(-0.25f, 0f),
+            new Vector2(-0.25f, -0.25f),
+            new Vector2(0f, -0.25f),
+            new Vector2(0.25f, -0.25f)
+        };
+    
+        private House _house;
+        private Well _well;
+        private Church _church;
+
+        private readonly CityModel _cityModel = new();
+
+        public void Initialize(string cityName)
+        {
+            _cityModel.City = this;
+            _cityModel.CityName = cityName;
+            
+            BuildHouse();
+        }
+
+        public void BuildChurch()
+        {
+            if (_church) return;
+            
+            _church = InstantiateAtRandomPoint(churchGameObject).GetComponent<Church>();
+            _church.Initialize();
+        }
+
+        public void BuildWell()
+        {
+            if (_well) return;
+            
+            _well = InstantiateAtRandomPoint(wellGameObject).GetComponent<Well>();
+        }
+    
+        private void BuildHouse()
+        {
+            if (_house) return;
+            
+            _house = InstantiateAtRandomPoint(houseGameObject).GetComponent<House>();
+        }
+
+        private GameObject InstantiateAtRandomPoint(GameObject prefab)
+        {
+            var randomNumber = Random.Range(0, _buildingPoints.Count);
+            var randomPoint = _buildingPoints[randomNumber];
+            _buildingPoints.RemoveAt(randomNumber);
+        
+            var instance = Instantiate(prefab, transform);
+            instance.transform.localPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
+            instance.transform.LookAt(transform);
+            instance.SetActive(true);
+        
+            return instance;
+        }
+        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);
+            }
+        }
+    }
+}

@@ -16,6 +16,7 @@ namespace UI
         public class UIOpenEvents
         {
             public UnityAction<CityModel> OnOpenCityMenu;
+            public UnityAction<NPCModel> OnOpenNpcMenu;
         }
     }
 }
