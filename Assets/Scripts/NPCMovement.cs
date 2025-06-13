@@ -1,18 +1,18 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Plane = UnityEngine.Plane;
+using Random = UnityEngine.Random;
 
 public class NPCMovement : MonoBehaviour
 {
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
     
-    private Tilemap map;
-    private AnimManager npcAnim;
+    public Tilemap map;
+    // private AnimManager npcAnim;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
@@ -20,41 +20,36 @@ public class NPCMovement : MonoBehaviour
     private List<Vector3Int> range;
     private Stack<Vector3Int> path = new Stack<Vector3Int>();
     private Vector3 pathPoint;
-    private Plane clickPlane;
 
     private void Start()
     {
-        map = TM.map;
+        map = TM?.map;
 
-        npcAnim = transform.GetComponentInChildren<AnimManager>();
+        // npcAnim = transform.GetComponentsInChildren<AnimManager>()[0];
         
-        //DEBUG
-        clickPlane = new Plane(Vector3.up, new Vector3(0, -1, 0));
-
         pathPoint = AdjustCoordsForHeight(transform.position);
         transform.position = pathPoint;
+        restTimer = 3;
     }
 
+    private float restTimer = 5;
     private void Update()
     {
-        return;
-        //DEBUG Click on tile moves NPC there
-        if (Input.GetMouseButtonDown(0))
+        /*if (restTimer > 0) restTimer -= Time.deltaTime;
+        else if (restTimer != -1)
         {
-            if (Camera.main is not null)
-            {
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (clickPlane.Raycast(ray, out float enter))
-                {
-                    var clickPos = ray.GetPoint(enter);
-                    MovetoTile(map.WorldToCell(clickPos));
-                }
-            }
+            restTimer = -1;
+            // get random walk point in range
+            var p = transform.position;
+            p.y = -1;
+            var gridPos = map.WorldToCell(p);
+            var range = GetSpecificRange(gridPos, rangeRadius);
+            MovetoTile(range[Random.Range(0, range.Count-1)]);
         }
-
+        */
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
-
+        
         if (dist > 0.05f)
         {
             var direction = (pathPoint - position).normalized;
@@ -75,9 +70,18 @@ public class NPCMovement : MonoBehaviour
             {
                 pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
             }
-            else
+            else if (restTimer == -1) 
             {
-                npcAnim.SetIsMoving(false);
+                for (int  i = 0;  i < transform.childCount;  i++)
+                {
+                    var child = transform.GetChild(i);
+                    if (child.gameObject.activeSelf)
+                    {
+                        child.GetComponent<AnimManager>()?.SetIsDancing(true);
+                    }       
+                }
+                restTimer = 5;
+
             }
         }
     }
@@ -125,7 +129,15 @@ public class NPCMovement : MonoBehaviour
             if (path.TryPop(out pather))
             {
                 pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
-                npcAnim.SetIsMoving(true);
+                for (int  i = 0;  i < transform.childCount;  i++)
+                {
+                    var child = transform.GetChild(i);
+                    if (child.gameObject.activeSelf)
+                    {
+                        child.GetComponent<AnimManager>()?.SetIsMovingDelayed(true);
+
+                    }       
+                }
             }  
         }
     }
