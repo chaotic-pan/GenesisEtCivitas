@@ -7,20 +7,36 @@ public class TileManager : MonoBehaviour
 {
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
-    [SerializeField] private List<TileData> tileDatas;
-    private Dictionary<TileBase, TileData> dataFromTiles;
+    private Dictionary<Vector3Int, TileData> dataFromTiles= new Dictionary<Vector3Int, TileData>();
     
     private void Awake()
     {
         Instance = this;
+    }
 
-        dataFromTiles = new Dictionary<TileBase, TileData>();
-
-        foreach (var tileData in tileDatas)
+    public void InitializeTileData(MapExtractor ME)
+    {
+        for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
         {
-            foreach (var tile in tileData.tiles)
+            for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
             {
-                dataFromTiles.Add(tile, tileData);
+                var gridPos = new Vector3Int(x, y, 0);
+                TileBase tile = map.GetTile(gridPos);
+                if (tile != null)
+                {
+                    var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
+                    TileData tileData = new TileData(
+                        ME.travelcost[p.x, p.y],
+                        ME.fertility[p.x, p.y],
+                        ME.firmness[p.x, p.y],
+                        ME.ore[p.x, p.y],
+                        ME.vegetation[p.x, p.y],
+                        ME.animalPopulation[p.x, p.y],
+                        ME.animalHostility[p.x, p.y],
+                        ME.climate[p.x, p.y],
+                        1); 
+                    dataFromTiles.Add(gridPos, tileData);
+                }
             }
         }
     }
@@ -31,24 +47,18 @@ public class TileManager : MonoBehaviour
     }
     public TileData getTileDataByWorldCoords(Vector3 coordinates)
     {
-        var gridPos = GetTileGridPositionByWorldCoords(coordinates);
-
-        var tile = map.GetTile(gridPos);
-        return tile != null ? dataFromTiles[tile] : null;
+        var gridPos = map.WorldToCell(coordinates);
+        
+        return getTileDataByGridCoords(gridPos);
     }
 
-    public Vector3Int GetTileGridPositionByWorldCoords(Vector3 coordinates)
-        => map.WorldToCell(coordinates);
-    
     public TileData getTileDataByGridCoords(int gridX, int gridY)
     {
         return getTileDataByGridCoords(new Vector3Int(gridX,gridY));
     }
     public TileData getTileDataByGridCoords(Vector3Int gridPos)
     {
-
-        var tile = map.GetTile(gridPos);
-        return tile != null ? dataFromTiles[tile] : null;
+        return dataFromTiles.ContainsKey(gridPos) ? dataFromTiles[gridPos] : null;
     }
    
     public void printTileData(int gridX, int gridY) 
@@ -57,22 +67,20 @@ public class TileManager : MonoBehaviour
     }
     public void printTileData(Vector3Int gridPos)
     {
-        var tile = map.GetTile(gridPos);
-        var clickedTileData = tile != null ? dataFromTiles[tile] : null;
-        
-        if (clickedTileData == null)
+        if (!dataFromTiles.ContainsKey(gridPos))
         {
             print("At position " + gridPos + " there is no tile ");
             return;
         }
-                
-        string tileType = clickedTileData.tileType;
+        
+        var clickedTileData = dataFromTiles[gridPos]; 
+        
         float travelCost = clickedTileData.travelCost;
         float waterValue = clickedTileData.waterValue;
         float landFertility = clickedTileData.landFertility;
                 
-        print("At position " + gridPos + " there is a " + tileType 
-              + " Tile with: \nTravelCost=" + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
+        print("At position " + gridPos + " there is a Tile with: \nTravelCost=" 
+              + travelCost + ", WaterValue=" + waterValue + ", LandFertility=" + landFertility);
     }
     
     

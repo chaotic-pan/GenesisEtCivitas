@@ -40,7 +40,7 @@ namespace Player
             if (!plane.Raycast(ray, out var distance)) return;
             
             var point = ray.GetPoint(distance);
-            var tileGridPos = TileManager.Instance.GetTileGridPositionByWorldCoords(point);
+            var tileGridPos = TileManager.Instance.map.WorldToCell(point);
 
             if (TileManager.Instance.getTileDataByGridCoords(tileGridPos) != null)
             {
@@ -60,9 +60,9 @@ namespace Player
             if (plane.Raycast(ray, out var distance))
             {
                 var point = ray.GetPoint(distance);
-                var tileGridPos = TileManager.Instance.GetTileGridPositionByWorldCoords(point);
+                var tileGridPos = TileManager.Instance.map.WorldToCell(point);
                 var tileData = TileManager.Instance.getTileDataByGridCoords(tileGridPos);
-                if (!tileData)
+                if (tileData == null)
                 {
                     Debug.Log("No Tile Data!");
                     return;

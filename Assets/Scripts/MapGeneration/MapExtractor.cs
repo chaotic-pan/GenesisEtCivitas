@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Terrain;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using Utilities;
 
 public class MapExtractor : MonoBehaviour
@@ -32,9 +33,10 @@ public class MapExtractor : MonoBehaviour
     public readonly int[,] animalHostility = new int[points, points];
     public readonly int[,] climate = new int[points, points];
 
-    public void Awake()
+    private void Awake()
     {
         Instance = this;
+    
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/"+ fileName;
         byte[] byteArray = File.ReadAllBytes(path);
@@ -89,6 +91,11 @@ public class MapExtractor : MonoBehaviour
             textures);
 
         CalculateTravelCost();
+    }
+
+    private void Start()
+    {
+        TileManager.Instance.InitializeTileData(Instance);
     }
 
     public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks)
