@@ -181,7 +181,7 @@ namespace MapGeneration
             _currentMapOverlay = mapOverlay;
         }
 
-        private Color HeatToColor(Gradient gradient, float value, float min, float max)
+        public Color HeatToColor(Gradient gradient, float value, float min, float max)
         {
             var normalized = (value - min) / (max - min);
             return gradient.Evaluate(normalized);
