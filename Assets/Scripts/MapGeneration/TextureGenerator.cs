@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Utilities;
 
 namespace Terrain
 {
@@ -25,7 +23,7 @@ namespace Terrain
     {
         
 
-        private static Texture2D TextureFromColorMap(Color[] colorMap, int width)
+        public static Texture2D TextureFromColorMap(Color[] colorMap, int width)
         {
             var texture = new Texture2D(width, width)
             {

@@ -1,6 +1,8 @@
 using Models;
 using Player.Abilities;
 using Player.Skills;
+using Terrain;
+using UI;
 using UnityEngine;
 
 namespace Player
@@ -72,6 +74,9 @@ namespace Player
                 
                 CastAbility(tileGridPos);
                 Debug.Log("New tile water value: " + tileData.waterValue);
+                
+                // testheatmap update
+               UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(TileManager.Instance.getWorldPositionOfTile(tileGridPos), MapDisplay.MapOverlay.WaterValue);
             }
 
             _isWaitingForTileClick = false;
