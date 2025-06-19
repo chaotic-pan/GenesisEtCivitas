@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utilities;
 
+[ExecuteInEditMode]
 public class MapExtractor : MonoBehaviour
 {
     public static MapExtractor Instance;
@@ -36,9 +37,18 @@ public class MapExtractor : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-    
+    }
+
+    public void GenerateMap()
+    {
+        // Delete previous map
+        foreach(var chunk in GameObject.FindGameObjectsWithTag("MapChunk"))
+        {
+            DestroyImmediate(chunk);
+        }
+
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
-        var path = "./Assets/GenesisMap/"+ fileName;
+        var path = "./Assets/GenesisMap/" + fileName;
         byte[] byteArray = File.ReadAllBytes(path);
 
         // überall wo 0 ist, ist Wasser
@@ -53,22 +63,22 @@ public class MapExtractor : MonoBehaviour
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
         // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
         // Byte array ist 4* so lang wie float array (4 bytes = 1 float)
-        Buffer.BlockCopy(byteArray, 0, 
-            floatArrayHeightMap, 0, floatArrayHeightMap.Length*sizeof(float)); 
-        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 0), 
+        Buffer.BlockCopy(byteArray, 0,
+            floatArrayHeightMap, 0, floatArrayHeightMap.Length * sizeof(float));
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 0),
             fertilityFirmnessMap, 0, fertilityFirmnessMap.Length);
-        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 1), 
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 1),
             oreVegetationMap, 0, oreVegetationMap.Length);
-        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 2), 
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 2),
             animalPopulationHostilityMap, 0, animalPopulationHostilityMap.Length);
-        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3), 
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3),
             climateMap, 0, climateMap.Length);
 
         // Separate bytes into 2D arrays for each value
         int i = 0;
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
-            heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i],0);
+            heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
             fertility[coord.x, coord.y] = (int)fertilityFirmnessMap[i] & 0xF;
             firmness[coord.x, coord.y] = (int)(fertilityFirmnessMap[i] >> 4) & 0xF;
             ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
@@ -82,12 +92,12 @@ public class MapExtractor : MonoBehaviour
         // Map wird generiert
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
-        
+
         mapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
-        
+
         mapDisplay.DrawMeshes_(
             TerrainMeshGenerator.GenerateMesh(
-                heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot), 
+                heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot),
             textures);
 
         CalculateTravelCost();

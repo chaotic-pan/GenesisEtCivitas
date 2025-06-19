@@ -35,7 +35,7 @@ public class NPCMovement : MonoBehaviour
     private float restTimer = 5;
     private void Update()
     {
-        if (restTimer > 0) restTimer -= Time.deltaTime;
+        /*if (restTimer > 0) restTimer -= Time.deltaTime;
         else if (restTimer != -1)
         {
             restTimer = -1;
@@ -45,7 +45,7 @@ public class NPCMovement : MonoBehaviour
             var gridPos = map.WorldToCell(p);
             var range = TM.GetSpecificRange(gridPos, rangeRadius);
             MovetoTile(range[Random.Range(0, range.Count-1)]);
-        }
+        }*/
         
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
