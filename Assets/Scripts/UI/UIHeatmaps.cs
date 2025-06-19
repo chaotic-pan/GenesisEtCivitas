@@ -2,30 +2,32 @@ using System;
 using System.Collections.Generic;
 using Terrain;
 using TMPro;
-using UI;
 using UnityEngine;
 
-[RequireComponent(typeof(TMP_Dropdown))]
-public class UIHeatmaps : MonoBehaviour
+namespace UI
 {
-    private TMP_Dropdown _dropdown;
-
-    private void Awake()
+    [RequireComponent(typeof(TMP_Dropdown))]
+    public class UIHeatmaps : MonoBehaviour
     {
-        _dropdown = GetComponent<TMP_Dropdown>();
-    }
+        private TMP_Dropdown _dropdown;
 
-    private void Start()
-    {
-        foreach (var overlay in Enum.GetValues(typeof(MapDisplay.MapOverlay)))
+        private void Awake()
         {
-            _dropdown.AddOptions(new List<string>() { overlay.ToString() });
+            _dropdown = GetComponent<TMP_Dropdown>();
         }
-    }
+
+        private void Start()
+        {
+            foreach (var overlay in Enum.GetValues(typeof(MapDisplay.MapOverlay)))
+            {
+                _dropdown.AddOptions(new List<string>() { overlay.ToString() });
+            }
+        }
     
-    public void OnSelectedMap(int choice)
-    {
-        var overlay = (MapDisplay.MapOverlay) choice;
-        UIEvents.UIMap.OnOpenTest.Invoke(overlay);
+        public void OnSelectedMap(int choice)
+        {
+            var overlay = (MapDisplay.MapOverlay) choice;
+            UIEvents.UIMap.OnOpenHeatmap.Invoke(overlay);
+        }
     }
 }

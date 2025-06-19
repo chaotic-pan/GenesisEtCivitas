@@ -1,5 +1,7 @@
-﻿using Models;
+﻿using System.Collections.Generic;
+using Models;
 using Terrain;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace UI
@@ -12,7 +14,8 @@ namespace UI
 
         public class UIMapEvents
         {
-            public UnityAction<MapDisplay.MapOverlay> OnOpenTest;
+            public UnityAction<MapDisplay.MapOverlay> OnOpenHeatmap;
+            public UnityAction<List<Vector2>, MapDisplay.MapOverlay> OnUpdateHeatmapChunks;
         }
         
         public class UIUpdateEvents
