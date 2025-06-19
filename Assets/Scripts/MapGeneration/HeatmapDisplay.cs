@@ -134,7 +134,7 @@ namespace MapGeneration
             
         }
 
-        public void OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
+        private void OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
         {
             var worldPosition = new Vector3(0, 0, 0);
             var halfChunkSize = _chunkSize / 2;
@@ -180,8 +180,8 @@ namespace MapGeneration
             mapDisplay.ReplaceTexture(Maps[mapOverlay]);
             _currentMapOverlay = mapOverlay;
         }
-        
-        public Color HeatToColor(Gradient gradient, float value, float min, float max)
+
+        private Color HeatToColor(Gradient gradient, float value, float min, float max)
         {
             var normalized = (value - min) / (max - min);
             return gradient.Evaluate(normalized);
