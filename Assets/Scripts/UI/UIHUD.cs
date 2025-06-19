@@ -1,6 +1,7 @@
 using Models;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 namespace UI
@@ -17,6 +18,10 @@ namespace UI
         private void OnUpdatePlayerData(PlayerModel playerData)
         {
             influencePointsText.text = playerData.InfluencePoints.ToString();
+        }
+        public void LeaveGame()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }

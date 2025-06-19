@@ -8,11 +8,13 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
     [SerializeField] private int range = 20;
-    private TileManager TM = TileManager.Instance;
-    private MapExtractor ME = MapExtractor.Instance;
+    private TileManager TM;
+    private MapExtractor ME;
 
     private void Start()
     {
+        TM = TileManager.Instance;
+        ME = MapExtractor.Instance;
         var cellBounds = TileManager.Instance.map.cellBounds;
 
         for(int i=0; i< civilisationCount; i++)
@@ -37,7 +39,7 @@ public class NPCSpawner : MonoBehaviour
     }
     private void FindSettlingLocation(GameObject civ)
     {
-        NPCMovement move = GetComponent<NPCMovement>();
+        NPCMovement move = civ.GetComponent<NPCMovement>();
         Vector3Int curGridPos = TM.map.WorldToCell(civ.transform.position);
         List<Vector3Int> locations = TM.GetSpecificRange(curGridPos, range);
 
@@ -45,7 +47,7 @@ public class NPCSpawner : MonoBehaviour
         float winValue = 0;
         foreach(Vector3Int loc in locations)
         {
-            Vector2Int arrayIndex = ME.CoordsToPoints(move.map.CellToWorld(loc));
+            Vector2Int arrayIndex = ME.CoordsToPoints(TM.map.CellToWorld(loc));
             float value = (ME.GetFood(arrayIndex) + ME.GetWater(arrayIndex) + ME.GetSafety(arrayIndex) + ME.GetShelter(arrayIndex) + ME.GetEnergy(arrayIndex)) / 5;
             if(winValue < value)
             {
