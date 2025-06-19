@@ -499,6 +499,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1098913289 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1365751777514352408, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
+  m_PrefabInstance: {fileID: 97118259464125998}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1098913290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098913289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ce2b61163914ce3b3d72750e8626864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heatmaps:
+  - {fileID: 11400000, guid: 7128e8d4aa3a6c34e98cae77d4d3345f, type: 2}
+  - {fileID: 11400000, guid: ab129b4775d9492469745a508669c866, type: 2}
+  - {fileID: 11400000, guid: 76673f7a853222b4591cd91d562c86e8, type: 2}
+  - {fileID: 11400000, guid: 4014f6584d26e0840b8f3389ab4878ca, type: 2}
+  - {fileID: 11400000, guid: 20d0a2dc17d640f4f9dba7ad8259124b, type: 2}
+  - {fileID: 11400000, guid: 89ca0649216f20e4492a76d36f776e14, type: 2}
+  - {fileID: 11400000, guid: 6ad878f1bf7581f43be87d945c570510, type: 2}
+  - {fileID: 11400000, guid: 7a26072c050c0d94f85c767a76e8b692, type: 2}
+  - {fileID: 11400000, guid: ee2480e69b3740a48b0188cd6655f733, type: 2}
+  mapDisplay: {fileID: 1098913292}
+--- !u!114 &1098913292 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5275509461014153462, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
+  m_PrefabInstance: {fileID: 97118259464125998}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098913289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4429202f21840f54aa2ea5cd9b56de9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1263111931
 GameObject:
   m_ObjectHideFlags: 0
@@ -138178,6 +138217,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MapGeneration
       objectReference: {fileID: 0}
+    - target: {fileID: 2506709553646273115, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
+      propertyPath: heatmapDisplay
+      value: 
+      objectReference: {fileID: 1098913290}
     - target: {fileID: 2832103399836716160, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -138221,7 +138264,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1365751777514352408, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1098913290}
   m_SourcePrefab: {fileID: 100100000, guid: 77b7bfc1337538b45a87861bdd58ecca, type: 3}
 --- !u!1001 &1521144965871426440
 PrefabInstance:

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MapGeneration;
 using Terrain;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -16,6 +17,7 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
+    [SerializeField] private HeatmapDisplay heatmapDisplay;
     //1913*1913 Punkte für die Gesamtmap
     private const int points = 1913;
     private const int totalPoints = 1913*1913;
@@ -83,9 +85,9 @@ public class MapExtractor : MonoBehaviour
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
         
-        mapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
+        heatmapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
         
-        mapDisplay.DrawMeshes_(
+        mapDisplay.DrawMeshes(
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot), 
             textures);
@@ -96,6 +98,7 @@ public class MapExtractor : MonoBehaviour
     private void Start()
     {
         TileManager.Instance.InitializeTileData(Instance);
+        heatmapDisplay.Initialize();
     }
 
     public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks)
@@ -121,64 +124,6 @@ public class MapExtractor : MonoBehaviour
                 var matchingRegion = regions.First(region => region.height > currentHeight);
 
                 colorMap[colorMapCoordinate] = matchingRegion.color * 1f;
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(float[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = mapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(int[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = mapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
 
             }
 
