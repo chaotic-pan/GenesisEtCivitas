@@ -7,8 +7,6 @@ namespace Terrain
 {
     public class MapDisplay : MonoBehaviour
     {
-        [SerializeField] private List<Heatmap> heatmaps;
-        
         public GameObject meshRendererPrefab;
         private const int size = 239;
         private int scale = 1;
@@ -55,11 +53,6 @@ namespace Terrain
             }
         }
         
-        public Color HeatToColor(Gradient gradient, float value, float min, float max)
-        {
-            var normalized = (value - min) / (max - min);
-            return gradient.Evaluate(normalized);
-        }
 
         public enum MapOverlay
         {
