@@ -34,11 +34,46 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x, p.y],
-                        1); 
+                        1,  //water value
+                        ME.heightMap[p.x, p.y]
+                        ); 
                     dataFromTiles.Add(gridPos, tileData);
                 }
             }
         }
+    }
+
+
+    /* Food: fertility, animalPopulation
+     * Water: heightMap
+     * Safety: animalHostility, heightMap
+     * Shelter: firmness, ore, vegetation
+     * Energy: climate */
+
+
+    public float GetFood(Vector3Int coords)
+    {
+        return (dataFromTiles[coords].landFertility + dataFromTiles[coords].animalPopulation) / 2;
+    }
+    public float GetWater(Vector3Int coords)
+    {
+        //TODO
+        return 1;
+    }
+    public float GetSafety(Vector3Int coords)
+    {
+        float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
+        height = 0.1f <= height && height <= 0.7f ? 15f : 0;
+        return (height + dataFromTiles[coords].animalHostility) / 2;
+    }
+    public float GetShelter(Vector3Int coords)
+    {
+        return (dataFromTiles[coords].firmness + dataFromTiles[coords].ore + dataFromTiles[coords].vegetation) / 3;
+    }
+    public float GetEnergy(Vector3Int coords)
+    {
+        //TODO change it to a way where the value is better the closer it is to smth like 20 degree celsius
+        return ((dataFromTiles[coords].climate + 1) / 16) - 1;
     }
 
     public TileData getTileDataByWorldCoords(float x, float y, float z)

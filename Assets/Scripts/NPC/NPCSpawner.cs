@@ -34,7 +34,7 @@ public class NPCSpawner : MonoBehaviour
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
             civ.GetComponent<Civilization>().setPopulation(Random.Range(1,8));
-            //FindSettlingLocation(civ);
+            FindSettlingLocation(civ);
         }
     }
     private void FindSettlingLocation(GameObject civ)
@@ -47,8 +47,7 @@ public class NPCSpawner : MonoBehaviour
         float winValue = 0;
         foreach(Vector3Int loc in locations)
         {
-            Vector2Int arrayIndex = ME.CoordsToPoints(TM.map.CellToWorld(loc));
-            float value = (ME.GetFood(arrayIndex) + ME.GetWater(arrayIndex) + ME.GetSafety(arrayIndex) + ME.GetShelter(arrayIndex) + ME.GetEnergy(arrayIndex)) / 5;
+            float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
             if(winValue < value)
             {
                 winValue = value;

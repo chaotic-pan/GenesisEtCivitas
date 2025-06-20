@@ -223,36 +223,4 @@ public class MapExtractor : MonoBehaviour
         return new Vector2Int((int)coord.x + chunkSize / 2, -(int)coord.z + chunkSize / 2);
     }
 
-
-    /* Food: fertility, animalPopulation
-     * Water: heightMap
-     * Safety: animalHostility, heightMap
-     * Shelter: firmness, ore, vegetation
-     * Energy: climate */
-
-
-    public float GetFood(Vector2Int coords)
-    {
-        return (fertility[coords.x, coords.y] + animalPopulation[coords.x, coords.y])/2;
-    }
-    public float GetWater(Vector2Int coords)
-    {
-        //TODO
-        return 1;
-    }
-    public float GetSafety(Vector2Int coords)
-    {
-        float height = meshHeightCurve.Evaluate(heightMap[coords.x, coords.y]) * mapHeightMultiplier;
-        height = 0.1f <= height && height <= 0.7f ? 15f : 0;
-        return (height + animalHostility[coords.x, coords.y])/2;
-    }
-    public float GetShelter(Vector2Int coords)
-    {
-        return (firmness[coords.x, coords.y] + ore[coords.x, coords.y] + vegetation[coords.x, coords.y]) / 3;
-    }
-    public float GetEnergy(Vector2Int coords)
-    {
-        //TODO change it to a way where the value is better the closer it is to smth like 20 degree celsius
-        return ((climate[coords.x, coords.y]+1)/16)-1;
-    }
 }
