@@ -24,28 +24,20 @@ public class NPCMovement : MonoBehaviour
     private void Start()
     {
         map = TM?.map;
-
-        // npcAnim = transform.GetComponentsInChildren<AnimManager>()[0];
-        
         pathPoint = AdjustCoordsForHeight(transform.position);
         transform.position = pathPoint;
-        restTimer = 3;
+        StartCoroutine(WaitAndSettle());
     }
-
-    private float restTimer = 5;
+    
+    IEnumerator WaitAndSettle()
+    {
+        // suspend execution for 2 seconds
+        yield return new WaitForSeconds(2);
+        FindSettlingLocation(20);
+    }
+    
     private void Update()
     {
-        /*if (restTimer > 0) restTimer -= Time.deltaTime;
-        else if (restTimer != -1)
-        {
-            restTimer = -1;
-            // get random walk point in range
-            var p = transform.position;
-            p.y = -1;
-            var gridPos = map.WorldToCell(p);
-            var range = TM.GetSpecificRange(gridPos, rangeRadius);
-            MovetoTile(range[Random.Range(0, range.Count-1)]);
-        }*/
         
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
@@ -70,22 +62,28 @@ public class NPCMovement : MonoBehaviour
             {
                 pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
             }
-            else if (restTimer == -1) 
-            {
-                for (int  i = 0;  i < transform.childCount;  i++)
-                {
-                    var child = transform.GetChild(i);
-                    if (child.gameObject.activeSelf)
-                    {
-                        child.GetComponent<AnimManager>()?.SetIsDancing(true);
-                    }       
-                }
-                restTimer = 5;
-
-            }
         }
     }
+    
+    private void FindSettlingLocation(int range)
+    {
+        Vector3Int gridPos = map.WorldToCell(transform.position);
+        List<Vector3Int> locations = TM.GetSpecificRange(gridPos, range);
 
+        Vector3Int settlingPos = new Vector3Int();
+        float winValue = 0;
+        foreach(Vector3Int loc in locations)
+        {
+            float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
+            if(winValue < value)
+            {
+                winValue = value;
+                settlingPos = loc;
+            }
+        }
+        MovetoTile(settlingPos); 
+    }
+    
     public void CalculateRange()
     {
         var p = transform.position;

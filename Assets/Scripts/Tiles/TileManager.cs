@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -53,7 +54,9 @@ public class TileManager : MonoBehaviour
 
     public float GetFood(Vector3Int coords)
     {
-        return (dataFromTiles[coords].landFertility + dataFromTiles[coords].animalPopulation) / 2;
+        return dataFromTiles.ContainsKey(coords) ? 
+            (dataFromTiles[coords].landFertility + dataFromTiles[coords].animalPopulation)/2 
+            : -1;
     }
     public float GetWater(Vector3Int coords)
     {
@@ -62,18 +65,27 @@ public class TileManager : MonoBehaviour
     }
     public float GetSafety(Vector3Int coords)
     {
-        float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
-        height = 0.1f <= height && height <= 0.7f ? 15f : 0;
-        return (height + dataFromTiles[coords].animalHostility) / 2;
+        if (dataFromTiles.ContainsKey(coords))
+        {
+            float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
+            height = 0.1f <= height && height <= 0.7f ? 15f : 0;
+            return (height + dataFromTiles[coords].animalHostility) / 2;
+        }
+
+        return -1;
     }
     public float GetShelter(Vector3Int coords)
     {
-        return (dataFromTiles[coords].firmness + dataFromTiles[coords].ore + dataFromTiles[coords].vegetation) / 3;
+        return   dataFromTiles.ContainsKey(coords) ? 
+            (dataFromTiles[coords].firmness + dataFromTiles[coords].ore + dataFromTiles[coords].vegetation) / 3 
+            : -1;
     }
     public float GetEnergy(Vector3Int coords)
     {
         //TODO change it to a way where the value is better the closer it is to smth like 20 degree celsius
-        return ((dataFromTiles[coords].climate + 1) / 16) - 1;
+        return  dataFromTiles.ContainsKey(coords) ? 
+            ((dataFromTiles[coords].climate + 1) / 16) - 1 
+            : -1;
     }
 
     public TileData getTileDataByWorldCoords(float x, float y, float z)

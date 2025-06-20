@@ -103,9 +103,7 @@ public class MapExtractor : MonoBehaviour
             textures);
 
         CalculateTravelCost();
-
-
-
+        
     }
 
     private void Start()

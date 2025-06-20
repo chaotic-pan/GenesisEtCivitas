@@ -7,7 +7,6 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] private GameObject civilisationPrefab;
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
-    [SerializeField] private int range = 20;
     private TileManager TM;
     private MapExtractor ME;
 
@@ -34,26 +33,7 @@ public class NPCSpawner : MonoBehaviour
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
             civ.GetComponent<Civilization>().setPopulation(Random.Range(1,8));
-            FindSettlingLocation(civ);
+            // FindSettlingLocation(civ);
         }
-    }
-    private void FindSettlingLocation(GameObject civ)
-    {
-        NPCMovement move = civ.GetComponent<NPCMovement>();
-        Vector3Int curGridPos = TM.map.WorldToCell(civ.transform.position);
-        List<Vector3Int> locations = TM.GetSpecificRange(curGridPos, range);
-
-        Vector3Int settlingVec = new Vector3Int();
-        float winValue = 0;
-        foreach(Vector3Int loc in locations)
-        {
-            float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
-            if(winValue < value)
-            {
-                winValue = value;
-                settlingVec = loc;
-            }
-        }
-        move.MovetoTile(settlingVec); 
     }
 }
