@@ -55,4 +55,45 @@ public class Civilization : MonoBehaviour
         //TODO: Split a civilisation
         Debug.Log("TODO: Split a civilisation");
     }
+
+    public float Food
+    {
+        get => food;
+        set
+        {
+            food = value;
+        }
+    }
+    public float Water
+    {
+        get => water;
+        set
+        {
+            water = value;
+        }
+    }
+    public float Safety
+    {
+        get => safety;
+        set
+        {
+            safety = value;
+        }
+    }
+    public float Shelter
+    {
+        get => shelter;
+        set
+        {
+            shelter = value;
+        }
+    }
+    public float Energy
+    {
+        get => energy;
+        set
+        {
+            energy = value;
+        }
+    }
 }
