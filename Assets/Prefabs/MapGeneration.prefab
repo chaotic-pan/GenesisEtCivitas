@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5275509461014153462}
   - component: {fileID: 2506709553646273115}
   - component: {fileID: 8314699731631611060}
+  - component: {fileID: 3169296905122996468}
   m_Layer: 0
   m_Name: MapGeneration
   m_TagString: Untagged
@@ -46,15 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4429202f21840f54aa2ea5cd9b56de9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heatmaps:
-  - {fileID: 11400000, guid: 6ad878f1bf7581f43be87d945c570510, type: 2}
-  - {fileID: 11400000, guid: 4014f6584d26e0840b8f3389ab4878ca, type: 2}
-  - {fileID: 11400000, guid: 20d0a2dc17d640f4f9dba7ad8259124b, type: 2}
-  - {fileID: 11400000, guid: 89ca0649216f20e4492a76d36f776e14, type: 2}
-  - {fileID: 11400000, guid: 7a26072c050c0d94f85c767a76e8b692, type: 2}
-  - {fileID: 11400000, guid: ab129b4775d9492469745a508669c866, type: 2}
-  - {fileID: 11400000, guid: 7128e8d4aa3a6c34e98cae77d4d3345f, type: 2}
-  - {fileID: 11400000, guid: 76673f7a853222b4591cd91d562c86e8, type: 2}
   meshRendererPrefab: {fileID: 5249541533371751029, guid: 8c3a9c2b58d6a6b45a2242b326b6ece4, type: 3}
 --- !u!114 &2506709553646273115
 MonoBehaviour:
@@ -70,6 +62,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fileName: file2.txt
   mapDisplay: {fileID: 5275509461014153462}
+  heatmapDisplay: {fileID: 8314699731631611060}
   mapHeightMultiplier: 50
   regions:
   - height: 0.1
@@ -82,7 +75,6 @@ MonoBehaviour:
     color: {r: 0.38431376, g: 0.2901961, b: 0.24705884, a: 0}
   - height: 1
     color: {r: 1, g: 1, b: 1, a: 0}
-  heatmapDisplay: {fileID: 8314699731631611060}
   meshHeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -128,6 +120,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce2b61163914ce3b3d72750e8626864, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapDisplay: {fileID: 5275509461014153462}
+  heatmapGenerator: {fileID: 3169296905122996468}
+--- !u!114 &3169296905122996468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365751777514352408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f2f7548017d4d1cb661e868e8ccc883, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   heatmaps:
   - {fileID: 11400000, guid: 7128e8d4aa3a6c34e98cae77d4d3345f, type: 2}
   - {fileID: 11400000, guid: ab129b4775d9492469745a508669c866, type: 2}
@@ -138,4 +144,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6ad878f1bf7581f43be87d945c570510, type: 2}
   - {fileID: 11400000, guid: 7a26072c050c0d94f85c767a76e8b692, type: 2}
   - {fileID: 11400000, guid: ee2480e69b3740a48b0188cd6655f733, type: 2}
-  mapDisplay: {fileID: 5275509461014153462}

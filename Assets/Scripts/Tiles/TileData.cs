@@ -11,11 +11,12 @@ public class TileData
         animalPopulation,
         animalHostility,
         climate,
-        waterValue
+        waterValue,
+        height
         ;
 
     public TileData(float travelCost, float landFertility, float firmness, float ore, float vegetation,
-        float animalPopulation, float animalHostility, float climate, float waterValue)
+        float animalPopulation, float animalHostility, float climate, float waterValue, float height)
     {
         this.travelCost = travelCost; 
         this.landFertility = landFertility;
@@ -26,5 +27,6 @@ public class TileData
         this.animalHostility = animalHostility;
         this.climate = climate;
         this.waterValue = waterValue;
+        this.height = height;
     }
 }

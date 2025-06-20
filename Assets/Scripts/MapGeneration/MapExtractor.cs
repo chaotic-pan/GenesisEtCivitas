@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Terrain;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utilities;
@@ -39,6 +40,51 @@ public class MapExtractor : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
+        var path = "./Assets/GenesisMap/" + fileName;
+        byte[] byteArray = File.ReadAllBytes(path);
+
+        // überall wo 0 ist, ist Wasser
+        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
+        // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
+        float[] floatArrayHeightMap = new float[totalPoints];
+        byte[] fertilityFirmnessMap = new byte[totalPoints];
+        byte[] oreVegetationMap = new byte[totalPoints];
+        byte[] animalPopulationHostilityMap = new byte[totalPoints];
+        byte[] climateMap = new byte[totalPoints];
+
+        // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
+        // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
+        // Byte array ist 4* so lang wie float array (4 bytes = 1 float)
+        Buffer.BlockCopy(byteArray, 0,
+            floatArrayHeightMap, 0, floatArrayHeightMap.Length * sizeof(float));
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 0),
+            fertilityFirmnessMap, 0, fertilityFirmnessMap.Length);
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 1),
+            oreVegetationMap, 0, oreVegetationMap.Length);
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 2),
+            animalPopulationHostilityMap, 0, animalPopulationHostilityMap.Length);
+        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3),
+            climateMap, 0, climateMap.Length);
+
+        // Separate bytes into 2D arrays for each value
+        int i = 0;
+        foreach (var coord in VectorUtils.GridCoordinates(points, points))
+        {
+            heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
+            fertility[coord.x, coord.y] = (int)fertilityFirmnessMap[i] & 0xF;
+            firmness[coord.x, coord.y] = (int)(fertilityFirmnessMap[i] >> 4) & 0xF;
+            ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
+            vegetation[coord.x, coord.y] = (int)(oreVegetationMap[i] >> 4) & 0xF;
+            animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
+            animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
+            climate[coord.x, coord.y] = (int)climateMap[i];
+
+            i++;
+        }
+        
+        CalculateTravelCost();
     }
 
     public void GenerateMap()
@@ -88,14 +134,13 @@ public class MapExtractor : MonoBehaviour
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
+
             i++;
         }
 
         // Map wird generiert
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
-
-        heatmapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
 
         mapDisplay.DrawMeshes(
             TerrainMeshGenerator.GenerateMesh(
@@ -104,8 +149,14 @@ public class MapExtractor : MonoBehaviour
 
         CalculateTravelCost();
 
+    }
 
-
+    public Dictionary<Vector2, Texture2D> GetTerrainTextures()
+    {
+        var colorMap = WriteColorMap(heightMap, chunkCountRoot);
+        var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
+        
+        return textures;
     }
 
     private void Start()
@@ -144,64 +195,6 @@ public class MapExtractor : MonoBehaviour
 
         return colorMaps;
     }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(float[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = heatmapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(int[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = heatmapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
 
     private void CalculateTravelCost()
     {
@@ -217,42 +210,11 @@ public class MapExtractor : MonoBehaviour
         var p = CoordsToPoints(coord);
         return meshHeightCurve.Evaluate(heightMap[p.x, p.y]) * mapHeightMultiplier;
     }
+    
 
     public Vector2Int CoordsToPoints(Vector3 coord)
     {
         return new Vector2Int((int)coord.x + chunkSize / 2, -(int)coord.z + chunkSize / 2);
     }
 
-
-    /* Food: fertility, animalPopulation
-     * Water: heightMap
-     * Safety: animalHostility, heightMap
-     * Shelter: firmness, ore, vegetation
-     * Energy: climate */
-
-
-    public float GetFood(Vector2Int coords)
-    {
-        return (fertility[coords.x, coords.y] + animalPopulation[coords.x, coords.y])/2;
-    }
-    public float GetWater(Vector2Int coords)
-    {
-        //TODO
-        return 1;
-    }
-    public float GetSafety(Vector2Int coords)
-    {
-        float height = meshHeightCurve.Evaluate(heightMap[coords.x, coords.y]) * mapHeightMultiplier;
-        height = 0.1f <= height && height <= 0.7f ? 15f : 0;
-        return (height + animalHostility[coords.x, coords.y])/2;
-    }
-    public float GetShelter(Vector2Int coords)
-    {
-        return (firmness[coords.x, coords.y] + ore[coords.x, coords.y] + vegetation[coords.x, coords.y]) / 3;
-    }
-    public float GetEnergy(Vector2Int coords)
-    {
-        //TODO change it to a way where the value is better the closer it is to smth like 20 degree celsius
-        return ((climate[coords.x, coords.y]+1)/16)-1;
-    }
 }

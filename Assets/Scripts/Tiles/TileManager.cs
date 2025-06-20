@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,7 +9,8 @@ public class TileManager : MonoBehaviour
 {
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
-    private Dictionary<Vector3Int, TileData> dataFromTiles= new Dictionary<Vector3Int, TileData>();
+    private Dictionary<Vector3Int, TileData> dataFromTiles = new Dictionary<Vector3Int, TileData>();
+    public List<Vector3Int> spawnLocations = new List<Vector3Int>();
     
     private void Awake()
     {
@@ -26,19 +29,70 @@ public class TileManager : MonoBehaviour
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
                     TileData tileData = new TileData(
-                        ME.travelcost[p.x, p.y],
-                        ME.fertility[p.x, p.y],
-                        ME.firmness[p.x, p.y],
-                        ME.ore[p.x, p.y],
-                        ME.vegetation[p.x, p.y],
+                        ME.travelcost[p.x,p.y],
+                        ME.fertility[p.x,p.y],
+                        ME.firmness[p.x,p.y],
+                        ME.ore[p.x,p.y],
+                        ME.vegetation[p.x,p.y],
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
-                        ME.climate[p.x, p.y],
-                        1); 
+                        ME.climate[p.x,p.y],
+                        1,  //water value
+                        ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier
+                        ); 
                     dataFromTiles.Add(gridPos, tileData);
+                    //print(ME.mapData.firmness[p.x, p.y]);
+                    if (tileData.height > 0.1)
+                    {
+                        spawnLocations.Add(gridPos);
+                    }
                 }
             }
         }
+    }
+
+
+    /* Food: fertility, animalPopulation
+     * Water: heightMap
+     * Safety: animalHostility, heightMap
+     * Shelter: firmness, ore, vegetation
+     * Energy: climate */
+
+
+    public float GetFood(Vector3Int coords)
+    {
+        return dataFromTiles.ContainsKey(coords) ? 
+            (dataFromTiles[coords].landFertility + dataFromTiles[coords].animalPopulation)/2 
+            : -1;
+    }
+    public float GetWater(Vector3Int coords)
+    {
+        //TODO
+        return 1;
+    }
+    public float GetSafety(Vector3Int coords)
+    {
+        if (dataFromTiles.ContainsKey(coords))
+        {
+            float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
+            height = 0.1f <= height && height <= 0.7f ? 15f : 0;
+            return (height + dataFromTiles[coords].animalHostility) / 2;
+        }
+
+        return -1;
+    }
+    public float GetShelter(Vector3Int coords)
+    {
+        return   dataFromTiles.ContainsKey(coords) ? 
+            (dataFromTiles[coords].firmness + dataFromTiles[coords].ore + dataFromTiles[coords].vegetation) / 3 
+            : -1;
+    }
+    public float GetEnergy(Vector3Int coords)
+    {
+        //TODO change it to a way where the value is better the closer it is to smth like 20 degree celsius
+        return  dataFromTiles.ContainsKey(coords) ? 
+            ((dataFromTiles[coords].climate + 1) / 16) - 1 
+            : -1;
     }
 
     public TileData getTileDataByWorldCoords(float x, float y, float z)
