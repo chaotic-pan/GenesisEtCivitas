@@ -29,19 +29,19 @@ public class TileManager : MonoBehaviour
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
                     TileData tileData = new TileData(
-                        ME.travelcost[p.x, p.y],
-                        ME.fertility[p.x, p.y],
-                        ME.firmness[p.x, p.y],
-                        ME.ore[p.x, p.y],
-                        ME.vegetation[p.x, p.y],
+                        ME.travelcost[p.x,p.y],
+                        ME.fertility[p.x,p.y],
+                        ME.firmness[p.x,p.y],
+                        ME.ore[p.x,p.y],
+                        ME.vegetation[p.x,p.y],
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
-                        ME.climate[p.x, p.y],
+                        ME.climate[p.x,p.y],
                         1,  //water value
                         ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier
                         ); 
                     dataFromTiles.Add(gridPos, tileData);
-                    print(ME.heightMap[p.x, p.y]);
+                    //print(ME.mapData.firmness[p.x, p.y]);
                     if (tileData.height > 0.1)
                     {
                         spawnLocations.Add(gridPos);

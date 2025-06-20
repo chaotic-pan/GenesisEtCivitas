@@ -19,8 +19,6 @@ public class NPCSpawner : MonoBehaviour
         for(int i=0; i< civilisationCount; i++)
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
-            print(TM.spawnLocations.Count);
-            print(random);
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
