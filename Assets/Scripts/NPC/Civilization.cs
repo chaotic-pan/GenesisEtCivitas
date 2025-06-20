@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -20,6 +19,8 @@ public class Civilization : MonoBehaviour
     private float happiness;
 
     private float ressources;
+
+    
 
     public void SetPopulation(int population)
     {
