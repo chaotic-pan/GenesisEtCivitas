@@ -22,7 +22,7 @@ public class NPCSpawner : MonoBehaviour
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
-            civ.GetComponent<Civilization>().setPopulation(Random.Range(1,8));
+            civ.GetComponent<Civilization>().SetPopulation(Random.Range(1,8));
         }
     }
 }

@@ -81,7 +81,8 @@ public class NPCMovement : MonoBehaviour
                 settlingPos = loc;
             }
         }
-        MovetoTile(settlingPos); 
+        MovetoTile(settlingPos);
+        this.transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
     }
     
     public void CalculateRange()

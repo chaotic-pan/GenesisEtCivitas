@@ -8,24 +8,34 @@ public class Civilization : MonoBehaviour
     // ressources are gathered and go up to 500
 
     [SerializeField] public string civilisationName;
-    [SerializeField] private int food = 250;
-    [SerializeField] private int water = 250;
-    [SerializeField] private int safety = 250;
-    [SerializeField] private int shelter = 250;
-    [SerializeField] private int energy = 250;
+    [SerializeField] private float food = 250;
+    [SerializeField] private float water = 250;
+    [SerializeField] private float safety = 250;
+    [SerializeField] private float shelter = 250;
+    [SerializeField] private float energy = 250;
+    private TileManager TM = TileManager.Instance;
 
-    public int population;
-    private int belief;
-    private int happiness;
+    public float population;
+    private float belief;
+    private float happiness;
 
-    private int ressources;
+    private float ressources;
 
-    public void setPopulation(int population)
+    public void SetPopulation(int population)
     {
         for (int i = 0; i < population; i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
         }
+    }
+
+    public void GetSettlingValues(Vector3Int vec)
+    {
+        food = TM.GetFood(vec);
+        water = TM.GetWater(vec);
+        safety = TM.GetSafety(vec);
+        shelter = TM.GetShelter(vec);
+        energy = TM.GetEnergy(vec);
     }
 
     private void CalcValues()
