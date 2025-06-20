@@ -77,3 +77,6 @@ crashlytics-build.properties
 .vscode/extensions.json
 .vscode/launch.json
 .vscode/settings.json
+
+/[Aa]ssets/2D/GeneratedHeatmaps/*.jpg
+/[Aa]ssets/2D/GeneratedHeatmaps/*.meta

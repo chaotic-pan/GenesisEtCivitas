@@ -31,6 +31,7 @@ namespace MapGeneration
 
         private readonly Dictionary<MapDisplay.MapOverlay, Color[]> _colorMapCacheDict = new();
         private MapDisplay.MapOverlay[] _overlayKeys;
+        private string generatedHeatmapPath = $"{Application.dataPath}/2D/GeneratedHeatmaps";
         
         public void Initialize()
         {
@@ -43,6 +44,8 @@ namespace MapGeneration
         public void GenerateAllHeatmaps(TileManager tileManager)
         {
             Initialize();
+
+            DeleteAllHeatmaps();
             
             for (int y = 0; y < 8; y++)
             {
@@ -112,7 +115,30 @@ namespace MapGeneration
                 
                 byte[] bytes = ImageConversion.EncodeToJPG(tex);
                 DestroyImmediate(tex);
-                File.WriteAllBytes($"{Application.dataPath}/2D/GeneratedHeatmaps/{overlay}_{chunk.x}_{chunk.y}.jpg", bytes);
+                File.WriteAllBytes($"{generatedHeatmapPath}/{overlay}_{chunk.x}_{chunk.y}.jpg", bytes);
+            }
+        }
+        
+        private void DeleteAllHeatmaps()
+        {
+            try
+            {
+                if (!Directory.Exists(generatedHeatmapPath))
+                {
+                    Debug.LogWarning($"Folder does not exist: {generatedHeatmapPath}");
+                    return;
+                }
+                
+                string[] files = Directory.GetFiles(generatedHeatmapPath);
+            
+                foreach (string file in files)
+                {
+                    File.Delete(file);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error deleting files: {e.Message}");
             }
         }
 

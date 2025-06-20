@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ability
   - MapChunk
+  - TileManager
   layers:
   - Default
   - TransparentFX

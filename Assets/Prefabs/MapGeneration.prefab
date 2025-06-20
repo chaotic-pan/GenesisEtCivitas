@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapDisplay: {fileID: 5275509461014153462}
-  heatmapGenerator: {fileID: 0}
+  heatmapGenerator: {fileID: 3169296905122996468}
 --- !u!114 &3169296905122996468
 MonoBehaviour:
   m_ObjectHideFlags: 0
