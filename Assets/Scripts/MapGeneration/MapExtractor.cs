@@ -142,8 +142,6 @@ public class MapExtractor : MonoBehaviour
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
 
-        heatmapDisplay.Maps[MapDisplay.MapOverlay.Terrain] = textures;
-
         mapDisplay.DrawMeshes(
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot),
@@ -151,6 +149,14 @@ public class MapExtractor : MonoBehaviour
 
         CalculateTravelCost();
 
+    }
+
+    public Dictionary<Vector2, Texture2D> GetTerrainTextures()
+    {
+        var colorMap = WriteColorMap(heightMap, chunkCountRoot);
+        var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
+        
+        return textures;
     }
 
     private void Start()
@@ -181,64 +187,6 @@ public class MapExtractor : MonoBehaviour
                 var matchingRegion = regions.First(region => region.height > currentHeight);
 
                 colorMap[colorMapCoordinate] = matchingRegion.color * 1f;
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(float[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = heatmapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
-
-            }
-
-            colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
-        }
-
-        return colorMaps;
-    }
-    
-    public Dictionary<Vector2, Color[]> GetColorData(int[,] noiseMap, Heatmap heatmap)
-    {
-        var colorMaps = new Dictionary<Vector2, Color[]>();
-        foreach (var chunkCoord in VectorUtils.GridCoordinates(chunkCountRoot, chunkCountRoot))
-        {
-            //Reduce Offsets by 1 to have same values at seams
-            var chunkXOffset = chunkCoord.x * (chunkSize - 1);
-            var chunkYOffset = chunkCoord.y * (chunkSize - 1);
-
-            var colorMap = new Color[chunkSize * chunkSize];
-            foreach (var coord in VectorUtils.GridCoordinates(chunkSize, chunkSize))
-            {
-                var offsetX = coord.x + chunkXOffset;
-                var offsetY = coord.y + chunkYOffset;
-                var colorMapCoordinate = coord.y * chunkSize + coord.x;
-
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-
-                colorMap[colorMapCoordinate] = heatmapDisplay.HeatToColor(heatmap.gradient, currentHeight, heatmap.min, heatmap.max);
 
             }
 

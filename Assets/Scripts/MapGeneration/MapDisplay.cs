@@ -12,6 +12,32 @@ namespace Terrain
         private int scale = 1;
 
         private Dictionary<Vector2, GameObject> _meshInstances = new();
+        private void Start()
+        {
+            FillMeshInstancesDictionary();
+            LoadTerrainTexturesIntoMapsDictionary();
+        }
+    
+        private void FillMeshInstancesDictionary()
+        {
+            _meshInstances.Clear();
+            
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var child = transform.GetChild(i);
+                
+                var chunkX = Mathf.RoundToInt(child.position.x / (scale * size));
+                var chunkY = Mathf.RoundToInt(-child.position.z / (scale * size));
+                var chunkCoordinate = new Vector2(chunkX, chunkY);
+            
+                _meshInstances[chunkCoordinate] = child.gameObject;
+            }
+        }
+
+        private void LoadTerrainTexturesIntoMapsDictionary()
+        {
+            
+        }
         
         public void DrawMeshes(Dictionary<Vector2,MeshData> meshDataDict, Dictionary<Vector2,Texture2D> textures)
         {
