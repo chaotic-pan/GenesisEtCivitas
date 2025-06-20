@@ -8,6 +8,7 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField] private float dayLengthInSeconds = 600f; // 10 irl minutes per day
     [SerializeField] private float speed = 1;
     [SerializeField] private bool debugMode;
+    [SerializeField] private GameObject GameOverScreen;
     
     private float _elapsedRealTimeInSeconds;
     private float _currentSunAngle;
@@ -31,6 +32,7 @@ public class DayNightCycle : MonoBehaviour
     public void StopCycle()
     {
         _cycleModel.AdvanceCycle = false;
+        GameOverScreen.SetActive(true);
     }
 
     private void Update()
