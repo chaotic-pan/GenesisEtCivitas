@@ -62,6 +62,18 @@ public class NPCMovement : MonoBehaviour
             {
                 pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
             }
+            else
+            {
+                for (int  i = 0;  i < transform.childCount;  i++)
+                {
+                    var child = transform.GetChild(i);
+                    if (child.gameObject.activeSelf)
+                    {
+                        child.GetComponent<AnimManager>()?.SetIsMoving(false);
+                    }       
+                }
+            }
+
         }
     }
     
