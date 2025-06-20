@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MapGeneration.Maps;
 using Terrain;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utilities;
@@ -104,6 +106,22 @@ public class MapExtractor : MonoBehaviour
 
         CalculateTravelCost();
         
+        // MapData dataObject = ScriptableObject.CreateInstance<MapData>();
+        // dataObject.a = 5f;
+        // dataObject.height = heightMap;
+        //
+        // var assetName = "Assets/GenesisMap/MapData.asset";
+        // if (File.Exists(assetName))
+        // {
+        //     var theFile = Resources.Load<MapData>("MapData");
+        //     EditorUtility.CopySerialized(dataObject, theFile);
+        //     theFile.name = Path.GetFileName(fileName);
+        //     AssetDatabase.SaveAssets();
+        //     AssetDatabase.Refresh();
+        //
+        //     Debug.Log($"Dialogue <color=yellow>{fileName}</color> <color=green>Refreshed</color>. {DateTime.Now}");
+        // }
+
     }
 
     private void Start()
@@ -215,6 +233,7 @@ public class MapExtractor : MonoBehaviour
         var p = CoordsToPoints(coord);
         return meshHeightCurve.Evaluate(heightMap[p.x, p.y]) * mapHeightMultiplier;
     }
+    
 
     public Vector2Int CoordsToPoints(Vector3 coord)
     {

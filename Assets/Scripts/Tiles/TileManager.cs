@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -8,7 +9,8 @@ public class TileManager : MonoBehaviour
 {
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
-    private Dictionary<Vector3Int, TileData> dataFromTiles= new Dictionary<Vector3Int, TileData>();
+    private Dictionary<Vector3Int, TileData> dataFromTiles = new Dictionary<Vector3Int, TileData>();
+    public List<Vector3Int> spawnLocations = new List<Vector3Int>();
     
     private void Awake()
     {
@@ -36,9 +38,14 @@ public class TileManager : MonoBehaviour
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x, p.y],
                         1,  //water value
-                        ME.heightMap[p.x, p.y]
+                        ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier
                         ); 
                     dataFromTiles.Add(gridPos, tileData);
+                    print(ME.heightMap[p.x, p.y]);
+                    if (tileData.height > 0.1)
+                    {
+                        spawnLocations.Add(gridPos);
+                    }
                 }
             }
         }
