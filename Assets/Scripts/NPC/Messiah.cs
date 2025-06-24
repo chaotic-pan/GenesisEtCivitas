@@ -12,11 +12,12 @@ public class Messiah : MonoBehaviour
         npcMove.reachedDestination.AddListener(OnDestinationReached);
     }
 
-    public void GrantScoreImprovements(Civilization civ)
+    public void GrantScoreImprovements(Civilization civi)
     {
+        civ = civi;
         Vector3Int tilePos = npcMove.map.WorldToCell(civ.transform.position);
         npcMove.MovetoTile(tilePos);
-        this.civ = civ;
+        
     }
 
     private void OnDestinationReached(int npcId)
@@ -24,11 +25,11 @@ public class Messiah : MonoBehaviour
         if (npcId == npcMove.GetInstanceID() &&
             civ != null)
         {
-             ChangeCiviScores(civ);
+             ChangeCiviScores();
         }
     }
 
-    private void ChangeCiviScores(Civilization civ)
+    private void ChangeCiviScores()
     {
         civ.Food += 5;
         civ.Water += 5;

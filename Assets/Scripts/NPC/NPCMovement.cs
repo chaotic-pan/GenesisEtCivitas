@@ -66,6 +66,7 @@ public class NPCMovement : MonoBehaviour
             }
             else
             {
+                //TODO: EVENT FEUERT PERMANENT; FIX THIS SOME TIME!!!!
                 reachedDestination.Invoke(GetInstanceID());
                 for (int  i = 0;  i < transform.childCount;  i++)
                 {
