@@ -36,7 +36,7 @@ public class NPCMovement : MonoBehaviour
         FindSettlingLocation(20);
     }
     
-    private void Update()
+    private void FixedUpdate()
     {
         
         var position = transform.position;
@@ -69,7 +69,8 @@ public class NPCMovement : MonoBehaviour
                     var child = transform.GetChild(i);
                     if (child.gameObject.activeSelf)
                     {
-                        child.GetComponent<AnimManager>()?.SetIsMoving(false);
+                        if (child.TryGetComponent<AnimManager>(out var animM))
+                            animM.SetIsMoving(false);
                     }       
                 }
             }
