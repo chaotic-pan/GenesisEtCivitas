@@ -1,3 +1,4 @@
+using CityStuff;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -20,8 +21,9 @@ public class Civilization : MonoBehaviour
 
     private float ressources;
 
+    public bool hasSettlingLoc = false;
+    public City city;
     
-
     public void SetPopulation(int population)
     {
         for (int i = 0; i < population; i++)
