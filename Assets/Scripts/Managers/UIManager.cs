@@ -18,12 +18,14 @@ namespace Managers
         
         [SerializeField] private UICityMenu uiCityMenu;
         [SerializeField] private UINpcMenu uiNpcMenu;
+        [SerializeField] private UIMessiahMenu uiMessiahMenu;
 
 
         private void Awake()
         {
             uiCityMenu?.Initialize();
             uiNpcMenu?.Initialize();
+            uiMessiahMenu?.Initialize();
         }
 
         private void Start()

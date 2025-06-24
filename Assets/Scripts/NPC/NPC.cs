@@ -32,7 +32,6 @@ public class NPC : MonoBehaviour, IPointerClickHandler
 
     private void CheckForMessiah()
     {
-        Debug.Log("Check");
         if(_npcModel.IsMessiah == true)
         {
             Instantiate(messiahPrefab, this.transform.position, Quaternion.identity);
@@ -69,13 +68,18 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
-            if (hit.collider.gameObject == gameObject)
+            if (hit.collider.gameObject == gameObject && civ != null)
             {
                 UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
                 //TODO: Make this section less bad
                 UpdateValues();
                 
             }
+            else if (hit.collider.gameObject == gameObject && mes != null)
+            {
+                UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+            }
+            
         }
 
     }
