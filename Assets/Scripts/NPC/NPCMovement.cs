@@ -33,7 +33,7 @@ public class NPCMovement : MonoBehaviour
     {
         // suspend execution for 2 seconds
         yield return new WaitForSeconds(2);
-        FindSettlingLocation(20);
+        if (this.transform.GetComponent<Civilization>() != null) FindSettlingLocation(20);
     }
     
     private void Update()
@@ -70,6 +70,14 @@ public class NPCMovement : MonoBehaviour
                     if (child.gameObject.activeSelf)
                     {
                         child.GetComponent<AnimManager>()?.SetIsMoving(false);
+                        // Build city if no city is existent at location after movement
+                        if (this.transform.GetComponent<Civilization>() != null)
+                        {
+                            if (this.transform.GetComponent<Civilization>().city == null && this.transform.GetComponent<Civilization>().hasSettlingLoc)
+                            {
+                                this.transform.GetComponent<Civilization>().city = CityBuilder.Instance.BuildCity(this.transform.position, "StadtNameeeee");
+                            }
+                        }
                     }       
                 }
             }
@@ -94,6 +102,7 @@ public class NPCMovement : MonoBehaviour
             }
         }
         MovetoTile(settlingPos);
+        this.transform.GetComponent<Civilization>().hasSettlingLoc = true;
         this.transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
     }
     
