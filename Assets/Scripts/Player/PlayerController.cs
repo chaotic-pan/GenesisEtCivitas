@@ -4,6 +4,7 @@ using Player.Skills;
 using Terrain;
 using UI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Player
 {
@@ -13,6 +14,8 @@ namespace Player
         private PlayerSkillSet _playerSkillSet;
         private PlayerAbility _activeAbility;
         
+        public UnityAction<AbilityType> callAbility;
+        
         private bool _isWaitingForTileClick;
 
         private void Awake()
@@ -20,6 +23,8 @@ namespace Player
             _playerModel = GetComponent<PlayerModel>();
             _playerSkillSet = new PlayerSkillSet(_playerModel);
             _playerSkillSet.OnSkillUnlocked += PlayerSkillSet_OnSkillUnlocked;
+            callAbility += EnterAbility;
+            
         }
         
         private void Update()

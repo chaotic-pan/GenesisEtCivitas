@@ -28,6 +28,7 @@ public class TileManager : MonoBehaviour
                 if (tile != null)
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
+                    var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
                         ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
@@ -37,11 +38,10 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x,p.y],
-                        1,  //water value
-                        ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier
+                        height <= 0.1 ? 30 : 1,  //water value
+                        height
                         ); 
-                    dataFromTiles.Add(gridPos, tileData);
-                    //print(ME.mapData.firmness[p.x, p.y]);
+                    dataFromTiles.TryAdd(gridPos, tileData);
                     if (tileData.height > 0.1)
                     {
                         spawnLocations.Add(gridPos);
