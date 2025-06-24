@@ -1,49 +1,51 @@
 using System;
+using Player.Abilities;
 using Player.Skills;
+using UI;
 using UnityEngine;
 
 public class UISkillTree : MonoBehaviour
 {
 
-    private PlayerSkillSet _playerSkillSet;
+    private PlayerSkillSet playerSkillSet;
+    [SerializeField] private UIAbilityPanel uiAbilityPanel;
 
+    private bool UnlockSkill(PlayerSkillSet.Skill skill)
+    {
+        return playerSkillSet.TryUnlockSkill(skill);
+    }
+    
     // Water Skill set
     public void UnlockWaterOne()
     {
-        if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.WaterOne))
+        if (UnlockSkill(PlayerSkillSet.Skill.WaterOne))
         {
-            Debug.LogError("Cannot Unlock");
+            uiAbilityPanel.SpawnAbilityButton("RAIN", AbilityType.Rain);   
         }
     }
 
     public void UnlockWaterTwo()
     {
-        if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.WaterTwo))
-        {
-            Debug.LogError("Cannot Unlock");
-        }
+        UnlockSkill(PlayerSkillSet.Skill.WaterTwo);
     }
 
     //Death Skill set
     public void UnlockDeathOne()
     {
-        if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.DeathOne))
+        if (UnlockSkill(PlayerSkillSet.Skill.DeathOne))
         {
-            Debug.LogError("Cannot Unlock");
+            uiAbilityPanel.SpawnAbilityButton("EARTHQUAKE", AbilityType.Earthquake);   
         }
     }
 
     public void UnlockDeathTwo()
     {
-         if (!_playerSkillSet.TryUnlockSkill(PlayerSkillSet.Skill.DeathTwo))
-        {
-            Debug.LogError("Cannot Unlock");
-        }
+        UnlockSkill(PlayerSkillSet.Skill.DeathTwo);
     }
 
     public void SetPlayerSkills(PlayerSkillSet playerSkillSet)
     {
-        this._playerSkillSet = playerSkillSet;
+        this.playerSkillSet = playerSkillSet;
     }
 
 

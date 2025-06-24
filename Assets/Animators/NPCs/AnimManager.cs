@@ -22,7 +22,7 @@ public class AnimManager : MonoBehaviour
     private GameObject Hoe;
     private GameObject Pickaxe;
 
-    private void Start()
+    private void Awake()
     {
         mAnimator = GetComponent<Animator>();
         FishingPole = transform.GetChild(2).gameObject;

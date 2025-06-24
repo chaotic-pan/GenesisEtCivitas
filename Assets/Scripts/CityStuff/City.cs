@@ -16,21 +16,22 @@ namespace CityStuff
         [SerializeField] private GameObject wellGameObject;
         [SerializeField] private GameObject churchGameObject;
     
-        private readonly List<Vector2> _buildingPoints = new ()
-        {
-            new Vector2(0.25f, 0f),
-            new Vector2(0.25f, 0.25f),
-            new Vector2(0f, 0.25f),
-            new Vector2(-0.25f, 0.25f),
-            new Vector2(-0.25f, 0f),
-            new Vector2(-0.25f, -0.25f),
-            new Vector2(0f, -0.25f),
-            new Vector2(0.25f, -0.25f)
-        };
-    
         private House _house;
         private Well _well;
         private Church _church;
+        
+        
+        private readonly List<Vector2> _buildingPoints = new ()
+        {
+            new Vector2(4f, 0f),
+            new Vector2(4f, 4f),
+            new Vector2(0f, 4f),
+            new Vector2(-4f, 4f),
+            new Vector2(-4f, 0f),
+            new Vector2(-4f, -4f),
+            new Vector2(0f, -4f),
+            new Vector2(4f, -4f)
+        };
 
         private readonly CityModel _cityModel = new();
 
@@ -72,6 +73,11 @@ namespace CityStuff
         
             var instance = Instantiate(prefab, transform);
             instance.transform.localPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
+
+            var desiredHeight = MapExtractor.Instance.GetHeightByWorldCoord(instance.transform.position);
+            
+            instance.transform.position = new Vector3(instance.transform.position.x, desiredHeight, instance.transform.position.z);
+            
             instance.transform.LookAt(transform);
             instance.SetActive(true);
         

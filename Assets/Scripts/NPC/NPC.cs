@@ -1,26 +1,46 @@
+using System;
 using System.Collections;
 using Models;
 using UI;
 using Unity.Mathematics.Geometry;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UI;
 
 public class NPC : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private NPCInfluenceArea influenceArea;
+    public static UnityEvent CheckMessiah = new UnityEvent();
+    public GameObject messiahPrefab;
     
     private NPCModel _npcModel = new NPCModel();
     private Civilization civ;
+    private Messiah mes;
     
     public void Awake()
     {
-        influenceArea.Initialize(this);
+        CheckMessiah.AddListener(CheckForMessiah);
         civ = this.transform.GetComponent<Civilization>();
-        StartCoroutine(StatsDecay(10));
+        mes = this.transform.GetComponent<Messiah>();
+        if (civ != null)
+        {
+            StartCoroutine(StatsDecay(10));
+            influenceArea.Initialize(this);
+        }
     }
 
+    private void CheckForMessiah()
+    {
+        if(_npcModel.IsMessiah == true)
+        {
+            Instantiate(messiahPrefab, this.transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+        }
+    }
     IEnumerator StatsDecay(float timer)
     {
+        if (civ == null) yield return 0;
         yield return new WaitForSeconds(timer);
         civ.Food -= 1;
         civ.Food = civ.Food <= 0 ? 0 : civ.Food;
@@ -48,18 +68,24 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
-            if (hit.collider.gameObject == gameObject)
+            if (hit.collider.gameObject == gameObject && civ != null)
             {
                 UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
                 //TODO: Make this section less bad
                 UpdateValues();
                 
             }
+            else if (hit.collider.gameObject == gameObject && mes != null)
+            {
+                UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+            }
+            
         }
 
     }
     private void UpdateValues()
     {
+        if (civ == null) return;
         _npcModel.Food = civ.Food;
         _npcModel.Water = civ.Water;
         _npcModel.Safety = civ.Safety;

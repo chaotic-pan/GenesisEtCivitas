@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3231224276502657812}
   - component: {fileID: 6362208822355190539}
   - component: {fileID: 3429691633098140387}
+  - component: {fileID: 2050289209017274225}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -94,6 +95,7 @@ MonoBehaviour:
   dayLengthInSeconds: 600
   speed: 1
   debugMode: 0
+  GameOverScreen: {fileID: 0}
 --- !u!114 &3429691633098140387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,3 +110,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
   uiSkillTree: {fileID: 0}
+--- !u!114 &2050289209017274225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7121daf48cb3b4486adae5dd9c8b82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cityPrefab: {fileID: 419345410134529011, guid: ea96a45d4aa04be4e977536cb0ccc0bc, type: 3}

@@ -13,15 +13,16 @@ namespace UI
         [SerializeField] private TextMeshProUGUI safetyText;
         [SerializeField] private TextMeshProUGUI shelterText;
         [SerializeField] private TextMeshProUGUI energyText;
-
+        private NPCModel model;
         public override void Initialize()
         {
-            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
+            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;     
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)
         {
             OnOpen(npcModel);
+            model = npcModel;
         }
     
         protected override void UpdateData(NPCModel data)
@@ -33,6 +34,12 @@ namespace UI
             safetyText.text = data.Safety.ToString();
             shelterText.text = data.Shelter.ToString();
             energyText.text = data.Energy.ToString();
+        }
+
+        public void ButtonPressMessiah()
+        {
+            model.IsMessiah = true;
+            NPC.CheckMessiah.Invoke();
         }
     }
 }
