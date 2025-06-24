@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
@@ -12,7 +13,6 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] private int rangeRadius = 5;
     
     public Tilemap map;
-    // private AnimManager npcAnim;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
@@ -20,6 +20,8 @@ public class NPCMovement : MonoBehaviour
     private List<Vector3Int> range;
     private Stack<Vector3Int> path = new Stack<Vector3Int>();
     private Vector3 pathPoint;
+
+    public UnityEvent<int> reachedDestination = new UnityEvent<int>();
 
     private void Start()
     {
@@ -64,14 +66,12 @@ public class NPCMovement : MonoBehaviour
             }
             else
             {
+                reachedDestination.Invoke(GetInstanceID());
                 for (int  i = 0;  i < transform.childCount;  i++)
                 {
                     var child = transform.GetChild(i);
                     if (child.gameObject.activeSelf)
                     {
-
-                        
-
                         child.GetComponent<AnimManager>()?.SetIsMoving(false);
                         // Build city if no city is existent at location after movement
                         if (this.transform.GetComponent<Civilization>() != null)
