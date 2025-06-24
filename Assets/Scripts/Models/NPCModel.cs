@@ -6,7 +6,7 @@ namespace Models
     public class NPCModel : IObservableData<NPCModel>
     {
         public UnityEvent<NPCModel> OnUpdateData { get; } = new();
-        
+
         private float _faith;
         private float _food;
         private float _water;
@@ -14,6 +14,16 @@ namespace Models
         private float _shelter;
         private float _energy;
 
+        private bool _isMessiah;
+        public bool IsMessiah
+        {
+            get => _isMessiah;
+            set
+            {
+                _isMessiah = value;
+                OnUpdateData.Invoke(this);
+            }
+        }
         public float Faith
         {
             get => _faith;
