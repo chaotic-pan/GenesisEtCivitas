@@ -19,6 +19,8 @@ namespace CityStuff
         private House _house;
         private Well _well;
         private Church _church;
+
+        private Civilization civ;
         
         
         private readonly List<Vector2> _buildingPoints = new ()
@@ -33,13 +35,13 @@ namespace CityStuff
             new Vector2(4f, -4f)
         };
 
-        private readonly CityModel _cityModel = new();
+        private NPCModel _npcModel;
 
-        public void Initialize(string cityName)
+        public void Initialize(NPCModel model, Civilization civi)
         {
-            _cityModel.City = this;
-            _cityModel.CityName = cityName;
-            
+            _npcModel = model;
+            _npcModel.City = this;
+            civ = civi;
             BuildHouse();
         }
 
@@ -88,7 +90,8 @@ namespace CityStuff
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);
+                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
             }
         }
     }

@@ -15,7 +15,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     public static UnityEvent<string, Civilization> UseMessiah = new UnityEvent<string, Civilization>();
     public GameObject messiahPrefab;
     
-    private NPCModel _npcModel = new NPCModel();
+    public NPCModel _npcModel = new NPCModel();
     private Civilization civ;
     private Messiah mes;
     
@@ -37,6 +37,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         if(_npcModel.IsMessiah == true)
         {
             Instantiate(messiahPrefab, this.transform.position, Quaternion.identity);
+            Destroy(_npcModel.City.gameObject);
             Destroy(this.gameObject);
         }
     }
@@ -85,7 +86,6 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             if (hit.collider.gameObject == gameObject && civ != null)
             {
                 UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
-                UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
                 //TODO: Make this section less bad
                 UpdateValues();
                 

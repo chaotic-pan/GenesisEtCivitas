@@ -1,4 +1,5 @@
-﻿using Models.Interfaces;
+﻿using CityStuff;
+using Models.Interfaces;
 using UnityEngine.Events;
 
 namespace Models
@@ -6,7 +7,7 @@ namespace Models
     public class NPCModel : IObservableData<NPCModel>
     {
         public UnityEvent<NPCModel> OnUpdateData { get; } = new();
-
+        private int _population;    //von CityModel
         private float _faith;
         private float _food;
         private float _water;
@@ -14,7 +15,20 @@ namespace Models
         private float _shelter;
         private float _energy;
 
-        private bool _isMessiah;
+        private bool _isMessiah; 
+        
+        public City City;
+
+        public int Population
+        {
+            get => _population;
+            set
+            {
+                _population = value;
+                OnUpdateData?.Invoke(this);
+            }
+        }
+
         public bool IsMessiah
         {
             get => _isMessiah;

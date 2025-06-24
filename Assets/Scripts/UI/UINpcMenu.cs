@@ -1,3 +1,4 @@
+using CityStuff;
 using Models;
 using TMPro;
 using UnityEngine;
@@ -13,16 +14,20 @@ namespace UI
         [SerializeField] private TextMeshProUGUI safetyText;
         [SerializeField] private TextMeshProUGUI shelterText;
         [SerializeField] private TextMeshProUGUI energyText;
+
+        [SerializeField] private TextMeshProUGUI populationText;
         private NPCModel model;
+        private City _city;
         public override void Initialize()
         {
-            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;     
+            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)
         {
             OnOpen(npcModel);
             model = npcModel;
+            _city = npcModel.City;
         }
     
         protected override void UpdateData(NPCModel data)
@@ -34,6 +39,7 @@ namespace UI
             safetyText.text = data.Safety.ToString();
             shelterText.text = data.Shelter.ToString();
             energyText.text = data.Energy.ToString();
+            populationText.text = data.Population.ToString();
         }
 
         public void ButtonPressMessiah()
@@ -41,5 +47,11 @@ namespace UI
             model.IsMessiah = true;
             NPC.CheckMessiah.Invoke();
         }
+        public void OnBuildChurch()
+        {
+            if (!_city) return;
+            _city.BuildChurch();
+        }
+
     }
 }

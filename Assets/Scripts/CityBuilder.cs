@@ -1,5 +1,6 @@
 using System;
 using CityStuff;
+using Models;
 using UnityEngine;
 
 public class CityBuilder : MonoBehaviour
@@ -14,7 +15,7 @@ public class CityBuilder : MonoBehaviour
         Instance = this;
     }
     
-    public City BuildCity(Vector3 worldPosition, string cityName)
+    public City BuildCity(Vector3 worldPosition, NPCModel _npcModel, Civilization civ)
     {
         var cityInstance = Instantiate(cityPrefab);
         var cell = TileManager.Instance.map.WorldToCell(worldPosition);
@@ -24,7 +25,7 @@ public class CityBuilder : MonoBehaviour
         var city = cityInstance.GetComponent<City>();
         
         cityInstance.transform.position = cityPosition;
-        city.Initialize(cityName);
+        city.Initialize(_npcModel, civ);
         // city.BuildWell();
 
         return city;

@@ -75,12 +75,13 @@ public class NPCMovement : MonoBehaviour
                     {
                         child.GetComponent<AnimManager>()?.SetIsMoving(false);
                         // Build city if no city is existent at location after movement
-                        if (this.transform.GetComponent<Civilization>() != null)
+                        Civilization civie = this.transform.GetComponent<Civilization>();
+                        if (civie != null)
                         {
                             if (child.TryGetComponent<AnimManager>(out var animM)) animM.SetIsMoving(false);
-                            if (this.transform.GetComponent<Civilization>().city == null && this.transform.GetComponent<Civilization>().hasSettlingLoc)
+                            if (civie.city == null && civie.hasSettlingLoc)
                             {
-                                this.transform.GetComponent<Civilization>().city = CityBuilder.Instance.BuildCity(this.transform.position, "StadtNameeeee");
+                                civie.city = CityBuilder.Instance.BuildCity(this.transform.position, this.transform.GetComponent<NPC>()._npcModel, civie);
                             }
                         }
 
