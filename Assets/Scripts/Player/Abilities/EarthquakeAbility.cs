@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections.Generic;
+using Terrain;
+using UI;
 
 namespace Player.Abilities
 {
@@ -11,12 +14,46 @@ namespace Player.Abilities
         public override void EnterAbility()
         {
             Debug.Log("Entered Earthquake Ability");
+            // Set a distinct color for earthquake AoE (orange-red)
+            GridOverlayManager.Instance.aoeHighlightColor = new Color(1f, 0.4f, 0f, 0.7f);
         }
-        
-        public override void CastAbility(Vector3Int tileGridPos)
+
+        public override void CastAbility(Vector3Int centerTilePos)
         {
-            // Debug.Log("Casted Earthquake Ability");
+            // Get all tiles in AoE.
+            int radius = (EffectDiameter - 1) / 2;
+            List<Vector3Int> affectedTiles = TileManager.Instance.GetSpecificRange(centerTilePos, radius);
             
+            // Apply firmness reduction to each tile.
+            foreach (Vector3Int tilePos in affectedTiles)
+            {
+                var tileData = TileManager.Instance.getTileDataByGridCoords(tilePos);
+                if (tileData != null)
+                {
+                    // Reduce firmness by 3 (clamped to minimum 0).
+                    tileData.firmness = Mathf.Max(tileData.firmness - 3, 0);
+                }
+            }
+            
+            // Update heatmaps for all affected chunks.
+            HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
+            foreach (Vector3Int tilePos in affectedTiles)
+            {
+                var chunks = TileManager.Instance.getWorldPositionOfTile(tilePos);
+                foreach (Vector2 chunk in chunks)
+                {
+                    affectedChunks.Add(chunk);
+                }
+            }
+            
+            // Trigger heatmap updates.
+            foreach (Vector2 chunk in affectedChunks)
+            {
+                UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                    new List<Vector2> { chunk }, 
+                    MapDisplay.MapOverlay.Firmness
+                );
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Player.Abilities
         public override void EnterAbility()
         {
             Debug.Log("Entered Rain Ability");
+            GridOverlayManager.Instance.aoeHighlightColor = new Color(0, 0.5f, 1f, 0.7f);
         }
 
         public override void CastAbility(Vector3Int centerTilePos)
