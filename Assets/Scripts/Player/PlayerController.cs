@@ -84,12 +84,12 @@ namespace Player
                 var point = ray.GetPoint(distance);
                 var tileGridPos = TileManager.Instance.map.WorldToCell(point);
         
-                // Calculate AoE tiles using EffectDiameter.
-                int radius = Mathf.FloorToInt(_activeAbility.EffectDiameter / 2f);
+                int diameter = _activeAbility.EffectDiameter;
+                int radius = (diameter - 1) / 2; // For hex grids.
+        
                 List<Vector3Int> newAoeTiles = TileManager.Instance.GetSpecificRange(tileGridPos, radius);
         
-                // Update if changed.
-                if (!newAoeTiles.Equals(aoePreviewTiles))
+                if (!newAoeTiles.SequenceEqual(aoePreviewTiles))
                 {
                     aoePreviewTiles = newAoeTiles;
                     GridOverlayManager.Instance.ShowAoeOverlay(aoePreviewTiles);
