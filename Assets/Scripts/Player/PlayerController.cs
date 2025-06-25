@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Models;
 using Player.Abilities;
 using Player.Skills;
@@ -17,7 +19,9 @@ namespace Player
         public UnityAction<AbilityType> callAbility;
         
         private bool _isWaitingForTileClick;
-
+        
+        private List<Vector3Int> aoePreviewTiles = new List<Vector3Int>();
+        
         private void Awake()
         {
             _playerModel = GetComponent<PlayerModel>();
@@ -31,33 +35,17 @@ namespace Player
         {
             if (_isWaitingForTileClick)
             {
-                // ShowHoverEffect();
-
-                if (Input.GetMouseButtonDown(0))
+                PreviewAoeTiles();
+        
+                if (Input.GetMouseButtonDown(0)) // Left click.
                 {
                     HandleTileClick();
                 }
+                else if (Input.GetMouseButtonDown(1)) // Right click.
+                {
+                    CancelAbility();
+                }
             }
-        }
-
-        private void ShowHoverEffect()
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            var plane = new Plane(Vector3.up, Vector3.zero);
-            if (!plane.Raycast(ray, out var distance)) return;
-            
-            var point = ray.GetPoint(distance);
-            var tileGridPos = TileManager.Instance.map.WorldToCell(point);
-
-            if (TileManager.Instance.getTileDataByGridCoords(tileGridPos) != null)
-            {
-                VisualizeAreaOfEffect(tileGridPos);
-            }
-        }
-
-        private void VisualizeAreaOfEffect(Vector3Int tileGridPos)
-        {
-            throw new System.NotImplementedException();
         }
 
         private void HandleTileClick()
@@ -86,10 +74,40 @@ namespace Player
 
             _isWaitingForTileClick = false;
         }
+        
+        private void PreviewAoeTiles()
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var plane = new Plane(Vector3.up, Vector3.zero);
+            if (plane.Raycast(ray, out var distance))
+            {
+                var point = ray.GetPoint(distance);
+                var tileGridPos = TileManager.Instance.map.WorldToCell(point);
+        
+                // Calculate AoE tiles using EffectDiameter.
+                int radius = Mathf.FloorToInt(_activeAbility.EffectDiameter / 2f);
+                List<Vector3Int> newAoeTiles = TileManager.Instance.GetSpecificRange(tileGridPos, radius);
+        
+                // Update if changed.
+                if (!newAoeTiles.Equals(aoePreviewTiles))
+                {
+                    aoePreviewTiles = newAoeTiles;
+                    GridOverlayManager.Instance.ShowAoeOverlay(aoePreviewTiles);
+                }
+            }
+        }
 
         public void EnterRainAbility()
         {
             EnterAbility(AbilityType.Rain);
+        }
+        
+        private void CancelAbility()
+        {
+            _isWaitingForTileClick = false;
+            Destroy(_activeAbility);
+            _activeAbility = null;
+            GridOverlayManager.Instance.HideAoeOverlay();
         }
 
         public void EnterEarthquakeAbility()
@@ -109,6 +127,7 @@ namespace Player
             
             _activeAbility.EnterAbility();
             _isWaitingForTileClick = true;
+            GridOverlayManager.Instance.ShowAoeOverlay(new List<Vector3Int>());
         }
 
         private void CastAbility(Vector3Int tileGridPos)
@@ -123,6 +142,7 @@ namespace Player
             // Debug.Log("Cost: " + _activeAbility.Cost);
             
             _activeAbility = null;
+            GridOverlayManager.Instance.HideAoeOverlay();        
         }
 
         //Skills
