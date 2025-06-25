@@ -13,16 +13,19 @@ namespace MapGeneration
         [SerializeField] private MapDisplay mapDisplay;
         [SerializeField] private HeatmapGenerator heatmapGenerator;
 
-        private readonly Dictionary<MapDisplay.MapOverlay, Dictionary<Vector2, Texture2D>> _maps = new();
+        public readonly Dictionary<MapDisplay.MapOverlay, Dictionary<Vector2, Texture2D>> _maps = new();
         
-        private MapDisplay.MapOverlay _currentMapOverlay;
+        public MapDisplay.MapOverlay _currentMapOverlay;
         private TileManager _tileManager;
         private Dictionary<MapDisplay.MapOverlay, Func<TileData, float>> _overlayValueByTile;
         private Dictionary<MapDisplay.MapOverlay, Heatmap> _heatmapDict;
         private int _chunkSize;
         
+        public static HeatmapDisplay Instance;
+        
         private void Awake()
         {
+            Instance = this;
             UIEvents.UIMap.OnOpenHeatmap += OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
         }
