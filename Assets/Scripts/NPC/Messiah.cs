@@ -9,7 +9,7 @@ public class Messiah : MonoBehaviour
     private void Start()
     {
         npcMove = this.gameObject.GetComponent<NPCMovement>();
-        npcMove.reachedDestination.AddListener(OnDestinationReached);
+        npcMove.endedWalk.AddListener(OnDestinationReached);
     }
 
     public void GrantScoreImprovements(Civilization civi)

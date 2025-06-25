@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
@@ -11,7 +12,7 @@ public class NPCMovement : MonoBehaviour
 {
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
-    
+
     public Tilemap map;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
@@ -21,7 +22,8 @@ public class NPCMovement : MonoBehaviour
     private Stack<Vector3Int> path = new Stack<Vector3Int>();
     private Vector3 pathPoint;
 
-    public UnityEvent<int> reachedDestination = new UnityEvent<int>();
+    public UnityEvent<int> startedWalk = new UnityEvent<int>();
+    public UnityEvent<int> endedWalk = new UnityEvent<int>();
 
     private void Start()
     {
@@ -35,20 +37,21 @@ public class NPCMovement : MonoBehaviour
     {
         // suspend execution for 2 seconds
         yield return new WaitForSeconds(2);
-        if (this.transform.GetComponent<Civilization>() != null) FindSettlingLocation(20);
+        if (transform.GetComponent<Civilization>() != null) FindSettlingLocation(20);
     }
-    
+
+    private bool inWalk = false;
     private void FixedUpdate()
     {
-        
         var position = transform.position;
         var dist = Vector3.Distance(position, pathPoint);
         
-        if (dist > 0.05f)
+        if (dist > 2f)
         {
             var direction = (pathPoint - position).normalized;
-            var rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(direction), 
-                Time.deltaTime*movementSpeed);
+            var lookRotation = Quaternion.LookRotation(direction);
+            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
+                Time.deltaTime);
 
             transform.rotation = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
@@ -63,35 +66,63 @@ public class NPCMovement : MonoBehaviour
             if (path.TryPop(out var pather))
             {
                 pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
+                DEBUG_spawnBreadcrumbs(pather);
             }
             else
             {
-                //TODO: EVENT FEUERT PERMANENT; FIX THIS SOME TIME!!!!
-                reachedDestination.Invoke(GetInstanceID());
+                if (!inWalk) return;
+                
+                inWalk = false;
+                endedWalk.Invoke(GetInstanceID());
+                print("AAAAAAAAAAA");
+                    
+                // Build city if no city is existent at location after movement
+                Civilization civie = transform.GetComponent<Civilization>();
+                if (civie != null)
+                {
+                    if (civie.city == null && civie.hasSettlingLoc)
+                    {
+                        civie.city = CityBuilder.Instance.BuildCity(transform.position, transform.GetComponent<NPC>()._npcModel, civie);
+                    }
+                }
+                    
                 for (int  i = 0;  i < transform.childCount;  i++)
                 {
                     var child = transform.GetChild(i);
                     if (child.gameObject.activeSelf)
                     {
-                        child.GetComponent<AnimManager>()?.SetIsMoving(false);
-                        // Build city if no city is existent at location after movement
-                        Civilization civie = this.transform.GetComponent<Civilization>();
-                        if (civie != null)
-                        {
-                            if (child.TryGetComponent<AnimManager>(out var animM)) animM.SetIsMoving(false);
-                            if (civie.city == null && civie.hasSettlingLoc)
-                            {
-                                civie.city = CityBuilder.Instance.BuildCity(this.transform.position, this.transform.GetComponent<NPC>()._npcModel, civie);
-                            }
-                        }
-
+                        if (child.TryGetComponent<AnimManager>(out var animM)) animM.SetIsMoving(false);
                     }       
                 }
             }
-
         }
     }
     
+# region DEBUG
+    [Tooltip("enable to have Civs spawn visual point along their walking path")]
+    [SerializeField] private bool DEBUG_PathBreadcrumbs;
+    private List<GameObject> DEBUG_breadcrumbs = new();
+
+    private void DEBUG_spawnBreadcrumbs(Vector3Int pos)
+    {
+        if (!DEBUG_PathBreadcrumbs) return;
+        var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        s.transform.localScale = new Vector3(2,2,2);
+        s.transform.position = AdjustCoordsForHeight(map.CellToWorld(pos));
+        DEBUG_breadcrumbs.Add(s);
+    }
+    
+    private void DEBUG_clearBreadcrumbs(Vector3Int pos)
+    {
+        if (!DEBUG_PathBreadcrumbs) return;
+        foreach (var crumb in DEBUG_breadcrumbs)
+        {
+            Destroy(crumb);
+        }
+        DEBUG_breadcrumbs.Clear();
+    }
+#endregion
+
     private void FindSettlingLocation(int range)
     {
         Vector3Int gridPos = map.WorldToCell(transform.position);
@@ -109,8 +140,8 @@ public class NPCMovement : MonoBehaviour
             }
         }
         MovetoTile(settlingPos);
-        this.transform.GetComponent<Civilization>().hasSettlingLoc = true;
-        this.transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
+        transform.GetComponent<Civilization>().hasSettlingLoc = true;
+        transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
     }
     
     public void CalculateRange()
@@ -133,23 +164,22 @@ public class NPCMovement : MonoBehaviour
         //calculate path between current and target pos
         CalculateRange();
         path = Dijkstra(npcGridPos, gridPos, range);
-        
-        if (path.TryPop(out var pather))
-        {
-            // double pop bc the first path point is the current pos
-            if (path.TryPop(out pather))
-            {
-                pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
-                for (int  i = 0;  i < transform.childCount;  i++)
-                {
-                    var child = transform.GetChild(i);
-                    if (child.gameObject.activeSelf)
-                    {
-                        child.GetComponent<AnimManager>()?.SetIsMovingDelayed(true);
 
-                    }       
-                }
-            }  
+        // double pop bc the first path point is the current pos
+        if (!path.TryPop(out var pather)) return;
+        if (!path.TryPop(out pather)) return;
+        
+        pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
+        DEBUG_spawnBreadcrumbs(pather);
+        inWalk = true;
+        for (int  i = 0;  i < transform.childCount;  i++)
+        {
+            var child = transform.GetChild(i);
+            if (child.gameObject.activeSelf)
+            {
+                child.GetComponent<AnimManager>()?.SetIsMovingDelayed(true);
+
+            }       
         }
     }
     
