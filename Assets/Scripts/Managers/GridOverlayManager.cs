@@ -10,30 +10,23 @@ public class GridOverlayManager : MonoBehaviour
     
     private Dictionary<Vector2, Texture2D> originalTextures = new Dictionary<Vector2, Texture2D>();
     private Dictionary<Vector2, Texture2D> overlayTextures = new Dictionary<Vector2, Texture2D>();
-    private List<Vector3Int> currentAoeTiles = new List<Vector3Int>();
+    private HashSet<Vector3Int> currentAoeTiles = new HashSet<Vector3Int>();
     private MapDisplay.MapOverlay originalOverlay;
+
+    private const int ChunkSize = 240;
+    private const int HalfChunkSize = ChunkSize / 2;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     public void ShowAoeOverlay(List<Vector3Int> aoeTiles)
     {
-        if (HeatmapDisplay.Instance == null || MapDisplay.Instance == null)
-        {
-            Debug.LogError("Missing MapDisplay or HeatmapDisplay reference");
-            return;
-        }
+        if (HeatmapDisplay.Instance == null || MapDisplay.Instance == null) return;
         
-        currentAoeTiles = aoeTiles;
+        currentAoeTiles = new HashSet<Vector3Int>(aoeTiles);
         originalOverlay = HeatmapDisplay.Instance._currentMapOverlay;
         
         var currentTextures = HeatmapDisplay.Instance._maps[originalOverlay];
@@ -62,29 +55,29 @@ public class GridOverlayManager : MonoBehaviour
         Texture2D overlayTex = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.ARGB32, false);
         overlayTex.SetPixels(baseTexture.GetPixels());
         
-        foreach (var tilePos in currentAoeTiles)
+        // Calculate chunk origin.
+        float chunkOriginX = chunkCoord.x * (ChunkSize - 1) + 1;
+        float chunkOriginZ = -(chunkCoord.y * (ChunkSize - 1));
+        
+        for (int y = 0; y < ChunkSize; y++)
         {
-            Vector2 tileChunk = TileManager.Instance.GetChunkForTile(tilePos);
-            if (tileChunk != chunkCoord) continue;
-
-            Vector3 worldPos = TileManager.Instance.map.CellToWorld(tilePos);
-            
-            // Calculate UV coordinates within chunk.
-            float uvX = (worldPos.x % 239f) / 239f;
-            float uvY = (-worldPos.z % 239f) / 239f;
-            
-            // Convert to texture coordinates.
-            int texX = Mathf.FloorToInt(uvX * baseTexture.width);
-            int texY = Mathf.FloorToInt(uvY * baseTexture.height);
-            
-            // Highlight the tile with a 5x5 pixel area.
-            for (int i = -2; i <= 2; i++)
+            for (int x = 0; x < ChunkSize; x++)
             {
-                for (int j = -2; j <= 2; j++)
+                // Calculate world position for this texel.
+                Vector3 worldPos = new Vector3(
+                    chunkOriginX + x - HalfChunkSize,
+                    0,
+                    chunkOriginZ + y - HalfChunkSize
+                );
+                
+                // Convert to grid position.
+                Vector3Int gridPos = TileManager.Instance.map.WorldToCell(worldPos);
+                
+                if (currentAoeTiles.Contains(gridPos))
                 {
-                    int px = Mathf.Clamp(texX + i, 0, baseTexture.width - 1);
-                    int py = Mathf.Clamp(texY + j, 0, baseTexture.height - 1);
-                    overlayTex.SetPixel(px, py, aoeHighlightColor);
+                    // Flip Y coordinate to match texture orientation.
+                    int textureY = ChunkSize - 1 - y;
+                    overlayTex.SetPixel(x, textureY, aoeHighlightColor);
                 }
             }
         }
