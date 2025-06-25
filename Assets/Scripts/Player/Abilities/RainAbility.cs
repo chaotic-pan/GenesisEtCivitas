@@ -6,8 +6,7 @@ namespace Player.Abilities
     {
         public override int Cost => 30;
         public override AbilityType Type => AbilityType.Rain;
-
-        public int effectDiameter = 5;
+        public override int EffectDiameter => 5;
 
         public override void EnterAbility()
         {
