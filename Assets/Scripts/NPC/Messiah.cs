@@ -8,7 +8,7 @@ public class Messiah : MonoBehaviour
     
     private void Start()
     {
-        npcMove = this.gameObject.GetComponent<NPCMovement>();
+        npcMove = gameObject.GetComponent<NPCMovement>();
         npcMove.endedWalk.AddListener(OnDestinationReached);
     }
 
@@ -22,8 +22,7 @@ public class Messiah : MonoBehaviour
 
     private void OnDestinationReached(int npcId)
     {
-        if (npcId == npcMove.GetInstanceID() &&
-            civ != null)
+        if (npcId == npcMove.GetInstanceID() && civ != null)
         {
              ChangeCiviScores();
         }

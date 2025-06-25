@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class AnimManager : MonoBehaviour
 {
     private Animator mAnimator;
+    private int civID;
     private static readonly string IsMining = "isMining";
     private static readonly string IsFarming = "isFarming";
     private static readonly string IsTreeCutting = "isTreeCutting";
@@ -31,6 +33,17 @@ public class AnimManager : MonoBehaviour
         Axe = transform.GetChild(5).gameObject;
         Hoe = transform.GetChild(6).gameObject;
         Pickaxe = transform.GetChild(7).gameObject;
+    }
+
+    private void Start()
+    {
+        if (transform.parent.TryGetComponent<NPCMovement>(out var move))
+        {
+            civID = move.GetInstanceID();
+            move.startedWalk.AddListener(eventStartWalk);
+            move.endedWalk.AddListener(eventStopWalk);
+        }
+        
     }
 
     private void Update()
@@ -75,6 +88,15 @@ public class AnimManager : MonoBehaviour
         // }
     }
 
+    private void eventStartWalk(int id)
+    {
+        if (id == civID) SetIsMovingDelayed(true);
+    }
+    private void eventStopWalk(int id)
+    {
+        if (id == civID) SetIsMoving(false);
+    }
+    
     public void SetIsMoving(bool isMoving)
     {
         resetBools(); 

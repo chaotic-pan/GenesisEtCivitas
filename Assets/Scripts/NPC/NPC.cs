@@ -34,11 +34,11 @@ public class NPC : MonoBehaviour, IPointerClickHandler
 
     private void CheckForMessiah()
     {
-        if(_npcModel.IsMessiah == true)
+        if(_npcModel.IsMessiah)
         {
-            Instantiate(messiahPrefab, this.transform.position, Quaternion.identity);
-            Destroy(_npcModel.City.gameObject);
-            Destroy(this.gameObject);
+            Instantiate(messiahPrefab, transform.position, Quaternion.identity);
+            if (_npcModel.City !=null) Destroy(_npcModel.City.gameObject);
+            Destroy(gameObject);
         }
     }
     private void UseMessiahAction(string actionName, Civilization civ)
