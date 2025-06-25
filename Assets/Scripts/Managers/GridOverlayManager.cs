@@ -15,6 +15,7 @@ public class GridOverlayManager : MonoBehaviour
 
     private const int ChunkSize = 240;
     private const int HalfChunkSize = ChunkSize / 2;
+    private HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
 
     private void Awake()
     {
@@ -25,64 +26,108 @@ public class GridOverlayManager : MonoBehaviour
     public void ShowAoeOverlay(List<Vector3Int> aoeTiles)
     {
         if (HeatmapDisplay.Instance == null || MapDisplay.Instance == null) return;
+
+        // Restore all previously modified textures first.
+        RestoreOriginalTextures();
         
         currentAoeTiles = new HashSet<Vector3Int>(aoeTiles);
         originalOverlay = HeatmapDisplay.Instance._currentMapOverlay;
         
         var currentTextures = HeatmapDisplay.Instance._maps[originalOverlay];
-        foreach (var kvp in currentTextures)
+        affectedChunks.Clear();
+
+        // Find all chunks that need updating.
+        foreach (var tile in currentAoeTiles)
         {
-            originalTextures[kvp.Key] = kvp.Value;
-            overlayTextures[kvp.Key] = CreateOverlayTexture(kvp.Value, kvp.Key);
+            var chunks = TileManager.Instance.getWorldPositionOfTile(tile);
+            foreach (var chunk in chunks)
+            {
+                affectedChunks.Add(chunk);
+            }
+        }
+
+        // Process only affected chunks.
+        foreach (var chunk in affectedChunks)
+        {
+            if (!currentTextures.ContainsKey(chunk)) continue;
+            
+            // Store original if not already stored.
+            if (!originalTextures.ContainsKey(chunk))
+            {
+                originalTextures[chunk] = currentTextures[chunk];
+            }
+            
+            // Create or reuse overlay texture.
+            if (!overlayTextures.ContainsKey(chunk))
+            {
+                overlayTextures[chunk] = new Texture2D(ChunkSize, ChunkSize, TextureFormat.ARGB32, false);
+            }
+            
+            UpdateOverlayTexture(chunk);
         }
         
         MapDisplay.Instance.ReplaceTexture(overlayTextures);
     }
-
-    public void HideAoeOverlay()
+    
+    private void RestoreOriginalTextures()
     {
-        if (MapDisplay.Instance != null)
+        foreach (var kvp in originalTextures)
         {
-            MapDisplay.Instance.ReplaceTexture(originalTextures);
+            if (overlayTextures.ContainsKey(kvp.Key))
+            {
+                overlayTextures[kvp.Key].SetPixels(kvp.Value.GetPixels());
+                overlayTextures[kvp.Key].Apply();
+            }
         }
-        currentAoeTiles.Clear();
-        originalTextures.Clear();
-        overlayTextures.Clear();
     }
 
-    private Texture2D CreateOverlayTexture(Texture2D baseTexture, Vector2 chunkCoord)
+    private void UpdateOverlayTexture(Vector2 chunkCoord)
     {
-        Texture2D overlayTex = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.ARGB32, false);
+        var baseTexture = originalTextures[chunkCoord];
+        var overlayTex = overlayTextures[chunkCoord];
+        
+        // Copy base texture.
         overlayTex.SetPixels(baseTexture.GetPixels());
         
         // Calculate chunk origin.
         float chunkOriginX = chunkCoord.x * (ChunkSize - 1) + 1;
         float chunkOriginZ = -(chunkCoord.y * (ChunkSize - 1));
         
+        // Highlight affected tiles.
         for (int y = 0; y < ChunkSize; y++)
         {
             for (int x = 0; x < ChunkSize; x++)
             {
-                // Calculate world position for this texel.
                 Vector3 worldPos = new Vector3(
                     chunkOriginX + x - HalfChunkSize,
                     0,
                     chunkOriginZ + y - HalfChunkSize
                 );
                 
-                // Convert to grid position.
                 Vector3Int gridPos = TileManager.Instance.map.WorldToCell(worldPos);
                 
                 if (currentAoeTiles.Contains(gridPos))
                 {
-                    // Flip Y coordinate to match texture orientation.
                     int textureY = ChunkSize - 1 - y;
                     overlayTex.SetPixel(x, textureY, aoeHighlightColor);
                 }
             }
         }
-        
         overlayTex.Apply();
-        return overlayTex;
+    }
+
+    public void HideAoeOverlay()
+    {
+        if (MapDisplay.Instance != null)
+        {
+            // Restore all original textures.
+            RestoreOriginalTextures();
+            MapDisplay.Instance.ReplaceTexture(originalTextures);
+        }
+        
+        currentAoeTiles.Clear();
+        originalTextures.Clear();
+        overlayTextures.Clear();
+        affectedChunks.Clear();
     }
 }
