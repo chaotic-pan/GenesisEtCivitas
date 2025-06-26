@@ -66,6 +66,7 @@ MonoBehaviour:
   _SkillTreeMenu: {fileID: 0}
   uiCityMenu: {fileID: 0}
   uiNpcMenu: {fileID: 0}
+  uiMessiahMenu: {fileID: 0}
 --- !u!114 &3231224276502657812
 MonoBehaviour:
   m_ObjectHideFlags: 0
