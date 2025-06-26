@@ -21,7 +21,6 @@ public class CivMenuRow : MonoBehaviour
         npcModel.OnUpdateData.AddListener(UpdateData);
         
         _npcModel = npcModel;
-        
         UpdateData(npcModel);
     }
 
