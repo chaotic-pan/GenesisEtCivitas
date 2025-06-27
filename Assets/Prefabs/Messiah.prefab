@@ -622,6 +622,13 @@ MonoBehaviour:
   maxSpeed: 10
   rangeRadius: 20
   map: {fileID: 0}
+  startedWalk:
+    m_PersistentCalls:
+      m_Calls: []
+  endedWalk:
+    m_PersistentCalls:
+      m_Calls: []
+  DEBUG_PathBreadcrumbs: 1
 --- !u!114 &6309690029069101142
 MonoBehaviour:
   m_ObjectHideFlags: 0

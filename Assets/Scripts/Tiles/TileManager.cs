@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -9,8 +8,8 @@ public class TileManager : MonoBehaviour
 {
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
-    private Dictionary<Vector3Int, TileData> dataFromTiles = new Dictionary<Vector3Int, TileData>();
-    public List<Vector3Int> spawnLocations = new List<Vector3Int>();
+    private Dictionary<Vector3Int, TileData> dataFromTiles = new();
+    public List<Vector3Int> spawnLocations = new();
     
     private void Awake()
     {
@@ -241,5 +240,10 @@ public class TileManager : MonoBehaviour
         }
 
         return newRange;
+    }
+    
+    public List<Vector3Int> GetFullRange()
+    {
+        return dataFromTiles.Keys.ToList();
     }
 }

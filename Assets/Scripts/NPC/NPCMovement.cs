@@ -93,26 +93,31 @@ public class NPCMovement : MonoBehaviour
         var height = ME.GetHeightByWorldCoord(coord);
         return new Vector3(coord.x,height , coord.z);
     }
-
+    
     public void MovetoTile(Vector3Int gridPos)
     {
         MovetoTileAndExecute(gridPos, null);
     }
-    
-    public void MovetoTileAndExecute(Vector3Int gridPos, Action doOnReached)
+    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
+    {
+        MovetoTileInRangeAndExecute(gridPos, range, null);
+    }
+    public void MovetoTileAndExecute(Vector3Int gridPos, Action<int> doOnReached)
+    {
+        CalculateRange();
+        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
+    }
+    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<int> doOnReached)
     {
         var npcGridPos = map.WorldToCell(transform.position);
-        
-        //calculate path between current and target pos
-        CalculateRange();
-        var path = Dijkstra(npcGridPos, gridPos, range);
+        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
         
         DEBUG_spawnBreadcrumbs(AdjustCoordsForHeight(map.CellToWorld(gridPos)),5);
 
         StartCoroutine(FollowPath(path, doOnReached));
     }
     
-    IEnumerator FollowPath(Stack<Vector3Int> path, Action onReached)
+    IEnumerator FollowPath(Stack<Vector3Int> path, Action<int> onReached)
     {
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
@@ -138,7 +143,7 @@ public class NPCMovement : MonoBehaviour
             }
         }
 
-        onReached?.Invoke();
+        onReached?.Invoke(GetInstanceID());
     }
     
     IEnumerator MovetoTarget(Vector3 target)
