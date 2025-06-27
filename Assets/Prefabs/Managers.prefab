@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6362208822355190539}
   - component: {fileID: 3429691633098140387}
   - component: {fileID: 2050289209017274225}
+  - component: {fileID: 9166940963492807670}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -66,6 +67,7 @@ MonoBehaviour:
   _SkillTreeMenu: {fileID: 0}
   uiCityMenu: {fileID: 0}
   uiNpcMenu: {fileID: 0}
+  uiMessiahMenu: {fileID: 0}
 --- !u!114 &3231224276502657812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,3 +125,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cityPrefab: {fileID: 419345410134529011, guid: ea96a45d4aa04be4e977536cb0ccc0bc, type: 3}
+--- !u!114 &9166940963492807670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78af243f872747c680a6ba0427985fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aoeHighlightColor: {r: 0, g: 0.5, b: 1, a: 0.7}

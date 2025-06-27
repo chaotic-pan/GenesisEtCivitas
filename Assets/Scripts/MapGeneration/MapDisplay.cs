@@ -12,8 +12,11 @@ namespace Terrain
         private int scale = 1;
 
         private Dictionary<Vector2, GameObject> _meshInstances = new();
-        private void Start()
+        
+        public static MapDisplay Instance;
+        private void Awake()
         {
+            Instance = this;
             FillMeshInstancesDictionary();
             LoadTerrainTexturesIntoMapsDictionary();
         }

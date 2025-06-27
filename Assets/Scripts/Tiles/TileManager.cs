@@ -143,6 +143,16 @@ public class TileManager : MonoBehaviour
         
         return hitChunk;
     }
+    
+    public Vector2 GetChunkForTile(Vector3Int tilePos)
+    {
+        Vector3 worldPos = map.CellToWorld(tilePos);
+    
+        int chunkX = Mathf.FloorToInt((worldPos.x + 120) / 239f);
+        int chunkY = Mathf.FloorToInt((-worldPos.z + 120) / 239f);
+    
+        return new Vector2(chunkX, chunkY);
+    }
    
     public void printTileData(int gridX, int gridY) 
     {
@@ -225,20 +235,34 @@ public class TileManager : MonoBehaviour
             CubeToGrid(cubePos.x, cubePos.y+1, cubePos.z-1)
         };
     }
+    
+    public Bounds GetTileBounds(Vector3Int gridPos)
+    {
+        Vector3 center = map.GetCellCenterWorld(gridPos);
+        Vector3 size = map.cellSize;
+        return new Bounds(center, size);
+    }
 
     public List<Vector3Int> GetSpecificRange(Vector3Int gridPos, int radius)
     {
+        if (radius < 0) return new List<Vector3Int> { gridPos };
+    
         var newRange = new List<Vector3Int>();
-        for (int q = -radius; q <= radius; q++)
+        var centerCube = GridToCube(gridPos);
+    
+        for (int dx = -radius; dx <= radius; dx++)
         {
-            for (int r = Math.Max(-radius, -q - radius); r <= Math.Min(radius, -q + radius); r++)
+            for (int dy = Math.Max(-radius, -dx - radius); dy <= Math.Min(radius, -dx + radius); dy++)
             {
-                var s = -q - r;
-                var cubePos = GridToCube(gridPos);
-                newRange.Add(CubeToGrid(cubePos.x + q, cubePos.y + r, gridPos.z + s));
+                int dz = -dx - dy;
+                Vector3Int cubePos = new Vector3Int(
+                    centerCube.x + dx,
+                    centerCube.y + dy,
+                    centerCube.z + dz
+                );
+                newRange.Add(CubeToGrid(cubePos));
             }
         }
-
         return newRange;
     }
     
