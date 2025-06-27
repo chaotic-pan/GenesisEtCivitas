@@ -31,9 +31,6 @@ namespace UI
         public void ButtonPressSendSaviour()
         {
             _playerController.callAbility(AbilityType.SendSaviour);
-            
-            // coroutine = SelectCity(5);
-            // StartCoroutine(coroutine);
         }
 
         public void ButtonPressMessiahAction()

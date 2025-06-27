@@ -628,7 +628,7 @@ MonoBehaviour:
   endedWalk:
     m_PersistentCalls:
       m_Calls: []
-  DEBUG_PathBreadcrumbs: 1
+  DEBUG_PathBreadcrumbs: 0
 --- !u!114 &6309690029069101142
 MonoBehaviour:
   m_ObjectHideFlags: 0
