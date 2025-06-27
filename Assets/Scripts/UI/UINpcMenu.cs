@@ -1,4 +1,5 @@
 using CityStuff;
+using Events;
 using Models;
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace UI
         [SerializeField] private TextMeshProUGUI populationText;
         private NPCModel model;
         private City _city;
+        
         public override void Initialize()
         {
             UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
@@ -53,5 +55,10 @@ namespace UI
             _city.BuildChurch();
         }
 
+        public void OnJumpToCiv()
+        {
+            GameEvents.Camera.OnJumpToCiv(model.NPC);
+        }
+        
     }
 }
