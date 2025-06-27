@@ -22,6 +22,7 @@ public class Messiah : MonoBehaviour
     {
         if (npcId == npcMove.GetInstanceID() && civ != null)
         {
+            // TODO preach Animation
              ChangeCiviScores();
         }
     }

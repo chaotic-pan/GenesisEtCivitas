@@ -28,6 +28,14 @@ namespace UI
             // npcName.text = data.NPCName;
         }
 
+        public void ButtonPressSendSaviour()
+        {
+            Debug.Log("click on a Tile to send Saviour there");
+
+            // coroutine = SelectCity(5);
+            // StartCoroutine(coroutine);
+        }
+
         public void ButtonPressMessiahAction()
         {
             Debug.Log("Select a civilisation");

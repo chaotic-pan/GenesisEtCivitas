@@ -29,6 +29,12 @@ namespace UI
             model = npcModel;
             _city = npcModel.City;
         }
+
+        public void SwitchToSaviour()
+        {
+            OnClose();
+            UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(model);
+        }
     
         protected override void UpdateData(NPCModel data)
         {
