@@ -62,11 +62,7 @@ namespace Player
                     Debug.Log("No Tile Data!");
                     return;
                 }
-                Debug.Log("Tile grid pos: " + tileGridPos);
-                Debug.Log("Tile water value: " + tileData.waterValue);
-                
                 CastAbility(tileGridPos);
-                Debug.Log("New tile water value: " + tileData.waterValue);
                 
                 // testheatmap update
                UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(TileManager.Instance.getWorldPositionOfTile(tileGridPos), MapDisplay.MapOverlay.WaterValue);
@@ -121,6 +117,7 @@ namespace Player
             {
                 AbilityType.Rain => gameObject.AddComponent<RainAbility>(),
                 AbilityType.Earthquake => gameObject.AddComponent<EarthquakeAbility>(),
+                AbilityType.SendSaviour => gameObject.AddComponent<SendSaviourAbility>(),
                 _ => null
             };
             if (!_activeAbility) return;

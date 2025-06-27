@@ -11,8 +11,7 @@ using UI;
 public class NPC : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private NPCInfluenceArea influenceArea;
-    public static UnityEvent CheckMessiah = new UnityEvent();
-    public static UnityEvent<string, Civilization> UseMessiah = new UnityEvent<string, Civilization>();
+    public static UnityEvent CheckMessiah = new ();
     public GameObject messiahPrefab;
     
     public NPCModel _npcModel = new NPCModel();
@@ -22,9 +21,8 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     public void Awake()
     {
         CheckMessiah.AddListener(CheckForMessiah);
-        UseMessiah.AddListener(UseMessiahAction);
-        civ = this.transform.GetComponent<Civilization>();
-        mes = this.transform.GetComponent<Messiah>();
+        civ = transform.GetComponent<Civilization>();
+        mes = transform.GetComponent<Messiah>();
         if (civ != null)
         {
             StartCoroutine(StatsDecay(10));
@@ -41,18 +39,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             Destroy(gameObject);
         }
     }
-    private void UseMessiahAction(string actionName, Civilization civ)
-    {
-        if (mes == null) return;
-        switch (actionName)
-        {
-            case "GrantScoreImprovements":
-                mes.GrantScoreImprovements(civ);
-                break;
-            default:
-                break;
-        }
-    }
+  
     IEnumerator StatsDecay(float timer)
     {
         if (civ == null) yield return 0;

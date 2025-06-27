@@ -1,16 +1,28 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Messiah : MonoBehaviour
 {
     private NPCMovement npcMove;
     private Civilization civ;
     
+    public static UnityEvent<Civilization> UseMessiah = new ();
+    public static UnityEvent<Vector3Int> SendMessiah = new ();
+
+    
     private void Start()
     {
         npcMove = gameObject.GetComponent<NPCMovement>();
+        UseMessiah.AddListener(GrantScoreImprovements);
+        SendMessiah.AddListener(OnSendMessiah);
     }
 
+    public void OnSendMessiah(Vector3Int gridPos)
+    {
+        npcMove.MovetoTileInRange(gridPos, TileManager.Instance.GetFullRange());
+    }
+    
     public void GrantScoreImprovements(Civilization civi)
     {
         civ = civi;

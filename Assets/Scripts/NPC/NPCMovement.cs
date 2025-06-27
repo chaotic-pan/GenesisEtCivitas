@@ -109,11 +109,14 @@ public class NPCMovement : MonoBehaviour
     }
     public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<int> doOnReached)
     {
+        DEBUG_clearBreadcrumbs();
+        StopAllCoroutines();
+        
         var npcGridPos = map.WorldToCell(transform.position);
         var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
         
         DEBUG_spawnBreadcrumbs(AdjustCoordsForHeight(map.CellToWorld(gridPos)),5);
-
+        
         StartCoroutine(FollowPath(path, doOnReached));
     }
     
@@ -151,7 +154,7 @@ public class NPCMovement : MonoBehaviour
         DEBUG_spawnBreadcrumbs(target,2);
         var position = transform.position;
         
-        while (Vector3.Distance(position, target) > 2f)
+        while (Vector3.Distance(position, target) > 10f)
         {
             var direction = (target - position).normalized;
             var lookRotation = Quaternion.LookRotation(direction);

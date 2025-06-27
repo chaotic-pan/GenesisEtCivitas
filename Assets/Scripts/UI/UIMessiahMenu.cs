@@ -1,15 +1,15 @@
 using Models;
-using System;
 using System.Collections;
-using TMPro;
+using Player;
+using Player.Abilities;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
     public class UIMessiahMenu : UpdateableMenu<NPCModel>
     {
         private bool isSelectingCity;
+        public PlayerController _playerController;
 
         private IEnumerator coroutine;
         public override void Initialize()
@@ -30,8 +30,8 @@ namespace UI
 
         public void ButtonPressSendSaviour()
         {
-            Debug.Log("click on a Tile to send Saviour there");
-
+            _playerController.callAbility(AbilityType.SendSaviour);
+            
             // coroutine = SelectCity(5);
             // StartCoroutine(coroutine);
         }
@@ -62,7 +62,7 @@ namespace UI
         private void InvokeMessiahAction(Civilization civ)
         {
             Debug.Log(civ + " is currently in InvokeMessiahAction im UIMessiahMenu");
-            NPC.UseMessiah.Invoke("GrantScoreImprovements", civ);
+            Messiah.UseMessiah.Invoke(civ);
         }
     }
 }

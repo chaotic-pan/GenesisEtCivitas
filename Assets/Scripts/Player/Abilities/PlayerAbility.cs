@@ -5,7 +5,8 @@ namespace Player.Abilities
     public enum AbilityType
     {
         Rain,
-        Earthquake
+        Earthquake,
+        SendSaviour
     }
     
     public class PlayerAbility : MonoBehaviour
