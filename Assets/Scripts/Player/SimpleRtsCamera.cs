@@ -1,4 +1,6 @@
 using System;
+using Events;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,6 +22,8 @@ namespace Player
 		[SerializeField] private float rotateSpeed = 0.5f;
 		[SerializeField] private float rotateFallback = 1000f;
 
+		[SerializeField] private CinemachineCamera cinemachineCamera;
+		
 		private PlayerInput _playerInput;
 		private Vector2 _moveInput;
 		private Vector2 _mousePositionInput;
@@ -36,6 +40,13 @@ namespace Player
 		private void Awake()
 		{
 			_playerInput = FindAnyObjectByType<PlayerInput>();
+			
+			GameEvents.Camera.OnJumpToCiv += OnJumpToCiv;
+		}
+		
+		private void OnJumpToCiv(GameObject civ)
+		{
+			cinemachineCamera.Follow = civ.transform;
 		}
 
 		private void OnEnable()
@@ -68,6 +79,7 @@ namespace Player
 			ZoomCamera();
 			RotateCamera();
 			LimitCamera();
+			
 		}
 
 		private void LimitCamera()
@@ -108,8 +120,13 @@ namespace Player
 		private void MousePositionHandler(InputAction.CallbackContext callbackContext) =>
 			_mousePositionInput = callbackContext.ReadValue<Vector2>();
 
-		private void InitialMousePositionHandler(InputAction.CallbackContext callbackContext) =>
+		private void InitialMousePositionHandler(InputAction.CallbackContext callbackContext)
+		{
 			_initialMousePosition = _mousePositionInput;
+			
+			cinemachineCamera.Follow = null;
+			transform.rotation = Quaternion.Euler(60, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+		}
 
 		private void RightMouseHandler(InputAction.CallbackContext callbackContext) {
 			_rightMouseInput = callbackContext.ReadValue<float>();

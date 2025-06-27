@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Models;
 using Player.Abilities;
 using Player.Skills;
 using Terrain;
 using UI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Player
 {
@@ -13,46 +15,36 @@ namespace Player
         private PlayerSkillSet _playerSkillSet;
         private PlayerAbility _activeAbility;
         
+        public UnityAction<AbilityType> callAbility;
+        
         private bool _isWaitingForTileClick;
-
+        
+        private List<Vector3Int> aoePreviewTiles = new List<Vector3Int>();
+        
         private void Awake()
         {
             _playerModel = GetComponent<PlayerModel>();
             _playerSkillSet = new PlayerSkillSet(_playerModel);
             _playerSkillSet.OnSkillUnlocked += PlayerSkillSet_OnSkillUnlocked;
+            callAbility += EnterAbility;
+            
         }
         
         private void Update()
         {
             if (_isWaitingForTileClick)
             {
-                // ShowHoverEffect();
-
-                if (Input.GetMouseButtonDown(0))
+                PreviewAoeTiles();
+        
+                if (Input.GetMouseButtonDown(0)) // Left click.
                 {
                     HandleTileClick();
                 }
+                else if (Input.GetMouseButtonDown(1)) // Right click.
+                {
+                    CancelAbility();
+                }
             }
-        }
-
-        private void ShowHoverEffect()
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            var plane = new Plane(Vector3.up, Vector3.zero);
-            if (!plane.Raycast(ray, out var distance)) return;
-            
-            var point = ray.GetPoint(distance);
-            var tileGridPos = TileManager.Instance.map.WorldToCell(point);
-
-            if (TileManager.Instance.getTileDataByGridCoords(tileGridPos) != null)
-            {
-                VisualizeAreaOfEffect(tileGridPos);
-            }
-        }
-
-        private void VisualizeAreaOfEffect(Vector3Int tileGridPos)
-        {
-            throw new System.NotImplementedException();
         }
 
         private void HandleTileClick()
@@ -69,11 +61,7 @@ namespace Player
                     Debug.Log("No Tile Data!");
                     return;
                 }
-                Debug.Log("Tile grid pos: " + tileGridPos);
-                Debug.Log("Tile water value: " + tileData.waterValue);
-                
                 CastAbility(tileGridPos);
-                Debug.Log("New tile water value: " + tileData.waterValue);
                 
                 // testheatmap update
                UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(TileManager.Instance.getWorldPositionOfTile(tileGridPos), MapDisplay.MapOverlay.WaterValue);
@@ -81,10 +69,40 @@ namespace Player
 
             _isWaitingForTileClick = false;
         }
+        
+        private void PreviewAoeTiles()
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var plane = new Plane(Vector3.up, Vector3.zero);
+            if (plane.Raycast(ray, out var distance))
+            {
+                var point = ray.GetPoint(distance);
+                var tileGridPos = TileManager.Instance.map.WorldToCell(point);
+        
+                int diameter = _activeAbility.EffectDiameter;
+                int radius = (diameter - 1) / 2; // For hex grids.
+        
+                List<Vector3Int> newAoeTiles = TileManager.Instance.GetSpecificRange(tileGridPos, radius);
+        
+                if (!newAoeTiles.SequenceEqual(aoePreviewTiles))
+                {
+                    aoePreviewTiles = newAoeTiles;
+                    GridOverlayManager.Instance.ShowAoeOverlay(aoePreviewTiles);
+                }
+            }
+        }
 
         public void EnterRainAbility()
         {
             EnterAbility(AbilityType.Rain);
+        }
+        
+        private void CancelAbility()
+        {
+            _isWaitingForTileClick = false;
+            Destroy(_activeAbility);
+            _activeAbility = null;
+            GridOverlayManager.Instance.HideAoeOverlay();
         }
 
         public void EnterEarthquakeAbility()
@@ -98,12 +116,14 @@ namespace Player
             {
                 AbilityType.Rain => gameObject.AddComponent<RainAbility>(),
                 AbilityType.Earthquake => gameObject.AddComponent<EarthquakeAbility>(),
+                AbilityType.SendSaviour => gameObject.AddComponent<SendSaviourAbility>(),
                 _ => null
             };
             if (!_activeAbility) return;
             
             _activeAbility.EnterAbility();
             _isWaitingForTileClick = true;
+            GridOverlayManager.Instance.ShowAoeOverlay(new List<Vector3Int>());
         }
 
         private void CastAbility(Vector3Int tileGridPos)
@@ -118,6 +138,7 @@ namespace Player
             // Debug.Log("Cost: " + _activeAbility.Cost);
             
             _activeAbility = null;
+            GridOverlayManager.Instance.HideAoeOverlay();        
         }
 
         //Skills

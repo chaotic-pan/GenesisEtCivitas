@@ -303,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1798108614409395535
 Transform:
   m_ObjectHideFlags: 0
@@ -1567,7 +1567,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b0cfa1d6ddc12c24fabe427a21c8101c, type: 2}
+  - {fileID: 2100000, guid: bdfe5e6c6ee9f8b4b9e00d22aa9293f9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9985,6 +9985,13 @@ MonoBehaviour:
   maxSpeed: 10
   rangeRadius: 20
   map: {fileID: 0}
+  startedWalk:
+    m_PersistentCalls:
+      m_Calls: []
+  endedWalk:
+    m_PersistentCalls:
+      m_Calls: []
+  DEBUG_PathBreadcrumbs: 0
 --- !u!114 &7232340983693077581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9998,6 +10005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   influenceArea: {fileID: 2292834795574306297}
+  messiahPrefab: {fileID: 2077861693280709515, guid: bca12d35778f59f4bba2b0ba2248f185, type: 3}
 --- !u!136 &6283251092642932171
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -10040,6 +10048,8 @@ MonoBehaviour:
   shelter: 250
   energy: 250
   population: 0
+  hasSettlingLoc: 0
+  city: {fileID: 0}
 --- !u!1 &4624340083048041013
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -9,8 +8,8 @@ public class TileManager : MonoBehaviour
 {
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
-    private Dictionary<Vector3Int, TileData> dataFromTiles = new Dictionary<Vector3Int, TileData>();
-    public List<Vector3Int> spawnLocations = new List<Vector3Int>();
+    private Dictionary<Vector3Int, TileData> dataFromTiles = new();
+    public List<Vector3Int> spawnLocations = new();
     
     private void Awake()
     {
@@ -28,6 +27,7 @@ public class TileManager : MonoBehaviour
                 if (tile != null)
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
+                    var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
                         ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
@@ -37,11 +37,10 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x,p.y],
-                        1,  //water value
-                        ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier
+                        height <= 0.1 ? 30 : 1,  //water value
+                        height
                         ); 
-                    dataFromTiles.Add(gridPos, tileData);
-                    //print(ME.mapData.firmness[p.x, p.y]);
+                    dataFromTiles.TryAdd(gridPos, tileData);
                     if (tileData.height > 0.1)
                     {
                         spawnLocations.Add(gridPos);
@@ -144,6 +143,16 @@ public class TileManager : MonoBehaviour
         
         return hitChunk;
     }
+    
+    public Vector2 GetChunkForTile(Vector3Int tilePos)
+    {
+        Vector3 worldPos = map.CellToWorld(tilePos);
+    
+        int chunkX = Mathf.FloorToInt((worldPos.x + 120) / 239f);
+        int chunkY = Mathf.FloorToInt((-worldPos.z + 120) / 239f);
+    
+        return new Vector2(chunkX, chunkY);
+    }
    
     public void printTileData(int gridX, int gridY) 
     {
@@ -226,20 +235,39 @@ public class TileManager : MonoBehaviour
             CubeToGrid(cubePos.x, cubePos.y+1, cubePos.z-1)
         };
     }
+    
+    public Bounds GetTileBounds(Vector3Int gridPos)
+    {
+        Vector3 center = map.GetCellCenterWorld(gridPos);
+        Vector3 size = map.cellSize;
+        return new Bounds(center, size);
+    }
 
     public List<Vector3Int> GetSpecificRange(Vector3Int gridPos, int radius)
     {
+        if (radius < 0) return new List<Vector3Int> { gridPos };
+    
         var newRange = new List<Vector3Int>();
-        for (int q = -radius; q <= radius; q++)
+        var centerCube = GridToCube(gridPos);
+    
+        for (int dx = -radius; dx <= radius; dx++)
         {
-            for (int r = Math.Max(-radius, -q - radius); r <= Math.Min(radius, -q + radius); r++)
+            for (int dy = Math.Max(-radius, -dx - radius); dy <= Math.Min(radius, -dx + radius); dy++)
             {
-                var s = -q - r;
-                var cubePos = GridToCube(gridPos);
-                newRange.Add(CubeToGrid(cubePos.x + q, cubePos.y + r, gridPos.z + s));
+                int dz = -dx - dy;
+                Vector3Int cubePos = new Vector3Int(
+                    centerCube.x + dx,
+                    centerCube.y + dy,
+                    centerCube.z + dz
+                );
+                newRange.Add(CubeToGrid(cubePos));
             }
         }
-
         return newRange;
+    }
+    
+    public List<Vector3Int> GetFullRange()
+    {
+        return dataFromTiles.Keys.ToList();
     }
 }

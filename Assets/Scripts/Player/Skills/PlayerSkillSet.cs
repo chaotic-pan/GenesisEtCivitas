@@ -78,51 +78,27 @@ namespace Player.Skills
             Skill skillRequirement = GetSkillRequirement(skill);
             int skillCost = GetSkillCosts(skill);
 
-            if (!IsSkillUnlocked(skill))
-            {
-                if (skillRequirement != Skill.None)
-                {
-                    if (IsSkillUnlocked(skillRequirement))
-                    {
-
-                        if (skillCost <= _playerModel.virtuePoints)
-                        {
-                            UnlockSkill(skill);
-                            _playerModel.virtuePoints -= skillCost;
-                            return true;
-                        }
-                        else
-                        {
-                            Debug.LogError("Not Enough Virtue Points!");
-                            return false;
-                        }
-
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (skillCost <= _playerModel.virtuePoints)
-                    {
-                        UnlockSkill(skill);
-                        _playerModel.virtuePoints -= skillCost;
-                        return true;
-                    }
-                    else
-                    {
-                        Debug.LogError("Not Enough Virtue Points!");
-                        return false;
-                    }
-                }
-            }
-            else
+            if (IsSkillUnlocked(skill))
             {
                 Debug.LogError("Already Unlocked!");
                 return false;
             }
+
+            if (skillRequirement != Skill.None && !IsSkillUnlocked(skillRequirement))
+            {
+                Debug.LogError("Not Available Yet!");
+                return false;
+            }
+
+            if (skillCost > _playerModel.virtuePoints)
+            {
+                Debug.LogError("Not Enough Virtue Points!");
+                return false;
+            }
+
+            UnlockSkill(skill);
+            _playerModel.virtuePoints -= skillCost;
+            return true;
         }
     }
 }

@@ -3,7 +3,9 @@ using Models.Interfaces;
 using UnityEngine.Events;
 
 namespace Models
-{
+{       /// <summary>
+///  OBSOLETE!!!!!!!!!!!
+/// </summary>
     public class CityModel : IObservableData<CityModel>
     {
         public UnityEvent<CityModel> OnUpdateData { get; } = new();

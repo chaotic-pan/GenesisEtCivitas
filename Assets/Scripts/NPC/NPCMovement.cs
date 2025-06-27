@@ -3,29 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
-using Random = UnityEngine.Random;
 
 public class NPCMovement : MonoBehaviour
 {
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
-    
+
     public Tilemap map;
-    // private AnimManager npcAnim;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
-    private Stack<Vector3Int> path = new Stack<Vector3Int>();
-    private Vector3 pathPoint;
+
+    public UnityEvent<int> startedWalk = new();
+    public UnityEvent<int> endedWalk = new();
 
     private void Start()
     {
         map = TM?.map;
-        pathPoint = AdjustCoordsForHeight(transform.position);
-        transform.position = pathPoint;
+        transform.position = AdjustCoordsForHeight(transform.position);
         StartCoroutine(WaitAndSettle());
     }
     
@@ -33,50 +32,9 @@ public class NPCMovement : MonoBehaviour
     {
         // suspend execution for 2 seconds
         yield return new WaitForSeconds(2);
-        FindSettlingLocation(20);
+        if (transform.GetComponent<Civilization>() != null) FindSettlingLocation(20);
     }
-    
-    private void Update()
-    {
-        
-        var position = transform.position;
-        var dist = Vector3.Distance(position, pathPoint);
-        
-        if (dist > 0.05f)
-        {
-            var direction = (pathPoint - position).normalized;
-            var rotation = Quaternion.LerpUnclamped(transform.rotation, Quaternion.LookRotation(direction), 
-                Time.deltaTime*movementSpeed);
 
-            transform.rotation = rotation;
-            position += transform.forward * (movementSpeed * Time.deltaTime);
-            transform.position = AdjustCoordsForHeight(position);
-            
-            // var p = ME.CoordsToPoints(position);
-            // movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
-            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
-        }
-        else
-        {
-            if (path.TryPop(out var pather))
-            {
-                pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
-            }
-            else
-            {
-                for (int  i = 0;  i < transform.childCount;  i++)
-                {
-                    var child = transform.GetChild(i);
-                    if (child.gameObject.activeSelf)
-                    {
-                        child.GetComponent<AnimManager>()?.SetIsMoving(false);
-                    }       
-                }
-            }
-
-        }
-    }
-    
     private void FindSettlingLocation(int range)
     {
         Vector3Int gridPos = map.WorldToCell(transform.position);
@@ -94,9 +52,35 @@ public class NPCMovement : MonoBehaviour
             }
         }
         MovetoTile(settlingPos);
-        this.transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
+        transform.GetComponent<Civilization>().hasSettlingLoc = true;
+        transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
     }
     
+# region DEBUG
+    [Tooltip("enable to have Civs spawn visual point along their walking path")]
+    [SerializeField] private bool DEBUG_PathBreadcrumbs;
+    private List<GameObject> DEBUG_breadcrumbs = new();
+
+    private void DEBUG_spawnBreadcrumbs(Vector3 pos, int size)
+    {
+        if (!DEBUG_PathBreadcrumbs) return;
+        var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        s.transform.localScale = new Vector3(size,size,size);
+        s.transform.position = pos;
+        DEBUG_breadcrumbs.Add(s);
+    }
+    
+    private void DEBUG_clearBreadcrumbs()
+    {
+        if (!DEBUG_PathBreadcrumbs) return;
+        foreach (var crumb in DEBUG_breadcrumbs)
+        {
+            Destroy(crumb);
+        }
+        DEBUG_breadcrumbs.Clear();
+    }
+#endregion
+
     public void CalculateRange()
     {
         var p = transform.position;
@@ -109,31 +93,84 @@ public class NPCMovement : MonoBehaviour
         var height = ME.GetHeightByWorldCoord(coord);
         return new Vector3(coord.x,height , coord.z);
     }
-
+    
     public void MovetoTile(Vector3Int gridPos)
     {
-        // get current pos
-        var npcGridPos = map.WorldToCell(transform.position);
-        //calculate path between current and target pos
+        MovetoTileAndExecute(gridPos, null);
+    }
+    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
+    {
+        MovetoTileInRangeAndExecute(gridPos, range, null);
+    }
+    public void MovetoTileAndExecute(Vector3Int gridPos, Action<int> doOnReached)
+    {
         CalculateRange();
-        path = Dijkstra(npcGridPos, gridPos, range);
+        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
+    }
+    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<int> doOnReached)
+    {
+        DEBUG_clearBreadcrumbs();
+        StopAllCoroutines();
         
-        if (path.TryPop(out var pather))
-        {
-            // double pop bc the first path point is the current pos
-            if (path.TryPop(out pather))
-            {
-                pathPoint = AdjustCoordsForHeight(map.CellToWorld(pather));
-                for (int  i = 0;  i < transform.childCount;  i++)
-                {
-                    var child = transform.GetChild(i);
-                    if (child.gameObject.activeSelf)
-                    {
-                        child.GetComponent<AnimManager>()?.SetIsMovingDelayed(true);
+        var npcGridPos = map.WorldToCell(transform.position);
+        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
+        
+        DEBUG_spawnBreadcrumbs(AdjustCoordsForHeight(map.CellToWorld(gridPos)),5);
+        
+        StartCoroutine(FollowPath(path, doOnReached));
+    }
+    
+    IEnumerator FollowPath(Stack<Vector3Int> path, Action<int> onReached)
+    {
+        // one pop to remove first path point which is the current pos
+        if (!path.TryPop(out var pather)) yield break;
 
-                    }       
-                }
-            }  
+        startedWalk.Invoke(GetInstanceID());
+
+        while (path.Count > 0)
+        {
+            yield return StartCoroutine("MovetoTarget", 
+                AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+        }
+
+        endedWalk.Invoke(GetInstanceID());
+        DEBUG_clearBreadcrumbs();
+        
+        // Build city if no city is existent at location after movement
+        Civilization civie = transform.GetComponent<Civilization>();
+        if (civie != null)
+        {
+            if (civie.city == null && civie.hasSettlingLoc)
+            {
+                civie.city = CityBuilder.Instance.BuildCity(transform.position, transform.GetComponent<NPC>()._npcModel, civie);
+            }
+        }
+
+        onReached?.Invoke(GetInstanceID());
+    }
+    
+    IEnumerator MovetoTarget(Vector3 target)
+    {
+        DEBUG_spawnBreadcrumbs(target,2);
+        var position = transform.position;
+        
+        while (Vector3.Distance(position, target) > 10f)
+        {
+            var direction = (target - position).normalized;
+            var lookRotation = Quaternion.LookRotation(direction);
+            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
+                Time.deltaTime);
+
+            transform.rotation = rotation;
+            position += transform.forward * (movementSpeed * Time.deltaTime);
+            transform.position = AdjustCoordsForHeight(position);
+            
+            // TODO speed
+            // var p = ME.CoordsToPoints(position);
+            // movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
+            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
+           
+            yield return null;
         }
     }
     

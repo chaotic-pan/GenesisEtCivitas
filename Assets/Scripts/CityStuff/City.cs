@@ -16,29 +16,32 @@ namespace CityStuff
         [SerializeField] private GameObject wellGameObject;
         [SerializeField] private GameObject churchGameObject;
     
-        private readonly List<Vector2> _buildingPoints = new ()
-        {
-            new Vector2(0.25f, 0f),
-            new Vector2(0.25f, 0.25f),
-            new Vector2(0f, 0.25f),
-            new Vector2(-0.25f, 0.25f),
-            new Vector2(-0.25f, 0f),
-            new Vector2(-0.25f, -0.25f),
-            new Vector2(0f, -0.25f),
-            new Vector2(0.25f, -0.25f)
-        };
-    
         private House _house;
         private Well _well;
         private Church _church;
 
-        private readonly CityModel _cityModel = new();
-
-        public void Initialize(string cityName)
+        private Civilization civ;
+        
+        
+        private readonly List<Vector2> _buildingPoints = new ()
         {
-            _cityModel.City = this;
-            _cityModel.CityName = cityName;
-            
+            new Vector2(4f, 0f),
+            new Vector2(4f, 4f),
+            new Vector2(0f, 4f),
+            new Vector2(-4f, 4f),
+            new Vector2(-4f, 0f),
+            new Vector2(-4f, -4f),
+            new Vector2(0f, -4f),
+            new Vector2(4f, -4f)
+        };
+
+        private NPCModel _npcModel;
+
+        public void Initialize(NPCModel model, Civilization civi)
+        {
+            _npcModel = model;
+            _npcModel.City = this;
+            civ = civi;
             BuildHouse();
         }
 
@@ -72,6 +75,11 @@ namespace CityStuff
         
             var instance = Instantiate(prefab, transform);
             instance.transform.localPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
+
+            var desiredHeight = MapExtractor.Instance.GetHeightByWorldCoord(instance.transform.position);
+            
+            instance.transform.position = new Vector3(instance.transform.position.x, desiredHeight, instance.transform.position.z);
+            
             instance.transform.LookAt(transform);
             instance.SetActive(true);
         
@@ -82,7 +90,8 @@ namespace CityStuff
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                UIEvents.UIOpen.OnOpenCityMenu.Invoke(_cityModel);
+                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
             }
         }
     }

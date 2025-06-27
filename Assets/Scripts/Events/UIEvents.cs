@@ -27,6 +27,8 @@ namespace UI
         {
             public UnityAction<CityModel> OnOpenCityMenu;
             public UnityAction<NPCModel> OnOpenNpcMenu;
+            public UnityAction<NPCModel> OnOpenMessiahMenu;
+            public UnityAction<Civilization> OnSelectCityMessiahAction;
         }
     }
 }

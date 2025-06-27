@@ -1,3 +1,6 @@
+using CityStuff;
+using DefaultNamespace;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -19,9 +22,16 @@ public class Civilization : MonoBehaviour
     private float happiness;
 
     private float ressources;
+    public Language Language;
 
+    public bool hasSettlingLoc = false;
+    public City city;
+
+    public void Initialize()
+    {
+        Language = new Language();
+    }
     
-
     public void SetPopulation(int population)
     {
         for (int i = 0; i < population; i++)
