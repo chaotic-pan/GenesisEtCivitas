@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Events;
 using Models;
 using UI;
 using Unity.Mathematics.Geometry;
@@ -25,6 +26,12 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         mes = transform.GetComponent<Messiah>();
         if (civ != null)
         {
+            civ.Initialize();
+            _npcModel.NPCName = civ.Language.GenerateWord();
+            _npcModel.NPC = gameObject;
+            
+            GameEvents.Civilization.OnCivilizationSpawn.Invoke(_npcModel);
+            
             StartCoroutine(StatsDecay(10));
             influenceArea.Initialize(this);
         }
