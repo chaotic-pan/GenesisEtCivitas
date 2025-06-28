@@ -29,8 +29,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             civ.Initialize();
             _npcModel.NPCName = civ.Language.GenerateWord();
             _npcModel.NPC = gameObject;
-            
-            GameEvents.Civilization.OnCivilizationSpawn.Invoke(_npcModel);
+            GameEvents.Civilization.OnCivilizationSpawn.Invoke(gameObject);
             
             StartCoroutine(StatsDecay(10));
             influenceArea.Initialize(this);
@@ -41,7 +40,8 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     {
         if(_npcModel.IsMessiah)
         {
-            Instantiate(messiahPrefab, transform.position, Quaternion.identity);
+            var messiah = Instantiate(messiahPrefab, transform.position, Quaternion.identity);
+            GameEvents.Civilization.OnMessiahSpawn.Invoke(messiah, gameObject);
             if (_npcModel.City !=null) Destroy(_npcModel.City.gameObject);
             Destroy(gameObject);
         }

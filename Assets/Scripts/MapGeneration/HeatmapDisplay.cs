@@ -30,6 +30,12 @@ namespace MapGeneration
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
         }
 
+        private void OnDestroy()
+        {
+            UIEvents.UIMap.OnOpenHeatmap -= OnChangeMap;
+            UIEvents.UIMap.OnUpdateHeatmapChunks -= UpdateHeatMapChunks;
+        }
+
         private void Start()
         {
             heatmapGenerator.Initialize();

@@ -166,7 +166,7 @@ namespace DefaultNamespace
                     {
                         var hasTwoConsonants = rnd.Next(1, 101);
 
-                        if (hasTwoConsonants < 50)
+                        if (hasTwoConsonants < 75)
                         {
                             var randomIndex = rnd.Next(0, LanguageConfig.C2Onset.Length);
                             onsets[i] = LanguageConfig.C2Onset[randomIndex];
@@ -187,12 +187,12 @@ namespace DefaultNamespace
                     {
                         var hasThreeConsonants = rnd.Next(1, 101);
 
-                        if (hasThreeConsonants < 33)
+                        if (hasThreeConsonants < 50)
                         {
                             var randomIndex = rnd.Next(0, LanguageConfig.C3Onset.Length);
                             onsets[i] = LanguageConfig.C3Onset[randomIndex];
                         }
-                        else if (hasThreeConsonants < 66)
+                        else if (hasThreeConsonants < 80)
                         {
                             var randomIndex = rnd.Next(0, LanguageConfig.C2Onset.Length);
                             onsets[i] = LanguageConfig.C2Onset[randomIndex];
@@ -218,8 +218,8 @@ namespace DefaultNamespace
 
             return value switch
             {
-                < 5 => 1,
-                < 75 => 2,
+                < 10 => 1,
+                < 85 => 2,
                 _ => 3,
             };
         }

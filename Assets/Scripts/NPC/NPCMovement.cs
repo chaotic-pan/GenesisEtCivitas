@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CityStuff;
+using Events;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
@@ -143,6 +145,7 @@ public class NPCMovement : MonoBehaviour
             if (civie.city == null && civie.hasSettlingLoc)
             {
                 civie.city = CityBuilder.Instance.BuildCity(transform.position, transform.GetComponent<NPC>()._npcModel, civie);
+                GameEvents.Civilization.OnCityFounded.Invoke(gameObject);
             }
         }
 

@@ -15,8 +15,8 @@ public class LanguageConfig
     
     public static string[] C2Onset = new []
     {
-        "ts", "pf", "tsh", "kr", "tr", "tl", "d", "pr", "pl", "pw",
-        "kw", "ky", "ty", "py", "my", "mw", "ml", "ny", "nw", "fl",
+        "ts", "pf", "kr", "tr", "pr", "pl", "pw",
+        "kw", "ky", "ty", "py", "my", "ml", "ny", "fl",
         "fw", "fy", "dy", "dw", "dl", "ds", "gw", "gy", "gs", "gl", "sh", "tr", "br", "cr", "cl",
         "sf", "gn", "sk", "sp", "sm", "sn", "st", "sw", "sl",
         "vr", "zl", "zl", "bl", "dr"
@@ -25,7 +25,7 @@ public class LanguageConfig
     public static string[] C2Coda = new[]
     {
         "ks", "kt", "pt", "nt", "lk", "lt", "mp", "nd",
-        "nk", "ng", "nz", "ps", "xt",
+        "nk", "ng", "nz", "ps",
     };
 
     public static string[] C3Onset = new[]

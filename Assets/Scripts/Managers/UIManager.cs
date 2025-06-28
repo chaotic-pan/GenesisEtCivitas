@@ -23,7 +23,6 @@ namespace Managers
 
         private void Awake()
         {
-            uiCityMenu?.Initialize();
             uiNpcMenu?.Initialize();
             uiMessiahMenu?.Initialize();
         }
@@ -38,6 +37,9 @@ namespace Managers
         {
             _IpText.text = _playerModel.InfluencePoints.ToString();
             vpText.text = _playerModel.virtuePoints.ToString();
+            
+            if (Input.GetKeyDown(KeyCode.Escape))
+                SceneManager.LoadScene("MainMenu");
         }
 
         public void LoadSkillTree()

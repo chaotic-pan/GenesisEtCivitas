@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
 using CityStuff;
 using Events;
 using Models;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -15,21 +18,35 @@ namespace UI
         [SerializeField] private TextMeshProUGUI safetyText;
         [SerializeField] private TextMeshProUGUI shelterText;
         [SerializeField] private TextMeshProUGUI energyText;
-
         [SerializeField] private TextMeshProUGUI populationText;
+
+        [SerializeField] private List<GameObject> civObjects;
+        [SerializeField] private List<GameObject> cityObjects;
+        [SerializeField] private GameObject cityTab;
+        [SerializeField] private GameObject civTab;
+        [SerializeField] private Sprite tabActive;
+        [SerializeField] private Sprite tabInactive;
+        
         private NPCModel model;
-        private City _city;
+        
         
         public override void Initialize()
         {
-            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
+           UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
+           UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
+        }
+        
+        private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
+        {
+            UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)
         {
             OnOpen(npcModel);
             model = npcModel;
-            _city = npcModel.City;
+
+            OnOpenCivTab();
         }
 
         public void SwitchToSaviour()
@@ -40,7 +57,6 @@ namespace UI
     
         protected override void UpdateData(NPCModel data)
         {
-            npcName.text = data.NPCName;
             influenceText.text = data.Faith.ToString();
             foodText.text = data.Food.ToString();
             waterText.text = data.Water.ToString();
@@ -48,6 +64,11 @@ namespace UI
             shelterText.text = data.Shelter.ToString();
             energyText.text = data.Energy.ToString();
             populationText.text = data.Population.ToString();
+            
+            if (this == null) Debug.LogError("This UINpcMenu reference is destroyed!");
+            if (cityTab == null) Debug.LogError("cityTab is null (destroyed or never assigned).");
+            
+            cityTab.SetActive(data.City != null);
         }
 
         public void ButtonPressMessiah()
@@ -57,14 +78,49 @@ namespace UI
         }
         public void OnBuildChurch()
         {
-            if (!_city) return;
-            _city.BuildChurch();
+            if (!model.City) return;
+            model.City.BuildChurch();
         }
 
         public void OnJumpToCiv()
         {
             GameEvents.Camera.OnJumpToCiv(model.NPC);
         }
+
+        public void OnOpenCivTab()
+        {
+            foreach (var civObject in civObjects)
+            {
+                civObject.SetActive(true);
+            }
+            
+            foreach (var cityObject in cityObjects)
+            {
+                cityObject.SetActive(false);
+            }
+
+            npcName.text = model.NPCName;
+
+            civTab.GetComponent<Image>().sprite = tabActive;
+            cityTab.GetComponent<Image>().sprite = tabInactive;
+        }
         
+        public void OnOpenCityTab()
+        {
+            foreach (var civObject in civObjects)
+            {
+                civObject.SetActive(false);
+            }
+            
+            foreach (var cityObject in cityObjects)
+            {
+                cityObject.SetActive(true);
+            }
+            
+            npcName.text = model.City.CityName;
+            
+            civTab.GetComponent<Image>().sprite = tabInactive;
+            cityTab.GetComponent<Image>().sprite = tabActive;
+        }
     }
 }
