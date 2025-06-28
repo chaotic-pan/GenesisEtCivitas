@@ -29,6 +29,7 @@ namespace UI
             _tDataEvent?.RemoveListener(UpdateData);
             gameObject.SetActive(false);
         }
+        
 
         protected abstract void UpdateData(TData data);
         public abstract void Initialize();

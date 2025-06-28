@@ -16,12 +16,23 @@ namespace Models
         private float _safety;
         private float _shelter;
         private float _energy;
+        private float _cityName;
 
         private bool _isMessiah;
 
         public GameObject NPC;
-        public City City;
+        private City _city;
 
+        
+        public City City
+        {
+            get => _city;
+            set
+            {
+                _city = value;
+                OnUpdateData?.Invoke(this);
+            }
+        }
         
         public string NPCName
         {
@@ -107,6 +118,14 @@ namespace Models
             }
         }
 
-        
+        public float CityName
+        {
+            get => _cityName;
+            set
+            {
+                _cityName = value;
+                OnUpdateData.Invoke(this);
+            }
+        }
     }
 }

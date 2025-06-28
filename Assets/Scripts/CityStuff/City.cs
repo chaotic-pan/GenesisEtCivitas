@@ -21,7 +21,8 @@ namespace CityStuff
         private Church _church;
 
         private Civilization civ;
-        
+
+        public string CityName;
         
         private readonly List<Vector2> _buildingPoints = new ()
         {
@@ -42,6 +43,9 @@ namespace CityStuff
             _npcModel = model;
             _npcModel.City = this;
             civ = civi;
+
+            CityName = civ.Language.GenerateWord();
+            
             BuildHouse();
         }
 

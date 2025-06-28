@@ -16,6 +16,13 @@ namespace UI
         {
             UIEvents.UIOpen.OnOpenMessiahMenu += OnOpenNpcMenu;
             UIEvents.UIOpen.OnSelectCityMessiahAction += SelectedCity;
+            UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange;
+        }
+        
+        private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
+        {
+            UIEvents.UIOpen.OnOpenMessiahMenu -= OnOpenNpcMenu;
+            UIEvents.UIOpen.OnSelectCityMessiahAction -= SelectedCity;
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)

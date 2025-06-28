@@ -1,3 +1,4 @@
+using System;
 using Models;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,11 @@ namespace UI
         public void Initialize()
         {
             UIEvents.UIUpdate.OnUpdatePlayerData += OnUpdatePlayerData;
+        }
+
+        private void OnDestroy()
+        {
+            UIEvents.UIUpdate.OnUpdatePlayerData -= OnUpdatePlayerData;
         }
 
         private void OnUpdatePlayerData(PlayerModel playerData)
