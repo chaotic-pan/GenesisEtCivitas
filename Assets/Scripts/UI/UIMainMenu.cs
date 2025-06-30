@@ -3,10 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class UIMainMenu : MonoBehaviour
 {
+    [SerializeField] private UILoadingScreen loadingScreen;
 
     public void OnStart()
     {
-        SceneManager.LoadScene("WorldMap");
+        loadingScreen.LoadLevel("WorldMap");
     }
 
     public void OnQuit()
