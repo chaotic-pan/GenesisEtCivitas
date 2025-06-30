@@ -614,6 +614,7 @@ MonoBehaviour:
   cityObjects:
   - {fileID: 2585239503004769135}
   - {fileID: 1841846149354058870}
+  - {fileID: 5093028606997510331}
   cityTab: {fileID: 5587498828956015180}
   civTab: {fileID: 6004504736655640708}
   tabActive: {fileID: 21300000, guid: bf9c5b5cc3a237b4da44940a2a1a5545, type: 3}
