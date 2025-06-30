@@ -38,7 +38,8 @@ namespace UI
         
         private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
         {
-            UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
+            if (scene.name == "WorldMap")
+                UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)

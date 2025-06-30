@@ -7,7 +7,7 @@ public class UIMainMenu : MonoBehaviour
 
     public void OnStart()
     {
-        loadingScreen.LoadLevel("WorldMap");
+        loadingScreen.LoadLevel();
     }
 
     public void OnQuit()

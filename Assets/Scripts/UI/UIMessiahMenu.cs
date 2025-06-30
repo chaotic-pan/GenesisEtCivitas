@@ -21,6 +21,8 @@ namespace UI
         
         private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
         {
+            if (scene.name != "WorldMap") return;
+            
             UIEvents.UIOpen.OnOpenMessiahMenu -= OnOpenNpcMenu;
             UIEvents.UIOpen.OnSelectCityMessiahAction -= SelectedCity;
         }
