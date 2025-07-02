@@ -23,6 +23,8 @@ namespace UI
         
             _npcModel = npcModel;
             UpdateData(npcModel);
+
+            GameEvents.Civilization.OnCivilizationDeath += RemoveCivRow;
         }
         
         private void OnDestroy()
@@ -44,6 +46,14 @@ namespace UI
         public void OnClickOnCiv()
         {
             GameEvents.Camera.OnJumpToCiv(_npcModel.NPC);
+        }
+
+        private void RemoveCivRow(GameObject go)
+        {
+            if (go == _npcModel.NPC) 
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
