@@ -8,13 +8,10 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
     private TileManager TM;
-    private MapExtractor ME;
 
     private void Start()
     {
         TM = TileManager.Instance;
-        ME = MapExtractor.Instance;
-        var cellBounds = TileManager.Instance.map.cellBounds;
 
         for(int i=0; i< civilisationCount; i++)
         {

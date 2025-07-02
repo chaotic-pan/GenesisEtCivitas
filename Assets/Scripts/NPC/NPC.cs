@@ -1,13 +1,10 @@
-using System;
 using System.Collections;
 using Events;
 using Models;
 using UI;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UI;
 
 public class NPC : MonoBehaviour, IPointerClickHandler
 {
@@ -62,7 +59,15 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         civ.Energy -= 1;
         civ.Energy = civ.Energy <= 0 ? 0 : civ.Energy;
         UpdateValues();
-        StartCoroutine(StatsDecay(timer));
+
+        if (civ.Food == 0 && civ.Water == 0 && civ.Energy == 0)
+        {
+            GameEvents.Civilization.OnCivilizationDeath.Invoke(gameObject);
+        }
+        else
+        {
+            StartCoroutine(StatsDecay(timer));
+        }
     }
     
     public void IncreaseInfluence(int influence)

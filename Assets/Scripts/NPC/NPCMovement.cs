@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CityStuff;
 using Events;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 public class NPCMovement : MonoBehaviour
@@ -19,9 +17,6 @@ public class NPCMovement : MonoBehaviour
 
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
-
-    public UnityEvent<int> startedWalk = new();
-    public UnityEvent<int> endedWalk = new();
 
     private void Start()
     {
@@ -126,21 +121,20 @@ public class NPCMovement : MonoBehaviour
     {
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
-
-        startedWalk.Invoke(GetInstanceID());
+        
+        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
 
         while (path.Count > 0)
         {
             yield return StartCoroutine("MovetoTarget", 
                 AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
         }
-
-        endedWalk.Invoke(GetInstanceID());
+        
+        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
         
         // Build city if no city is existent at location after movement
-        Civilization civie = transform.GetComponent<Civilization>();
-        if (civie != null)
+        if (transform.TryGetComponent<Civilization>(out var civie))
         {
             if (civie.city == null && civie.hasSettlingLoc)
             {

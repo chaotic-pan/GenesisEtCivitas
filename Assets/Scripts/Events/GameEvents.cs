@@ -26,6 +26,10 @@ namespace Events
             public UnityAction<GameObject, GameObject> OnCivilizationSplit; // A split from B
             public UnityAction<GameObject> OnCivilizationDeath;
             public UnityAction<GameObject> OnCityFounded;
+            
+            public UnityAction<GameObject> OnStartWalking;
+            public UnityAction<GameObject> OnStopWalking;
+            
         }
         
         public class LifecycleEvents
