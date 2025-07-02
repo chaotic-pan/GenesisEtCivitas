@@ -151,7 +151,7 @@ public class NPCMovement : MonoBehaviour
         DEBUG_spawnBreadcrumbs(target,2);
         var position = transform.position;
         
-        while (Vector3.Distance(position, target) > 10f)
+        while (Vector3.Distance(position, target) > 5f)
         {
             var direction = (target - position).normalized;
             var lookRotation = Quaternion.LookRotation(direction);

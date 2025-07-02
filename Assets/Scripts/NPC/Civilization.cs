@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CityStuff;
 using DefaultNamespace;
 using Unity.VisualScripting;
@@ -9,6 +10,7 @@ public class Civilization : MonoBehaviour
     // combined scores belief and happiness are calculated
     // ressources are gathered and go up to 500
 
+    
     [SerializeField] public string civilisationName;
     [SerializeField] private float food = 250;
     [SerializeField] private float water = 250;
@@ -27,6 +29,19 @@ public class Civilization : MonoBehaviour
     public bool hasSettlingLoc = false;
     public City city;
 
+    public GameObject civiPrefab;
+
+    private readonly List<Vector3> _NPCPoints = new()
+    {
+        new Vector3(-0.33f, 0f, -0.36f),
+        new Vector3(0.42f, 0f, -0.36f),
+        new Vector3(0.06f, 0f, -0.75f),
+        new Vector3(-0.5f, 0f, -0.9f),
+        new Vector3(0.63f, 0f, -0.9f),
+        new Vector3(-0.18f, 0f, -1.3f),
+        new Vector3(0.3f, 0f, -1.31f),
+    };
+    
     public void Initialize()
     {
         Language = new Language();
@@ -36,7 +51,8 @@ public class Civilization : MonoBehaviour
     {
         for (int i = 0; i < population; i++)
         {
-            transform.GetChild(i).gameObject.SetActive(true);
+            var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+            civi.transform.localPosition = _NPCPoints[i];
         }
     }
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using Events;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class AnimManager : MonoBehaviour
 {
     private Animator mAnimator;
-    private static readonly string IsMining = "isMining";
     private static readonly string IsFarming = "isFarming";
     private static readonly string IsTreeCutting = "isTreeCutting";
     private static readonly string IsFishing = "isFishing";
@@ -15,6 +15,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsDancing = "isDancing";
     private static readonly string IsMoving = "isMoving";
     private static readonly string TrDeath = "TrDeath";
+    private static readonly string TrPreach = "TrPreach";
 
     private GameObject FishingPole;
     private GameObject Stool;
@@ -36,6 +37,7 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnStartWalking += OnStartWalk;
         GameEvents.Civilization.OnStopWalking += OnStopWalk;
         GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;
+        GameEvents.Civilization.OnPreach += Preach;
     }
 
     private void OnDisable()
@@ -43,6 +45,7 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnStartWalking -= OnStartWalk;
         GameEvents.Civilization.OnStopWalking -= OnStopWalk;
         GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
+        GameEvents.Civilization.OnPreach -= Preach;
     }
 
     private void OnStartWalk(GameObject go)
@@ -78,7 +81,7 @@ public class AnimManager : MonoBehaviour
     public void SetIsMining(bool isMining)
     {
         resetBools();
-        mAnimator.SetBool(IsMining, isMining);
+        mAnimator.SetBool(IsFarming, isMining);
         Pickaxe.SetActive(isMining);
     }
     
@@ -95,7 +98,16 @@ public class AnimManager : MonoBehaviour
         mAnimator.SetBool(IsTreeCutting, isTreeCutting);
         Axe.SetActive(isTreeCutting);
     }
-    
+
+    private void Preach(GameObject go, float duration)
+    {
+        if (go == transform.parent.gameObject)
+        {
+            StartCoroutine(Preach(duration));
+            SetIsPreaching(true);
+        }
+    }
+
     public void SetIsPreaching(bool isPreaching)
     {
         resetBools();
@@ -103,6 +115,18 @@ public class AnimManager : MonoBehaviour
         Podium.SetActive(isPreaching);
     }
     
+    IEnumerator Preach(float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            mAnimator.SetInteger("PreachRandomizer", Random.Range(0, 4));
+            timer += 2f;
+            yield return new WaitForSecondsRealtime(2f);
+        }
+        SetIsPreaching(false);
+    }
+
     public void SetIsFishing(bool isFishing)
     {
         resetBools();
@@ -133,17 +157,16 @@ public class AnimManager : MonoBehaviour
     {
         mAnimator.SetBool(IsMoving, false);
         mAnimator.SetBool(IsDancing, false);
-        mAnimator.SetBool(IsMining, false);
         mAnimator.SetBool(IsFarming, false);
         mAnimator.SetBool(IsTreeCutting, false);
         mAnimator.SetBool(IsPreaching, false);
         mAnimator.SetBool(IsFishing, false);
         
-        // FishingPole.SetActive(false);
-        // Stool.SetActive(false);
-        // Podium.SetActive(false);
-        // Axe.SetActive(false);
-        // Hoe.SetActive(false);
-        // Pickaxe.SetActive(false);
+        FishingPole.SetActive(false);
+        Stool.SetActive(false);
+        Podium.SetActive(false);
+        Axe.SetActive(false);
+        Hoe.SetActive(false);
+        Pickaxe.SetActive(false);
     }
 }

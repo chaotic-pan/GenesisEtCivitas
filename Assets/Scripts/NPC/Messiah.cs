@@ -1,4 +1,5 @@
 using System;
+using Events;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,13 +17,15 @@ public class Messiah : MonoBehaviour
         npcMove = gameObject.GetComponent<NPCMovement>();
         UseMessiah.AddListener(GrantScoreImprovements);
         SendMessiah.AddListener(OnSendMessiah);
+        GameEvents.Civilization.OnPreach.Invoke(gameObject, 10);
+
     }
 
     public void OnSendMessiah(Vector3Int gridPos)
     {
         npcMove.MovetoTileInRange(gridPos, TileManager.Instance.GetFullRange());
     }
-    
+
     public void GrantScoreImprovements(Civilization civi)
     {
         civ = civi;
@@ -33,9 +36,9 @@ public class Messiah : MonoBehaviour
     private void OnCityReached(int npcId)
     {
         if (npcId == npcMove.GetInstanceID() && civ != null)
-        {
-            // TODO preach Animation
-             ChangeCiviScores();
+        { 
+            GameEvents.Civilization.OnPreach.Invoke(gameObject, 5);
+            ChangeCiviScores();
         }
     }
 

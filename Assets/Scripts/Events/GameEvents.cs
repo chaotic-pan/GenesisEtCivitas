@@ -29,6 +29,7 @@ namespace Events
             
             public UnityAction<GameObject> OnStartWalking;
             public UnityAction<GameObject> OnStopWalking;
+            public UnityAction<GameObject, float> OnPreach;
             
         }
         
