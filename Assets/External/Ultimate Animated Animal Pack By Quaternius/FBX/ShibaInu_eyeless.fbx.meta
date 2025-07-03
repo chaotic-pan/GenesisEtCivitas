@@ -8,17 +8,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Black
-    second: {fileID: 2100000, guid: 7219604c206501b4baca8984f083448d, type: 2}
+    second: {fileID: 2100000, guid: 51817acad1f7e474cb8e203791b52032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main.002
-    second: {fileID: 2100000, guid: e6616c4be1d2e1c46a1b3fbf59fc6aef, type: 2}
+    second: {fileID: 2100000, guid: 699fed2577e353e48b39336a4eac2a32, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Light.002
-    second: {fileID: 2100000, guid: ca2160bf86ba7f44c9f5f65adcf13678, type: 2}
+    second: {fileID: 2100000, guid: f150455851dda094a9f741b67b6fa81b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -83,7 +83,7 @@ ModelImporter:
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
-    normalSmoothAngle: 0
+    normalSmoothAngle: 80
     normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4

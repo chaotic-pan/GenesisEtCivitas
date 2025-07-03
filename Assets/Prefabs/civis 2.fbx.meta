@@ -23,7 +23,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Wood
-    second: {fileID: 2100000, guid: 5609150e264b8764e9893fcba02f9c95, type: 2}
+    second: {fileID: 2100000, guid: c2552fe819a93f345b7b1c4161432a5c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

@@ -1,6 +1,6 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-797041669133152707
+--- !u!114 &-5202671966902790449
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_brown
+  m_Name: M_brown 4
   m_Shader: {fileID: -6465566751694194690, guid: 406c3faa56b803e4386878cca6f24913, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -57,6 +57,6 @@ Material:
     - _QueueOffset: 0
     - _Shades: 0.49
     m_Colors:
-    - _Color: {r: 0.627451, g: 0.4117647, b: 0.27058825, a: 0}
+    - _Color: {r: 0.2784314, g: 0.18431373, b: 0.24705882, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
