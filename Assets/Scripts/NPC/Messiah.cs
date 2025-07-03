@@ -17,8 +17,6 @@ public class Messiah : MonoBehaviour
         npcMove = gameObject.GetComponent<NPCMovement>();
         UseMessiah.AddListener(GrantScoreImprovements);
         SendMessiah.AddListener(OnSendMessiah);
-        GameEvents.Civilization.OnPreach.Invoke(gameObject, 10);
-
     }
 
     public void OnSendMessiah(Vector3Int gridPos)
@@ -37,7 +35,7 @@ public class Messiah : MonoBehaviour
     {
         if (npcId == npcMove.GetInstanceID() && civ != null)
         { 
-            GameEvents.Civilization.OnPreach.Invoke(gameObject, 5);
+            GameEvents.Civilization.OnPreach.Invoke(gameObject, 10);
             ChangeCiviScores();
         }
     }
