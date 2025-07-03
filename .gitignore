@@ -80,3 +80,5 @@ crashlytics-build.properties
 
 /[Aa]ssets/2D/GeneratedHeatmaps/*.jpg
 /[Aa]ssets/2D/GeneratedHeatmaps/*.meta
+
+/[Aa]ssets/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/*

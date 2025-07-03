@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37e73cc304bfa894dbda35a8e1e630be, type: 3}
   m_Name: MapFileLocation
   m_EditorClassIdentifier: 
-  isBuild: 1
-  MapLocation: 
+  isBuild: 0
+  MapLocation: C:\Users\Liz\Documents\Uni\4.Sem\Prj\GenesisEtCivitas\Assets\GenesisMap\file1.txt
