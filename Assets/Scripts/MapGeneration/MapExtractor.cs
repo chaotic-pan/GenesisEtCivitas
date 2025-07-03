@@ -26,6 +26,7 @@ public class MapExtractor : MonoBehaviour
     private int chunkSize = 240;
     private int chunkCountRoot = 8;
     public AnimationCurve meshHeightCurve;
+    [SerializeField] private MapFileLocation SO_fileLoc;
     
     public readonly float[,] heightMap = new float[points, points];
     public readonly float[,] travelcost = new float[points, points];
@@ -40,6 +41,12 @@ public class MapExtractor : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        if (SO_fileLoc.isBuild)
+        {
+            GenerateMap();
+            return;
+        }
+
 
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/" + fileName;
@@ -96,7 +103,9 @@ public class MapExtractor : MonoBehaviour
         }
 
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
+
         var path = "./Assets/GenesisMap/" + fileName;
+        if (SO_fileLoc.isBuild && SO_fileLoc.MapLocation != null) path = SO_fileLoc.MapLocation;
         byte[] byteArray = File.ReadAllBytes(path);
 
         // überall wo 0 ist, ist Wasser
