@@ -15,7 +15,7 @@ public class NPCInfluenceArea : MonoBehaviour
         
         var ability = other.GetComponent<PlayerAbility>();
         
-        _npc.IncreaseInfluence(10); 
+        _npc.IncreaseInfluence(); 
         //_npc.IncreaseInfluence(ability.influence);
     }
 }

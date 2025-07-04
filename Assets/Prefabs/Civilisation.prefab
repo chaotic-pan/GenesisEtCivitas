@@ -1351,11 +1351,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   civilisationName: 
-  food: 250
-  water: 250
-  safety: 250
-  shelter: 250
-  energy: 250
+  food: 1
+  water: 1
+  safety: 1
+  shelter: 1
+  energy: 1
   population: 0
   hasSettlingLoc: 0
   city: {fileID: 0}
