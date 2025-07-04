@@ -21,7 +21,7 @@ namespace EditorScripts
                 
                 mapGen.GenerateMap();
                 tilemapGen.InitializeTileData(mapGen);
-                heatmapGen.GenerateAllHeatmaps(tilemapGen);
+                heatmapGen.GenerateAllHeatmapsAndWriteToDrive(tilemapGen);
             }
         }
     }

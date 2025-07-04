@@ -37,6 +37,7 @@ namespace Events
         public class LifecycleEvents
         {
             public UnityAction OnGameEnd;
+            public UnityAction OnTileManagerFinishedInitializing;
         }
         
         public class InfluencePointsEvents

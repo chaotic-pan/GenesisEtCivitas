@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Events;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,6 +11,8 @@ public class TileManager : MonoBehaviour
     [SerializeField] public Tilemap map;
     private Dictionary<Vector3Int, TileData> dataFromTiles = new();
     public List<Vector3Int> spawnLocations = new();
+    
+    [SerializeField] private MapFileLocation SO_fileLoc;
     
     private void Awake()
     {
@@ -48,6 +51,8 @@ public class TileManager : MonoBehaviour
                 }
             }
         }
+        if (SO_fileLoc.isBuild) 
+            GameEvents.Lifecycle.OnTileManagerFinishedInitializing.Invoke();
     }
 
 

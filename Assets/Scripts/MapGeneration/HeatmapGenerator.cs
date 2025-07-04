@@ -32,7 +32,7 @@ namespace MapGeneration
         private readonly Dictionary<MapDisplay.MapOverlay, Color[]> _colorMapCacheDict = new();
         private MapDisplay.MapOverlay[] _overlayKeys;
         private string generatedHeatmapPath = $"{Application.dataPath}/2D/GeneratedHeatmaps";
-        
+
         public void Initialize()
         {
             _heatmapDict = heatmaps.ToDictionary(h => h.overlay, h => h);
@@ -41,7 +41,7 @@ namespace MapGeneration
             InitializeColorMapCacheDict();
         }
         
-        public void GenerateAllHeatmaps(TileManager tileManager)
+        public void GenerateAllHeatmapsAndWriteToDrive(TileManager tileManager)
         {
             Initialize();
 
@@ -51,9 +51,29 @@ namespace MapGeneration
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    UpdateHeatmapOnChunk(new Vector2(x, y), tileManager);
+                    var chunkHeatmaps = CreateHeatmapsOnChunk(new Vector2(x, y), tileManager);
+                    WriteHeatmapsToDrive(chunkHeatmaps, new Vector2(x, y));
                 }
             }
+        }
+
+        public Dictionary<Vector2, Dictionary<MapDisplay.MapOverlay, Texture2D>> GenerateAllHeatmaps(TileManager tileManager)
+        {
+            Initialize();
+
+            var heatmaps = new Dictionary<Vector2, Dictionary<MapDisplay.MapOverlay, Texture2D>>();
+            
+            for (var y = 0; y < 8; y++)
+            {
+                for (var x = 0; x < 8; x++)
+                {
+                    var chunk = new Vector2(x, y);
+                    var chunkHeatmaps = CreateHeatmapsOnChunk(chunk, tileManager);
+                    heatmaps.Add(chunk, chunkHeatmaps);
+                }
+            }
+            
+            return heatmaps;
         }
 
         private void InitializeColorMapCacheDict()
@@ -64,7 +84,7 @@ namespace MapGeneration
             }
         }
 
-        private void UpdateHeatmapOnChunk(Vector2 chunk, TileManager tileManager)
+        private Dictionary<MapDisplay.MapOverlay, Texture2D> CreateHeatmapsOnChunk(Vector2 chunk, TileManager tileManager)
         {
             var chunkOffsetX = chunk.x * (ChunkSize - 1) + 1;
             var chunkOffsetZ = -(chunk.y * (ChunkSize - 1));
@@ -107,14 +127,28 @@ namespace MapGeneration
                         _colorMapCacheDict[overlay][colorMapCoordinate] = heatPoint;
                     }
             }
+
+            var chunkHeatmaps = new Dictionary<MapDisplay.MapOverlay, Texture2D>();
             
             foreach (var overlay in _overlayKeys)
             {
                 var tileValue = _colorMapCacheDict[overlay];
                 var tex = TextureGenerator.TextureFromColorMap(tileValue, ChunkSize);
+
+                chunkHeatmaps[overlay] = tex;
                 
-                byte[] bytes = ImageConversion.EncodeToJPG(tex);
-                DestroyImmediate(tex);
+                
+            }
+
+            return chunkHeatmaps;
+        }
+
+        private void WriteHeatmapsToDrive(Dictionary<MapDisplay.MapOverlay, Texture2D> chunkHeatmaps, Vector2 chunk)
+        {
+            foreach (var overlay in chunkHeatmaps.Keys)
+            {
+                byte[] bytes = ImageConversion.EncodeToJPG(chunkHeatmaps[overlay]);
+                DestroyImmediate(chunkHeatmaps[overlay]);
                 File.WriteAllBytes($"{generatedHeatmapPath}/{overlay}_{chunk.x}_{chunk.y}.jpg", bytes);
             }
         }
