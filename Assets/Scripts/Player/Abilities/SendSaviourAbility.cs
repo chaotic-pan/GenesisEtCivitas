@@ -10,14 +10,12 @@ namespace Player.Abilities
 
         public override void EnterAbility()
         {
-            Debug.Log("click on a Tile to send Saviour there");
             GridOverlayManager.Instance.aoeHighlightColor = new Color(1, 0.75f, .25f, 0.7f);
         }
 
         public override void CastAbility(Vector3Int centerTilePos)
         {
             Messiah.SendMessiah?.Invoke(centerTilePos);
-            print("going there! prommie!! /no longer lie");
         }
     }
 }

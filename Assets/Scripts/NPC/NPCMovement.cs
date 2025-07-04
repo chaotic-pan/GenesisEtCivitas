@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CityStuff;
 using Events;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 public class NPCMovement : MonoBehaviour
@@ -20,45 +18,13 @@ public class NPCMovement : MonoBehaviour
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
 
-    public UnityEvent<int> startedWalk = new();
-    public UnityEvent<int> endedWalk = new();
-
     private void Start()
     {
         map = TM?.map;
         transform.position = AdjustCoordsForHeight(transform.position);
-        StartCoroutine(WaitAndSettle());
-    }
-    
-    IEnumerator WaitAndSettle()
-    {
-        // suspend execution for 2 seconds
-        yield return new WaitForSeconds(2);
-        if (transform.GetComponent<Civilization>() != null) FindSettlingLocation(20);
     }
 
-    private void FindSettlingLocation(int range)
-    {
-        Vector3Int gridPos = map.WorldToCell(transform.position);
-        List<Vector3Int> locations = TM.GetSpecificRange(gridPos, range);
-
-        Vector3Int settlingPos = new Vector3Int();
-        float winValue = 0;
-        foreach(Vector3Int loc in locations)
-        {
-            float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
-            if(winValue < value)
-            {
-                winValue = value;
-                settlingPos = loc;
-            }
-        }
-        MovetoTile(settlingPos);
-        transform.GetComponent<Civilization>().hasSettlingLoc = true;
-        transform.GetComponent<Civilization>().GetSettlingValues(settlingPos);
-    }
-    
-# region DEBUG
+    # region DEBUG
     [Tooltip("enable to have Civs spawn visual point along their walking path")]
     [SerializeField] private bool DEBUG_PathBreadcrumbs;
     private List<GameObject> DEBUG_breadcrumbs = new();
@@ -104,12 +70,12 @@ public class NPCMovement : MonoBehaviour
     {
         MovetoTileInRangeAndExecute(gridPos, range, null);
     }
-    public void MovetoTileAndExecute(Vector3Int gridPos, Action<int> doOnReached)
+    public void MovetoTileAndExecute(Vector3Int gridPos, Action<GameObject> doOnReached)
     {
         CalculateRange();
         MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
     }
-    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<int> doOnReached)
+    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
     {
         DEBUG_clearBreadcrumbs();
         StopAllCoroutines();
@@ -122,34 +88,23 @@ public class NPCMovement : MonoBehaviour
         StartCoroutine(FollowPath(path, doOnReached));
     }
     
-    IEnumerator FollowPath(Stack<Vector3Int> path, Action<int> onReached)
+    IEnumerator FollowPath(Stack<Vector3Int> path, Action<GameObject> onReached)
     {
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
-
-        startedWalk.Invoke(GetInstanceID());
+        
+        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
 
         while (path.Count > 0)
         {
             yield return StartCoroutine("MovetoTarget", 
                 AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
         }
-
-        endedWalk.Invoke(GetInstanceID());
-        DEBUG_clearBreadcrumbs();
         
-        // Build city if no city is existent at location after movement
-        Civilization civie = transform.GetComponent<Civilization>();
-        if (civie != null)
-        {
-            if (civie.city == null && civie.hasSettlingLoc)
-            {
-                civie.city = CityBuilder.Instance.BuildCity(transform.position, transform.GetComponent<NPC>()._npcModel, civie);
-                GameEvents.Civilization.OnCityFounded.Invoke(gameObject);
-            }
-        }
+        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
+        DEBUG_clearBreadcrumbs();
 
-        onReached?.Invoke(GetInstanceID());
+        onReached?.Invoke(gameObject);
     }
     
     IEnumerator MovetoTarget(Vector3 target)
@@ -157,7 +112,7 @@ public class NPCMovement : MonoBehaviour
         DEBUG_spawnBreadcrumbs(target,2);
         var position = transform.position;
         
-        while (Vector3.Distance(position, target) > 10f)
+        while (Vector3.Distance(position, target) > 5f)
         {
             var direction = (target - position).normalized;
             var lookRotation = Quaternion.LookRotation(direction);

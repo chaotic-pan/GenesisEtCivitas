@@ -23,6 +23,9 @@ namespace UI
         
             _npcModel = npcModel;
             UpdateData(npcModel);
+
+            GameEvents.Civilization.OnCivilizationDeath += RemoveCivRow;
+            GameEvents.Civilization.OnCivilizationMerge += RemoveMergedCivRow;
         }
         
         private void OnDestroy()
@@ -44,6 +47,21 @@ namespace UI
         public void OnClickOnCiv()
         {
             GameEvents.Camera.OnJumpToCiv(_npcModel.NPC);
+        }
+
+        private void RemoveCivRow(GameObject civObject)
+        {
+            if (civObject == _npcModel.NPC) 
+            {
+                Destroy(gameObject);
+            }
+        }
+        private void RemoveMergedCivRow(GameObject civAObject, GameObject civBObject)
+        {
+            if (civAObject == _npcModel.NPC) 
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

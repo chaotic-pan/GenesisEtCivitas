@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Events;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -7,8 +8,6 @@ using Random = UnityEngine.Random;
 public class AnimManager : MonoBehaviour
 {
     private Animator mAnimator;
-    private int civID;
-    private static readonly string IsMining = "isMining";
     private static readonly string IsFarming = "isFarming";
     private static readonly string IsTreeCutting = "isTreeCutting";
     private static readonly string IsFishing = "isFishing";
@@ -16,6 +15,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsDancing = "isDancing";
     private static readonly string IsMoving = "isMoving";
     private static readonly string TrDeath = "TrDeath";
+    private static readonly string PreachRandomizer = "PreachRandomizer";
 
     private GameObject FishingPole;
     private GameObject Stool;
@@ -33,87 +33,43 @@ public class AnimManager : MonoBehaviour
         Axe = transform.GetChild(5).gameObject;
         Hoe = transform.GetChild(6).gameObject;
         Pickaxe = transform.GetChild(7).gameObject;
-    }
-
-    private void Start()
-    {
-        if (transform.parent.TryGetComponent<NPCMovement>(out var move))
-        {
-            civID = move.GetInstanceID();
-            move.startedWalk.AddListener(eventStartWalk);
-            move.endedWalk.AddListener(eventStopWalk);
-        }
         
+        GameEvents.Civilization.OnStartWalking += OnStartWalk;
+        GameEvents.Civilization.OnStopWalking += OnStopWalk;
+        GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;
+        GameEvents.Civilization.OnPreach += Preach;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        // DEBUG
-        // if (mAnimator != null)
-        // {
-        //     if (Input.GetKeyDown(KeyCode.Keypad0))
-        //     {
-        //         TriggerDeath();
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad1))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsMining);
-        //         SetIsMining(!isdoing);
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad2))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsFarming);
-        //         SetIsFarming(!isdoing);
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad3))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsTreeCutting);
-        //         SetIsTreeCutting(!isdoing);
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad4))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsFishing);
-        //         SetIsFishing(!isdoing);
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad5))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsPreaching);
-        //         SetIsPreaching(!isdoing);
-        //     }
-        //     if (Input.GetKeyDown(KeyCode.Keypad6))
-        //     {
-        //         bool isdoing = mAnimator.GetBool(IsDancing);
-        //         SetIsDancing(!isdoing);
-        //     }
-        // }
+        GameEvents.Civilization.OnStartWalking -= OnStartWalk;
+        GameEvents.Civilization.OnStopWalking -= OnStopWalk;
+        GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
+        GameEvents.Civilization.OnPreach -= Preach;
     }
 
-    private void eventStartWalk(int id)
+    private void OnStartWalk(GameObject go)
     {
-        if (id == civID) SetIsMovingDelayed(true);
-    }
-    private void eventStopWalk(int id)
-    {
-        if (id == civID) SetIsMoving(false);
-    }
-    
-    public void SetIsMoving(bool isMoving)
-    {
-        resetBools(); 
-        mAnimator.SetBool(IsMoving, isMoving);
+        if (go == transform.parent.gameObject)
+        {
+            resetBools();
+            float randTime = Random.Range(1,50);
+            StartCoroutine(delayedWalk(randTime/100f));
+        }
     }
     
-    public void SetIsMovingDelayed(bool isMoving)
-    {
-        resetBools();
-        float randTime = Random.Range(1,50);
-        StartCoroutine(delayedWalk(randTime/100f, isMoving));
-    }
-    
-    IEnumerator delayedWalk(float wait, bool isMoving)
+    IEnumerator delayedWalk(float wait)
     {
         yield return new WaitForSecondsRealtime(wait);
-        mAnimator.SetBool(IsMoving, isMoving);
+        mAnimator.SetBool(IsMoving, true);
+    }
+    
+    private void OnStopWalk(GameObject go)
+    {
+        if (go == transform.parent.gameObject)
+        {
+            resetBools(); 
+        }
     }
     
     public void SetIsDancing(bool isDancing)
@@ -125,7 +81,7 @@ public class AnimManager : MonoBehaviour
     public void SetIsMining(bool isMining)
     {
         resetBools();
-        mAnimator.SetBool(IsMining, isMining);
+        mAnimator.SetBool(IsFarming, isMining);
         Pickaxe.SetActive(isMining);
     }
     
@@ -142,7 +98,16 @@ public class AnimManager : MonoBehaviour
         mAnimator.SetBool(IsTreeCutting, isTreeCutting);
         Axe.SetActive(isTreeCutting);
     }
-    
+
+    private void Preach(GameObject go, float duration)
+    {
+        if (go == transform.parent.gameObject)
+        {
+            StartCoroutine(Preach(duration));
+            SetIsPreaching(true);
+        }
+    }
+
     public void SetIsPreaching(bool isPreaching)
     {
         resetBools();
@@ -150,6 +115,18 @@ public class AnimManager : MonoBehaviour
         Podium.SetActive(isPreaching);
     }
     
+    IEnumerator Preach(float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            mAnimator.SetInteger(PreachRandomizer, Random.Range(0, 4));
+            timer += 2f;
+            yield return new WaitForSecondsRealtime(2f);
+        }
+        SetIsPreaching(false);
+    }
+
     public void SetIsFishing(bool isFishing)
     {
         resetBools();
@@ -158,27 +135,38 @@ public class AnimManager : MonoBehaviour
         Stool.SetActive(isFishing);
     }
     
-    public void TriggerDeath()
+    private void OnTriggerDeath(GameObject civObject)
     {
-        resetBools();
+        if (civObject == transform.parent.gameObject)
+        {
+            resetBools();
+            float randTime = Random.Range(1,50);
+            transform.parent.GetComponent<NPCMovement>().StopAllCoroutines();
+            StartCoroutine(delayedDeath(randTime/100f));
+        }
+    }
+    IEnumerator delayedDeath(float wait)
+    {
+        yield return new WaitForSecondsRealtime(wait);
         mAnimator.SetTrigger(TrDeath);
+        yield return new WaitForSecondsRealtime(3);
+        Destroy(transform.parent.gameObject);
     }
 
     private void resetBools()
     {
         mAnimator.SetBool(IsMoving, false);
         mAnimator.SetBool(IsDancing, false);
-        mAnimator.SetBool(IsMining, false);
         mAnimator.SetBool(IsFarming, false);
         mAnimator.SetBool(IsTreeCutting, false);
         mAnimator.SetBool(IsPreaching, false);
         mAnimator.SetBool(IsFishing, false);
         
-        // FishingPole.SetActive(false);
-        // Stool.SetActive(false);
-        // Podium.SetActive(false);
-        // Axe.SetActive(false);
-        // Hoe.SetActive(false);
-        // Pickaxe.SetActive(false);
+        FishingPole.SetActive(false);
+        Stool.SetActive(false);
+        Podium.SetActive(false);
+        Axe.SetActive(false);
+        Hoe.SetActive(false);
+        Pickaxe.SetActive(false);
     }
 }

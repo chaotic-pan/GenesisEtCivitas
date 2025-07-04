@@ -8,17 +8,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Black
-    second: {fileID: 2100000, guid: 7219604c206501b4baca8984f083448d, type: 2}
+    second: {fileID: 2100000, guid: 51817acad1f7e474cb8e203791b52032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main
-    second: {fileID: 2100000, guid: b2ac77956d7f22f448ee76af319b249b, type: 2}
+    second: {fileID: 2100000, guid: 052d8bcdc374b53418a41a29517f1036, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Light
-    second: {fileID: 2100000, guid: a5110ba6dcfd4a04c8335cd5813a6db6, type: 2}
+    second: {fileID: 2100000, guid: 5d47496811499854ca2b12d954ca7cfd, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -83,8 +83,8 @@ ModelImporter:
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
-    normalSmoothAngle: 0
-    normalImportMode: 0
+    normalSmoothAngle: 80
+    normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0

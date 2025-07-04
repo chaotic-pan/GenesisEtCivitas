@@ -11,6 +11,7 @@ namespace UI
 {
     public class UINpcMenu : UpdateableMenu<NPCModel>
     {
+        [Header("Textfields")]
         [SerializeField] private TextMeshProUGUI npcName;
         [SerializeField] private TextMeshProUGUI influenceText;
         [SerializeField] private TextMeshProUGUI foodText;
@@ -20,6 +21,7 @@ namespace UI
         [SerializeField] private TextMeshProUGUI energyText;
         [SerializeField] private TextMeshProUGUI populationText;
 
+        [Header("Tabs")]
         [SerializeField] private List<GameObject> civObjects;
         [SerializeField] private List<GameObject> cityObjects;
         [SerializeField] private GameObject cityTab;
@@ -38,7 +40,8 @@ namespace UI
         
         private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
         {
-            UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
+            if (scene.name == "WorldMap")
+                UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)
@@ -80,6 +83,12 @@ namespace UI
         {
             if (!model.City) return;
             model.City.BuildChurch();
+        }
+        
+        public void OnBuildWell()
+        {
+            if (!model.City) return;
+            model.City.BuildWell();
         }
 
         public void OnJumpToCiv()

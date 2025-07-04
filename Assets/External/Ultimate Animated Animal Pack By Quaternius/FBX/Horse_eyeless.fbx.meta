@@ -8,32 +8,32 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Hair
-    second: {fileID: 2100000, guid: 7219604c206501b4baca8984f083448d, type: 2}
+    second: {fileID: 2100000, guid: 51817acad1f7e474cb8e203791b52032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Hooves.001
-    second: {fileID: 2100000, guid: a5110ba6dcfd4a04c8335cd5813a6db6, type: 2}
+    second: {fileID: 2100000, guid: 51817acad1f7e474cb8e203791b52032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main.001
-    second: {fileID: 2100000, guid: 814e9c83798ea5748942d23a91d3afdb, type: 2}
+    second: {fileID: 2100000, guid: c2552fe819a93f345b7b1c4161432a5c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Dark.001
-    second: {fileID: 2100000, guid: 387295f3a3237f44f980881ae0aa380e, type: 2}
+    second: {fileID: 2100000, guid: c2552fe819a93f345b7b1c4161432a5c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Light.001
-    second: {fileID: 2100000, guid: e1690b650eeab804ea1e07412fa87bdd, type: 2}
+    second: {fileID: 2100000, guid: a7c0d22f637d120418d17f493236bc1f, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Muzzle.001
-    second: {fileID: 2100000, guid: 7219604c206501b4baca8984f083448d, type: 2}
+    second: {fileID: 2100000, guid: 51817acad1f7e474cb8e203791b52032, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -98,7 +98,7 @@ ModelImporter:
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
-    normalSmoothAngle: 0
+    normalSmoothAngle: 80
     normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4
