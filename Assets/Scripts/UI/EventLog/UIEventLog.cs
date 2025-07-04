@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using CityStuff;
 using Events;
-using Models;
 using UnityEngine;
 
 namespace UI.EventLog
@@ -19,6 +17,7 @@ namespace UI.EventLog
             GameEvents.Civilization.OnMessiahSpawn += OnMessiahSpawn;
             GameEvents.Civilization.OnCivilizationDeath += OnCivilizationDeath;
             GameEvents.Civilization.OnCivilizationSplit += OnCivilizationSplit;
+            GameEvents.Civilization.OnCivilizationMerge += OnCivilizationMerge;
             GameEvents.Civilization.OnCityFounded += OnCityFounded;
         }
 
@@ -70,6 +69,17 @@ namespace UI.EventLog
             
             var message = $"{Capitalize(npcModelA._npcModel.NPCName)} split from {Capitalize(npcModelB._npcModel.NPCName)}!";
             var eventLogEntry = new EventLogEntryModel(message, npcModelAObject);
+            
+            _eventQueue.Enqueue(eventLogEntry);
+        }
+
+        private void OnCivilizationMerge(GameObject npcModelAObject, GameObject npcModelBObject)
+        {
+            var npcModelA = npcModelAObject.GetComponent<NPC>();
+            var npcModelB = npcModelBObject.GetComponent<NPC>();
+            
+            var message = $"{Capitalize(npcModelA._npcModel.NPCName)} has joined {Capitalize(npcModelB._npcModel.NPCName)}!";
+            var eventLogEntry = new EventLogEntryModel(message, npcModelBObject);
             
             _eventQueue.Enqueue(eventLogEntry);
         }

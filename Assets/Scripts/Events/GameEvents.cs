@@ -24,6 +24,7 @@ namespace Events
             // All GameObjects must have NPC
             public UnityAction<GameObject> OnCivilizationSpawn;
             public UnityAction<GameObject, GameObject> OnCivilizationSplit; // A split from B
+            public UnityAction<GameObject, GameObject> OnCivilizationMerge; // A joined B
             public UnityAction<GameObject> OnCivilizationDeath;
             public UnityAction<GameObject> OnCityFounded;
             

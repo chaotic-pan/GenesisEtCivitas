@@ -18,6 +18,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     
     public void Awake()
     {
+        GameEvents.Civilization.OnCivilizationMerge += MergeCivilisation;
         CheckMessiah.AddListener(CheckForMessiah);
         civ = transform.GetComponent<Civilization>();
         mes = transform.GetComponent<Messiah>();
@@ -32,7 +33,11 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             influenceArea.Initialize(this);
         }
     }
-
+    private void OnDisable()
+    {
+        GameEvents.Civilization.OnCivilizationMerge -= MergeCivilisation;
+    }
+    
     private void CheckForMessiah()
     {
         if(_npcModel.IsMessiah)
@@ -97,6 +102,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         }
 
     }
+    
     private void UpdateValues()
     {
         if (civ == null) return;
@@ -105,5 +111,27 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         _npcModel.Safety = civ.Safety;
         _npcModel.Shelter = civ.Shelter;
         _npcModel.Energy = civ.Energy;
+    }
+
+    private void MergeCivilisation(GameObject civAObject, GameObject civBObject)
+    {
+        if (gameObject != civBObject) return;
+        
+        var civA = civAObject.GetComponent<Civilization>();
+        var popA = civA.population;
+        var popB = civ.population;
+
+        civ.Food = averageStat(popA, popB, civA.Food, civ.Food);
+        civ.Water = averageStat(popA, popB, civA.Water, civ.Water);
+        civ.Safety = averageStat(popA, popB, civA.Safety, civ.Safety);
+        civ.Shelter = averageStat(popA, popB, civA.Shelter, civ.Shelter);
+        civ.Energy = averageStat(popA, popB, civA.Energy, civ.Energy);
+
+        UpdateValues();
+    }
+
+    private float averageStat(float popA, float popB, float statA, float statB)
+    {
+        return (popA / popB * statB + statA) / (popA/popB + 1);
     }
 }

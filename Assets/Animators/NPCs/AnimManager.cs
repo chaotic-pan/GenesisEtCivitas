@@ -15,7 +15,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsDancing = "isDancing";
     private static readonly string IsMoving = "isMoving";
     private static readonly string TrDeath = "TrDeath";
-    private static readonly string TrPreach = "TrPreach";
+    private static readonly string PreachRandomizer = "PreachRandomizer";
 
     private GameObject FishingPole;
     private GameObject Stool;
@@ -120,7 +120,7 @@ public class AnimManager : MonoBehaviour
         float timer = 0;
         while (timer < duration)
         {
-            mAnimator.SetInteger("PreachRandomizer", Random.Range(0, 4));
+            mAnimator.SetInteger(PreachRandomizer, Random.Range(0, 4));
             timer += 2f;
             yield return new WaitForSecondsRealtime(2f);
         }
@@ -135,9 +135,9 @@ public class AnimManager : MonoBehaviour
         Stool.SetActive(isFishing);
     }
     
-    private void OnTriggerDeath(GameObject go)
+    private void OnTriggerDeath(GameObject civObject)
     {
-        if (go == transform.parent.gameObject)
+        if (civObject == transform.parent.gameObject)
         {
             resetBools();
             float randTime = Random.Range(1,50);

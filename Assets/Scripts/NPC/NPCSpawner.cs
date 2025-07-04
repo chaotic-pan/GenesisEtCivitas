@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using Events;
 using UnityEngine;
 
 public class NPCSpawner : MonoBehaviour
@@ -19,6 +21,67 @@ public class NPCSpawner : MonoBehaviour
             var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
             civilisations.Add(civ);
             civ.GetComponent<Civilization>().SetPopulation(Random.Range(1,8));
+            StartCoroutine(WaitAndSettle(civ));
         }
+    }
+    
+    IEnumerator WaitAndSettle(GameObject civ)
+    {
+        // suspend execution for 2 seconds
+        yield return new WaitForSeconds(2);
+        if (civ.GetComponent<Civilization>() != null) FindSettlingLocation(civ, 20);
+    }
+    
+    private void FindSettlingLocation(GameObject civ, int range)
+    {
+        Vector3Int gridPos = TM.map.WorldToCell(civ.transform.position);
+        List<Vector3Int> locations = TM.GetSpecificRange(gridPos, range);
+
+        Vector3Int settlingPos = new Vector3Int();
+        float winValue = 0;
+        foreach(Vector3Int loc in locations)
+        {
+            float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
+            if(winValue < value)
+            {
+                winValue = value;
+                settlingPos = loc;
+            }
+        }
+        civ.GetComponent<Civilization>().SetSettlingValues(settlingPos);
+        
+        civ.GetComponent<NPCMovement>().MovetoTileAndExecute(settlingPos, Settle);
+    }
+    
+    private void Settle(GameObject civObject)
+    {
+        var civPos = TM.map.WorldToCell(civObject.transform.position);
+        
+        foreach (var civil in civilisations)
+        {
+            if (civil == civObject) continue;
+            
+            var civilPos = TM.map.WorldToCell(civil.transform.position);
+            
+            if (civPos == civilPos)
+            {
+                GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, civil);
+                // average out bedürfnisse
+                civilisations.Remove(civObject);
+                Destroy(civObject);
+                return;
+            }
+        }
+
+        // Build city if no city is existent at location after movement
+        if (civObject.TryGetComponent<Civilization>(out var civ))
+        {
+            if (civ.city == null)
+            {
+                civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
+                GameEvents.Civilization.OnCityFounded.Invoke(civObject);
+            }
+        }
+        
     }
 }

@@ -31,9 +31,9 @@ public class Messiah : MonoBehaviour
         npcMove.MovetoTileInRangeAndExecute(tilePos, TileManager.Instance.GetFullRange(), OnCityReached);
     }
 
-    private void OnCityReached(int npcId)
+    private void OnCityReached(GameObject npc)
     {
-        if (npcId == npcMove.GetInstanceID() && civ != null)
+        if (npc == npcMove.gameObject && civ != null)
         { 
             GameEvents.Civilization.OnPreach.Invoke(gameObject, 10);
             ChangeCiviScores();

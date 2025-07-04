@@ -46,6 +46,7 @@ namespace Player
 		
 		private void OnJumpToCiv(GameObject civ)
 		{
+			if (civ == null) return;
 			cinemachineCamera.Follow = civ.transform;
 		}
 
