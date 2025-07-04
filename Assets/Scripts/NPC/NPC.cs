@@ -70,9 +70,9 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         }
     }
     
-    public void IncreaseInfluence(int influence)
+    public void IncreaseInfluence()
     {
-        _npcModel.Faith += influence;   
+        _npcModel.Faith = civ.Belief;   
     }
     
     public void OnPointerClick(PointerEventData eventData)
@@ -105,5 +105,6 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         _npcModel.Safety = civ.Safety;
         _npcModel.Shelter = civ.Shelter;
         _npcModel.Energy = civ.Energy;
+        _npcModel.Faith = civ.Belief;
     }
 }
