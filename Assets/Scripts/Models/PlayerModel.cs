@@ -7,7 +7,7 @@ namespace Models
     {
         private int _influencePoints = 100;
         public int virtuePoints = 2;
-        private int _maxIP = 1000;
+        private int _maxIP = 9999;
 
         public int InfluencePoints
         {

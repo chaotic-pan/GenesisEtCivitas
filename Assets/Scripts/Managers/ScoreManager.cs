@@ -9,6 +9,7 @@ namespace Managers
 {
     public class ScoreManager : MonoBehaviour
     {
+        [SerializeField] private NPCSpawner _npcSpawner;
         private PlayerModel _playerModel;
 
         private void Awake()
@@ -29,11 +30,18 @@ namespace Managers
         {
             while (true)
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(5f);
 
                 if (_playerModel.InfluencePoints < _playerModel.MaxIP)
                 {
-                    _playerModel.InfluencePoints += 10;
+                    foreach (GameObject civ in _npcSpawner.civilisations)
+                    {
+                        //_playerModel.InfluencePoints += 10;
+                        
+                        civ.GetComponent<Civilization>().CalcValues();
+                        _playerModel.InfluencePoints += (int)civ.GetComponent<Civilization>().Belief;
+                    }
+                    
                 }
             }
         }

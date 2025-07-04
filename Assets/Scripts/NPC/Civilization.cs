@@ -65,7 +65,7 @@ public class Civilization : MonoBehaviour
         energy = TM.GetEnergy(vec);
     }
 
-    private void CalcValues()
+    public void CalcValues()
     {
         belief = (food + water + safety + shelter + energy) / 5; //TODO: include churches, actions by player etc. into this calculation
         happiness = (food + water + safety + shelter + energy) / 5 + (ressources / 5);
@@ -121,6 +121,14 @@ public class Civilization : MonoBehaviour
         set
         {
             energy = value;
+        }
+    }
+    public float Belief
+    {
+        get => belief;
+        set
+        {
+            belief = value;
         }
     }
 }
