@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Events;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class NPCSpawner : MonoBehaviour
 {
@@ -9,6 +11,16 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
     private TileManager TM;
+
+    private void Awake()
+    {
+        GameEvents.Civilization.OnCivilizationDeath += onCivDeath;
+    }
+
+    private void OnDisable()
+    { 
+        GameEvents.Civilization.OnCivilizationDeath -= onCivDeath;
+    }
 
     private void Start()
     {
@@ -61,12 +73,12 @@ public class NPCSpawner : MonoBehaviour
         {
             if (civil == civObject) continue;
             
+            if (civil == null) continue;
             var civilPos = TM.map.WorldToCell(civil.transform.position);
             
             if (civPos == civilPos)
             {
                 GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, civil);
-                // average out bedürfnisse
                 civilisations.Remove(civObject);
                 Destroy(civObject);
                 return;
@@ -83,5 +95,14 @@ public class NPCSpawner : MonoBehaviour
             }
         }
         
+    }
+
+    private void onCivDeath(GameObject civObject)
+    {
+        civilisations.Remove(civObject);
+        if (civilisations.Count == 0)
+        {
+            GameEvents.Lifecycle.OnGameEnd.Invoke();
+        }
     }
 }

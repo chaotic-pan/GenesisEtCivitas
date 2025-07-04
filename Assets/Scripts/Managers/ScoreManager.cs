@@ -38,6 +38,7 @@ namespace Managers
                     {
                         //_playerModel.InfluencePoints += 10;
                         
+                        if (civ == null) continue;
                         civ.GetComponent<Civilization>().CalcValues();
                         _playerModel.InfluencePoints += (int)civ.GetComponent<Civilization>().Belief;
                     }
