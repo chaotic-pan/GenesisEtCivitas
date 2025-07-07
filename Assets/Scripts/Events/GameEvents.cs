@@ -27,6 +27,7 @@ namespace Events
             public UnityAction<GameObject, GameObject> OnCivilizationMerge; // A joined B
             public UnityAction<GameObject> OnCivilizationDeath;
             public UnityAction<GameObject> OnCityFounded;
+            public UnityAction<GameObject> OnCivilizationLowOnStats;
             
             public UnityAction<GameObject> OnStartWalking;
             public UnityAction<GameObject> OnStopWalking;

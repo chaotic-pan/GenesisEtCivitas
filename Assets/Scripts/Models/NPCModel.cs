@@ -1,4 +1,5 @@
 ﻿using CityStuff;
+using Events;
 using Models.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
@@ -23,6 +24,7 @@ namespace Models
         public GameObject NPC;
         private City _city;
 
+        private bool _isStruggling;
         
         public City City
         {
@@ -70,6 +72,20 @@ namespace Models
             {
                 _faith = value;
                 OnUpdateData.Invoke(this);
+
+                if (_faith < 5)
+                {
+                    if (_isStruggling) return;
+                    
+                    GameEvents.Civilization.OnCivilizationLowOnStats.Invoke(NPC);
+                    _isStruggling = true;
+                }
+                else
+                {
+                    _isStruggling = false;
+                }
+                
+                
             }
         }
         public float Food
