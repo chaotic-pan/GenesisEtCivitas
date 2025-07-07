@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Models;
+using Player.Skills;
 using Terrain;
 using UnityEngine;
 using UnityEngine.Events;
@@ -29,6 +30,7 @@ namespace UI
             public UnityAction<NPCModel> OnOpenNpcMenu;
             public UnityAction<NPCModel> OnOpenMessiahMenu;
             public UnityAction<Civilization> OnSelectCityMessiahAction;
+            public UnityAction<PlayerSkillSet> OnOpenSkillTree;
         }
     }
 }

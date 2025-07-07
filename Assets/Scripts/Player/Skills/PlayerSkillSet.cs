@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Models;
-using UnityEngine;
 
 namespace Player.Skills
 {
@@ -31,7 +30,7 @@ namespace Player.Skills
 
 
         private List<Skill> _unlockedSkills;
-
+        
         private void UnlockSkill(Skill skill)
         {
             if (!IsSkillUnlocked(skill))
@@ -75,30 +74,21 @@ namespace Player.Skills
 
         public bool TryUnlockSkill(Skill skill)
         {
-            Skill skillRequirement = GetSkillRequirement(skill);
+            if (!CheckSkillRequirement(skill)) return false;
+            
             int skillCost = GetSkillCosts(skill);
-
-            if (IsSkillUnlocked(skill))
-            {
-                Debug.LogError("Already Unlocked!");
-                return false;
-            }
-
-            if (skillRequirement != Skill.None && !IsSkillUnlocked(skillRequirement))
-            {
-                Debug.LogError("Not Available Yet!");
-                return false;
-            }
-
-            if (skillCost > _playerModel.virtuePoints)
-            {
-                Debug.LogError("Not Enough Virtue Points!");
-                return false;
-            }
-
+            if (skillCost > _playerModel.virtuePoints) return false;
+            
             UnlockSkill(skill);
             _playerModel.virtuePoints -= skillCost;
             return true;
+
+        }
+
+        public bool CheckSkillRequirement(Skill skill)
+        {
+            Skill skillRequirement = GetSkillRequirement(skill);
+            return skillRequirement == Skill.None || IsSkillUnlocked(skillRequirement);
         }
     }
 }

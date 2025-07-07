@@ -11,9 +11,10 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
-        private PlayerModel _playerModel;
-        private PlayerSkillSet _playerSkillSet;
-        private PlayerAbility _activeAbility;
+        public static PlayerController instance;
+        public PlayerModel _playerModel;
+        public PlayerSkillSet _playerSkillSet;
+        public PlayerAbility _activeAbility;
         
         public UnityAction<AbilityType> callAbility;
         
@@ -27,6 +28,7 @@ namespace Player
             _playerSkillSet = new PlayerSkillSet(_playerModel);
             _playerSkillSet.OnSkillUnlocked += PlayerSkillSet_OnSkillUnlocked;
             callAbility += EnterAbility;
+            instance = this;
             
         }
         
@@ -148,16 +150,16 @@ namespace Player
             switch (e.skill)
             {
                 case PlayerSkillSet.Skill.WaterOne:
-                    SetWaterOne();
+                    Debug.Log("Water One Unlocked");
                     break;
                 case PlayerSkillSet.Skill.DeathOne:
-                    SetDeathOne();
+                    Debug.Log("Death One Unlocked");
                     break;
                 case PlayerSkillSet.Skill.WaterTwo:
-                    SetWaterTwo();
+                    Debug.Log("Water Two Unlocked");
                     break;
                 case PlayerSkillSet.Skill.DeathTwo:
-                    SetDeathTwo();
+                    Debug.Log("Death Two Unlocked");
                     break;
             }
         }
@@ -172,18 +174,10 @@ namespace Player
         {
             return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterOne);
         }
-        private void SetWaterOne()
-        {
-            Debug.Log("Water One Unlocked");
-        }
 
         public bool CanUseWaterTwo()
         {
             return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterTwo);
-        }
-        private void SetWaterTwo()
-        {
-            Debug.Log("Water Two Unlocked");
         }
 
         // Death Skill set
@@ -191,18 +185,10 @@ namespace Player
         {
             return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
         }
-        private void SetDeathOne()
-        {
-            Debug.Log("Death One Unlocked");
-        }
-        
-         public bool CanUseDeathTwo()
+
+        public bool CanUseDeathTwo()
         {
             return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
-        }
-        private void SetDeathTwo()
-        {
-            Debug.Log("Death Two Unlocked");
         }
     }
 }
