@@ -9,6 +9,8 @@ public class UISkillTree : MonoBehaviour
 
     private PlayerSkillSet playerSkillSet;
     [SerializeField] private UIAbilityPanel uiAbilityPanel;
+    [SerializeField] private PlayerSkillSet.Skill test;
+    
 
     private bool UnlockSkill(PlayerSkillSet.Skill skill)
     {

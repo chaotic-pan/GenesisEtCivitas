@@ -60,12 +60,12 @@ namespace UI
     
         protected override void UpdateData(NPCModel data)
         {
-            influenceText.text = data.Faith.ToString();
-            foodText.text = data.Food.ToString();
-            waterText.text = data.Water.ToString();
-            safetyText.text = data.Safety.ToString();
-            shelterText.text = data.Shelter.ToString();
-            energyText.text = data.Energy.ToString();
+            influenceText.text = ((int)Mathf.Round(data.Faith)).ToString();
+            foodText.text = ((int)Mathf.Round(data.Food)).ToString();
+            waterText.text = ((int)Mathf.Round(data.Water)).ToString();
+            safetyText.text = ((int)Mathf.Round(data.Safety)).ToString();
+            shelterText.text = ((int)Mathf.Round(data.Shelter)).ToString();
+            energyText.text = ((int)Mathf.Round(data.Energy)).ToString();
             populationText.text = data.Population.ToString();
             
             if (this == null) Debug.LogError("This UINpcMenu reference is destroyed!");
