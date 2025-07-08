@@ -18,7 +18,7 @@ namespace Player.Skills
 
         public void Unlock()
         {
-            onUnlocked.Invoke();
+            onUnlocked?.Invoke();
         }
     }
 }

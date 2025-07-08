@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
-  m_Name: WaterOne
+  m_Name: Saviour
   m_EditorClassIdentifier: 
   requirement: {fileID: 0}
-  cost: 1
-  uiColor: {r: 0, g: 0.71827745, b: 1, a: 1}
-  title: Rain Miracle
-  description: Allows you to perform a Rain Miracle to raise the water values within
-    a certain area
+  cost: 0
+  uiColor: {r: 1, g: 1, b: 1, a: 1}
+  title: Saviour Promotion
+  description: You can choose one of  your settlement and appoint them as your personal
+    Saviour, who travels around the lands to spread your gospel

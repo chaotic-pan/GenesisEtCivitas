@@ -4,30 +4,33 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class UISkill : MonoBehaviour
+    public class UISkillItem : MonoBehaviour
     {
         [SerializeField] public Skill skill;
         public Sprite unlockedImg;
         public Sprite availableImg;
         public Sprite unavailableImg;
-        public UISkillTree tree;
 
         private Image img;
-        private bool clickable = true;
+        private UnityEngine.UI.Outline outline;
 
         private void Awake()
         {
             UIEvents.UIOpen.OnOpenSkillTree += UpdateSkillItem;
+            UIEvents.UIOpen.OnOpenSkillItem += ShowSkillItem;
         }
 
         private void OnDisable()
         {
             UIEvents.UIOpen.OnOpenSkillTree -= UpdateSkillItem;
+            UIEvents.UIOpen.OnOpenSkillItem -= ShowSkillItem;
         }
 
         private void Start()
         {
             img = GetComponent<Image>();
+            outline = GetComponent<UnityEngine.UI.Outline>();
+            outline.enabled = false;
             img.sprite = availableImg;
             img.color = skill.uiColor;
         }
@@ -37,28 +40,25 @@ namespace UI
             if (skillSet.IsSkillUnlocked(skill))
             {
                 img.sprite = unlockedImg;
-                clickable = false;
             }
             else if (skillSet.CheckSkillRequirement(skill))
             {
                 img.sprite = availableImg;
-                clickable = true;
             } 
             else 
             {
                 img.sprite = unavailableImg;
-                clickable = false;
             }
+        }
+
+        private void ShowSkillItem(Skill skill)
+        {
+            outline.enabled = skill == this.skill;
         }
         
         public void OnClick()
         {
-            if (clickable) tree.UnlockSkill(skill);
-        }
-
-        public void OnHover()
-        {
-            tree.Test(skill);
+            UIEvents.UIOpen.OnOpenSkillItem.Invoke(skill);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Models;
+using UnityEngine;
 
 namespace Player.Skills
 {
@@ -45,12 +46,10 @@ namespace Player.Skills
         public bool TryUnlockSkill(Skill skill)
         {
             if (!CheckSkillRequirement(skill)) return false;
-            
-            int skillCost = skill.cost;
-            if (skillCost > _playerModel.virtuePoints) return false;
-            
+            if (!CheckSkillCost(skill)) return false;
+
             UnlockSkill(skill);
-            _playerModel.virtuePoints -= skillCost;
+            _playerModel.InfluencePoints -= skill.cost;
             return true;
 
         }
@@ -58,7 +57,12 @@ namespace Player.Skills
         public bool CheckSkillRequirement(Skill skill)
         {
             Skill skillRequirement = skill.requirement;
-            return skillRequirement == null || IsSkillUnlocked(skillRequirement);
+            return skill.requirement == null || IsSkillUnlocked(skillRequirement);
+        }
+        
+        public bool CheckSkillCost(Skill skill)
+        {
+            return skill.cost <= _playerModel.InfluencePoints;
         }
     }
 }
