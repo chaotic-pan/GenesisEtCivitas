@@ -112,6 +112,8 @@ public class UISkillTree : MonoBehaviour
     
     private void CostCheck(PlayerModel pm)
     {
+        if (!playerSkillSet.CheckSkillRequirement(displayedSkill)) return;
+        
         if (displayedSkill.cost > pm.InfluencePoints)
         {
             // too expensive
