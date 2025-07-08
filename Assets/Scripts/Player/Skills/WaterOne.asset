@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WaterOne
   m_EditorClassIdentifier: 
   requirement: {fileID: 0}
-  cost: 1
+  cost: 100
   uiColor: {r: 0, g: 0.71827745, b: 1, a: 1}
   title: Rain Miracle
   description: Allows you to perform a Rain Miracle to raise the water values within

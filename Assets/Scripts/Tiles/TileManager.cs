@@ -66,8 +66,9 @@ public class TileManager : MonoBehaviour
     }
     public float GetWater(Vector3Int coords)
     {
-        //TODO
-        return 1;
+        return dataFromTiles.ContainsKey(coords) ? 
+            (dataFromTiles[coords].waterValue/3) 
+            : -1;
     }
     public float GetSafety(Vector3Int coords)
     {
@@ -75,7 +76,7 @@ public class TileManager : MonoBehaviour
         {
             float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
             height = 0.1f <= height && height <= 0.7f ? 15f : 0;
-            return (height + dataFromTiles[coords].animalHostility) / 2;
+            return (height/3 + dataFromTiles[coords].animalHostility) / 2;
         }
 
         return -1;

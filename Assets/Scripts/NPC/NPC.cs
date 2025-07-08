@@ -2,9 +2,11 @@ using System.Collections;
 using Events;
 using Models;
 using UI;
+using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using Math = System.Math;
 
 public class NPC : MonoBehaviour, IPointerClickHandler
 {
@@ -15,6 +17,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     public NPCModel _npcModel = new NPCModel();
     private Civilization civ;
     private Messiah mes;
+    private TileManager TM = TileManager.Instance;
     
     public void Awake()
     {
@@ -53,19 +56,17 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     {
         if (civ == null) yield return 0;
         yield return new WaitForSeconds(timer);
-        civ.Food -= 1;
-        civ.Food = civ.Food <= 0 ? 0 : civ.Food;
-        civ.Water -= 1;
-        civ.Water = civ.Water <= 0 ? 0 : civ.Water;
-        civ.Safety -= 1; 
-        civ.Safety = civ.Safety <= 0 ? 0 : civ.Safety;
-        civ.Shelter -= 1;
-        civ.Shelter = civ.Shelter <= 0 ? 0 : civ.Shelter;
-        civ.Energy -= 1;
-        civ.Energy = civ.Energy <= 0 ? 0 : civ.Energy;
+        
+        var tilePos = TM.map.WorldToCell(civ.transform.position);
+
+        civ.Food = calculateStat(civ.Food, TM.GetFood(tilePos));
+        civ.Water = calculateStat(civ.Water, TM.GetWater(tilePos));
+        civ.Safety = calculateStat(civ.Safety, TM.GetSafety(tilePos));
+        civ.Shelter = calculateStat(civ.Shelter, TM.GetShelter(tilePos));
+        civ.Energy = calculateStat(civ.Energy, TM.GetEnergy(tilePos));
         UpdateValues();
 
-        if (civ.Food == 0 && civ.Water == 0 && civ.Energy == 0)
+        if (civ.Food == 0 && civ.Water == 0)
         {
             GameEvents.Civilization.OnCivilizationDeath.Invoke(gameObject);
         }
@@ -74,7 +75,15 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             StartCoroutine(StatsDecay(timer));
         }
     }
-    
+
+    private float calculateStat(float stat, float tileStat)
+    {
+        // TODO BALANCING!!
+        stat -= 1 * (float)civ.population/2;
+        stat += tileStat*0.5f;
+        return Math.Clamp(stat, 0, 99);
+    }
+
     public void IncreaseInfluence()
     {
         _npcModel.Faith = civ.Belief;   
