@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
+  m_Name: WaterOne
+  m_EditorClassIdentifier: 
+  requirement: {fileID: 0}
+  cost: 1
+  uiColor: {r: 0, g: 0.71827745, b: 1, a: 1}
+  title: Rain Miracle
+  description: Allows you to perform a Rain Miracle to raise the water values within
+    a certain area
+  effect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7992364908116720170, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+        m_TargetAssemblyTypeName: UI.UINpcMenu, Assembly-CSharp
+        m_MethodName: UnlockWell
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

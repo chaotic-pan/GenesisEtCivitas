@@ -6,8 +6,7 @@ namespace UI
 {
     public class UISkill : MonoBehaviour
     {
-        [SerializeField] public PlayerSkillSet.Skill skill;
-        public Color mainColor;
+        [SerializeField] public Skill skill;
         public Sprite unlockedImg;
         public Sprite availableImg;
         public Sprite unavailableImg;
@@ -30,7 +29,7 @@ namespace UI
         {
             img = GetComponent<Image>();
             img.sprite = availableImg;
-            img.color = mainColor;
+            img.color = skill.uiColor;
         }
 
         private void UpdateSkillItem(PlayerSkillSet skillSet)

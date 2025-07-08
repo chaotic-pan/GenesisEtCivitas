@@ -26,7 +26,6 @@ namespace Player
         {
             _playerModel = GetComponent<PlayerModel>();
             _playerSkillSet = new PlayerSkillSet(_playerModel);
-            _playerSkillSet.OnSkillUnlocked += PlayerSkillSet_OnSkillUnlocked;
             callAbility += EnterAbility;
             instance = this;
             
@@ -143,52 +142,31 @@ namespace Player
             GridOverlayManager.Instance.HideAoeOverlay();        
         }
 
-        //Skills
-
-        private void PlayerSkillSet_OnSkillUnlocked(object sender, PlayerSkillSet.OnSkillUnlockedEventArgs e)
-        {
-            switch (e.skill)
-            {
-                case PlayerSkillSet.Skill.WaterOne:
-                    Debug.Log("Water One Unlocked");
-                    break;
-                case PlayerSkillSet.Skill.DeathOne:
-                    Debug.Log("Death One Unlocked");
-                    break;
-                case PlayerSkillSet.Skill.WaterTwo:
-                    Debug.Log("Water Two Unlocked");
-                    break;
-                case PlayerSkillSet.Skill.DeathTwo:
-                    Debug.Log("Death Two Unlocked");
-                    break;
-            }
-        }
-
         public PlayerSkillSet GetPlayerSkillSet()
         {
             return _playerSkillSet;
         }
 
-        // Water Skills
-        public bool CanUseWaterOne()
-        {
-            return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterOne);
-        }
-
-        public bool CanUseWaterTwo()
-        {
-            return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterTwo);
-        }
-
-        // Death Skill set
-        public bool CanUseDeathOne()
-        {
-            return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
-        }
-
-        public bool CanUseDeathTwo()
-        {
-            return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
-        }
+        // // Water Skills
+        // public bool CanUseWaterOne()
+        // {
+        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterOne);
+        // }
+        //
+        // public bool CanUseWaterTwo()
+        // {
+        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterTwo);
+        // }
+        //
+        // // Death Skill set
+        // public bool CanUseDeathOne()
+        // {
+        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
+        // }
+        //
+        // public bool CanUseDeathTwo()
+        // {
+        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
+        // }
     }
 }

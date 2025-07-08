@@ -3,6 +3,7 @@ using Player.Abilities;
 using Player.Skills;
 using TMPro;
 using UI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UISkillTree : MonoBehaviour
@@ -40,11 +41,12 @@ public class UISkillTree : MonoBehaviour
         }
     }
 
-    public bool UnlockSkill(PlayerSkillSet.Skill skill)
+    public bool UnlockSkill(Skill skill)
     {
         if (playerSkillSet.TryUnlockSkill(skill))
         {
-            uiAbilityPanel.SpawnAbilityButton("RAIN", AbilityType.Rain);
+            // uiAbilityPanel.SpawnAbilityButton("RAIN", AbilityType.Rain);
+            skill.Unlock();
             UIEvents.UIOpen.OnOpenSkillTree.Invoke(playerSkillSet);
             return true;
         }
@@ -52,9 +54,9 @@ public class UISkillTree : MonoBehaviour
         return false;
     }
 
-    public void Test(PlayerSkillSet.Skill skill)
+    public void Test(Skill skill)
     {
-        descriptionText.text = $"this is the {skill} skill, it costs {playerSkillSet.GetSkillCosts(skill)} VP" ;
+        descriptionText.text = skill.description ;
     }
 
 

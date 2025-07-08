@@ -13,14 +13,6 @@ namespace Player.Skills
         {
             public Skill skill;
         }
-        public enum Skill
-        {
-            None,
-            WaterOne,
-            WaterTwo,
-            DeathOne,
-            DeathTwo
-        }
 
         public PlayerSkillSet(PlayerModel playerModel)
         {
@@ -49,34 +41,12 @@ namespace Player.Skills
         {
             return $"Unlocked Skills: {string.Join(", ", _unlockedSkills)}";
         }
-
-        public Skill GetSkillRequirement(Skill skill)
-        {
-            switch (skill)
-            {
-                case Skill.WaterTwo: return Skill.WaterOne;
-                case Skill.DeathTwo: return Skill.DeathOne;
-            }
-            return Skill.None;
-        }
-
-        public int GetSkillCosts(Skill skill)
-        {
-            switch (skill)
-            {
-                case Skill.WaterOne: return 1;
-                case Skill.WaterTwo: return 2;
-                case Skill.DeathOne: return 1;
-                case Skill.DeathTwo: return 2;
-            }
-            return 0;
-        }
-
+        
         public bool TryUnlockSkill(Skill skill)
         {
             if (!CheckSkillRequirement(skill)) return false;
             
-            int skillCost = GetSkillCosts(skill);
+            int skillCost = skill.cost;
             if (skillCost > _playerModel.virtuePoints) return false;
             
             UnlockSkill(skill);
@@ -87,8 +57,8 @@ namespace Player.Skills
 
         public bool CheckSkillRequirement(Skill skill)
         {
-            Skill skillRequirement = GetSkillRequirement(skill);
-            return skillRequirement == Skill.None || IsSkillUnlocked(skillRequirement);
+            Skill skillRequirement = skill.requirement;
+            return skillRequirement == null || IsSkillUnlocked(skillRequirement);
         }
     }
 }

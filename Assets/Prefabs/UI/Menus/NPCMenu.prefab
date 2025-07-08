@@ -889,11 +889,13 @@ MonoBehaviour:
   cityObjects:
   - {fileID: 2585239503004769135}
   - {fileID: 1841846149354058870}
-  - {fileID: 5093028606997510331}
   cityTab: {fileID: 5587498828956015180}
   civTab: {fileID: 6004504736655640708}
   tabActive: {fileID: 21300000, guid: bf9c5b5cc3a237b4da44940a2a1a5545, type: 3}
   tabInactive: {fileID: 21300000, guid: dfe9dc169e82cbb42853996446c03637, type: 3}
+  lockedBuilding:
+  - {fileID: 5093028606997510331}
+  onUnlockWell: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
 --- !u!1 &1229143434515906169
 GameObject:
   m_ObjectHideFlags: 0
@@ -2547,8 +2549,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 272.98407, y: -549.8}
-  m_SizeDelta: {x: 417.96814, y: 43.6}
+  m_AnchoredPosition: {x: 290.74994, y: -609.39996}
+  m_SizeDelta: {x: 453.49988, y: 43.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2687706676650015241
 CanvasRenderer:
