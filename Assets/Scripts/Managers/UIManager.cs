@@ -41,15 +41,5 @@ namespace Managers
             if (Input.GetKeyDown(KeyCode.Escape))
                 SceneManager.LoadScene("MainMenu");
         }
-
-        public void LoadSkillTree()
-        {
-            _SkillTreeMenu.SetActive(!_SkillTreeMenu.activeSelf);
-        }
-
-        private void ToggleButton()
-        {
-            
-        }
     }
 }

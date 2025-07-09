@@ -16,6 +16,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsMoving = "isMoving";
     private static readonly string TrDeath = "TrDeath";
     private static readonly string PreachRandomizer = "PreachRandomizer";
+    private static readonly string DanceRandomizer = "DanceRandomizer";
 
     private GameObject FishingPole;
     private GameObject Stool;
@@ -75,6 +76,7 @@ public class AnimManager : MonoBehaviour
     public void SetIsDancing(bool isDancing)
     {
         resetBools();
+        if (isDancing) mAnimator.SetInteger(DanceRandomizer, Random.Range(0, 2));
         mAnimator.SetBool(IsDancing, isDancing);
     }
     

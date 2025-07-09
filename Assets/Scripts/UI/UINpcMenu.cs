@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CityStuff;
 using Events;
 using Models;
+using Player.Skills;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,19 +31,31 @@ namespace UI
         [SerializeField] private Sprite tabActive;
         [SerializeField] private Sprite tabInactive;
         
-        private NPCModel model;
+        [Header("Locked Buildings")]
+        [SerializeField] private List<GameObject> lockedBuilding;
+        [SerializeField] private Skill onUnlockWell;
         
+        private NPCModel model;
         
         public override void Initialize()
         {
            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
            UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
+
+           onUnlockWell.onUnlocked += UnlockWell;
+           foreach (var build in lockedBuilding.Where(build => cityObjects.Contains(build)))
+           {
+               cityObjects.Remove(build);
+           }
         }
-        
+
         private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
         {
             if (scene.name == "WorldMap")
+            {
                 UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
+                onUnlockWell.onUnlocked -= UnlockWell;
+            }
         }
 
         private void OnOpenNpcMenu(NPCModel npcModel)
@@ -60,12 +74,12 @@ namespace UI
     
         protected override void UpdateData(NPCModel data)
         {
-            influenceText.text = data.Faith.ToString();
-            foodText.text = data.Food.ToString();
-            waterText.text = data.Water.ToString();
-            safetyText.text = data.Safety.ToString();
-            shelterText.text = data.Shelter.ToString();
-            energyText.text = data.Energy.ToString();
+            influenceText.text = ((int)Mathf.Round(data.Faith)).ToString();
+            foodText.text = ((int)Mathf.Round(data.Food)).ToString();
+            waterText.text = ((int)Mathf.Round(data.Water)).ToString();
+            safetyText.text = ((int)Mathf.Round(data.Safety)).ToString();
+            shelterText.text = ((int)Mathf.Round(data.Shelter)).ToString();
+            energyText.text = ((int)Mathf.Round(data.Energy)).ToString();
             populationText.text = data.Population.ToString();
             
             if (this == null) Debug.LogError("This UINpcMenu reference is destroyed!");
@@ -130,6 +144,15 @@ namespace UI
             
             civTab.GetComponent<Image>().sprite = tabInactive;
             cityTab.GetComponent<Image>().sprite = tabActive;
+        }
+        
+        public void UnlockWell()
+        {
+            foreach (var build in lockedBuilding.Where(build => build.ToString().Contains("Well")))
+            {
+                cityObjects.Add(build);
+                return;
+            }
         }
     }
 }

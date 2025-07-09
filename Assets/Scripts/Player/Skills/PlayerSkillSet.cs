@@ -14,14 +14,6 @@ namespace Player.Skills
         {
             public Skill skill;
         }
-        public enum Skill
-        {
-            None,
-            WaterOne,
-            WaterTwo,
-            DeathOne,
-            DeathTwo
-        }
 
         public PlayerSkillSet(PlayerModel playerModel)
         {
@@ -31,7 +23,7 @@ namespace Player.Skills
 
 
         private List<Skill> _unlockedSkills;
-
+        
         private void UnlockSkill(Skill skill)
         {
             if (!IsSkillUnlocked(skill))
@@ -50,55 +42,27 @@ namespace Player.Skills
         {
             return $"Unlocked Skills: {string.Join(", ", _unlockedSkills)}";
         }
-
-        public Skill GetSkillRequirement(Skill skill)
-        {
-            switch (skill)
-            {
-                case Skill.WaterTwo: return Skill.WaterOne;
-                case Skill.DeathTwo: return Skill.DeathOne;
-            }
-            return Skill.None;
-        }
-
-        public int GetSkillCosts(Skill skill)
-        {
-            switch (skill)
-            {
-                case Skill.WaterOne: return 1;
-                case Skill.WaterTwo: return 2;
-                case Skill.DeathOne: return 1;
-                case Skill.DeathTwo: return 2;
-            }
-            return 0;
-        }
-
+        
         public bool TryUnlockSkill(Skill skill)
         {
-            Skill skillRequirement = GetSkillRequirement(skill);
-            int skillCost = GetSkillCosts(skill);
-
-            if (IsSkillUnlocked(skill))
-            {
-                Debug.LogError("Already Unlocked!");
-                return false;
-            }
-
-            if (skillRequirement != Skill.None && !IsSkillUnlocked(skillRequirement))
-            {
-                Debug.LogError("Not Available Yet!");
-                return false;
-            }
-
-            if (skillCost > _playerModel.virtuePoints)
-            {
-                Debug.LogError("Not Enough Virtue Points!");
-                return false;
-            }
+            if (!CheckSkillRequirement(skill)) return false;
+            if (!CheckSkillCost(skill)) return false;
 
             UnlockSkill(skill);
-            _playerModel.virtuePoints -= skillCost;
+            _playerModel.InfluencePoints -= skill.cost;
             return true;
+
+        }
+
+        public bool CheckSkillRequirement(Skill skill)
+        {
+            Skill skillRequirement = skill.requirement;
+            return skill.requirement == null || IsSkillUnlocked(skillRequirement);
+        }
+        
+        public bool CheckSkillCost(Skill skill)
+        {
+            return skill.cost <= _playerModel.InfluencePoints;
         }
     }
 }

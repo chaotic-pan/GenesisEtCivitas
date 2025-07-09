@@ -34,7 +34,7 @@ namespace UI.EventLog
     
         IEnumerator RemoveMessage()
         {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(6f);
             Destroy(gameObject);
         }
 

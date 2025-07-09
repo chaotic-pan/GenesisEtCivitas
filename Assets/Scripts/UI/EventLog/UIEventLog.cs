@@ -19,6 +19,17 @@ namespace UI.EventLog
             GameEvents.Civilization.OnCivilizationSplit += OnCivilizationSplit;
             GameEvents.Civilization.OnCivilizationMerge += OnCivilizationMerge;
             GameEvents.Civilization.OnCityFounded += OnCityFounded;
+            GameEvents.Civilization.OnCivilizationLowOnStats += OnCivlizationLowOnStats;
+        }
+
+        private void OnCivlizationLowOnStats(GameObject npcModelObject)
+        {
+            var npcModel = npcModelObject.GetComponent<NPC>();
+            
+            var message = $"{Capitalize(npcModel._npcModel.NPCName)} is struggling!";
+            var eventLogEntry = new EventLogEntryModel(message, npcModelObject);
+            
+            _eventQueue.Enqueue(eventLogEntry);
         }
 
         private void Start()
