@@ -61,6 +61,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonPrefab: {fileID: 8202570212625675649, guid: c2442403b2503314ab1e2e9a1eac1d85, type: 3}
   _playerController: {fileID: 0}
+  onUnlockRain: {fileID: 11400000, guid: 00e72bc87fda1bc488fbb0813bcd8fec, type: 2}
+  onUnlockEarthquake: {fileID: 11400000, guid: ae37a0204b4746449939f3c1dcfe96d1, type: 2}
 --- !u!114 &8644050630092386230
 MonoBehaviour:
   m_ObjectHideFlags: 0
