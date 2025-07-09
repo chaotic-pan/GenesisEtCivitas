@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Events;
 using Terrain;
 using UI;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace MapGeneration
     {
         [SerializeField] private MapDisplay mapDisplay;
         [SerializeField] private HeatmapGenerator heatmapGenerator;
+        [SerializeField] private MapFileLocation SO_fileLoc;
 
         public readonly Dictionary<MapDisplay.MapOverlay, Dictionary<Vector2, Texture2D>> _maps = new();
         
@@ -28,12 +30,16 @@ namespace MapGeneration
             Instance = this;
             UIEvents.UIMap.OnOpenHeatmap += OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
+
+            if (SO_fileLoc.isBuild)
+                GameEvents.Lifecycle.OnTileManagerFinishedInitializing += LoadTextures;
         }
 
         private void OnDestroy()
         {
             UIEvents.UIMap.OnOpenHeatmap -= OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks -= UpdateHeatMapChunks;
+            GameEvents.Lifecycle.OnTileManagerFinishedInitializing -= LoadTextures;
         }
 
         private void Start()
@@ -45,10 +51,35 @@ namespace MapGeneration
             _heatmapDict = heatmapGenerator._heatmapDict;
             
             InitializeMaps();
-            LoadTextures();
+
+            if (!SO_fileLoc.isBuild)
+                LoadTexturesFromDrive();
         }
+        
+        
 
         private void LoadTextures()
+        {
+            var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
+            var heatmaps = heatmapGenerator.GenerateAllHeatmaps(tilemapGen);
+
+            _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
+            
+            for (var y = 0; y < 8; y++)
+            {
+                for (var x = 0; x < 8; x++)
+                {
+                    foreach (var overlay in _overlayValueByTile.Keys)
+                    {
+                        var chunk = new Vector2(x, y);
+                        var tex = heatmaps[chunk][overlay];
+                        _maps[overlay].Add(chunk, tex);
+                    }
+                }
+            }
+        }
+        
+        private void LoadTexturesFromDrive()
         {
             _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
             
