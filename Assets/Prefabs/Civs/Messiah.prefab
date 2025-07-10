@@ -163,6 +163,8 @@ MonoBehaviour:
   maxSpeed: 10
   rangeRadius: 20
   map: {fileID: 0}
+  onUnlockBoats: {fileID: 11400000, guid: 6fdcc435d25473e4f9ccc3a9b754d805, type: 2}
+  boatPrefab: {fileID: 6165641262965079714, guid: ad665e2ad35f79b418e1281811fe1eb4, type: 3}
   DEBUG_PathBreadcrumbs: 0
 --- !u!114 &6309690029069101142
 MonoBehaviour:
