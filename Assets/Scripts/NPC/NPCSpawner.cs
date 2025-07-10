@@ -53,6 +53,11 @@ public class NPCSpawner : MonoBehaviour
         float winValue = 0;
         foreach(Vector3Int loc in locations)
         {
+            if (TM.isOcean(loc))
+            {
+                continue;
+            }
+            
             float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
             if(winValue < value)
             {

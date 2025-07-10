@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
+using Player.Skills;
+using Terrain;
+using UI;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -11,12 +14,21 @@ public class TileManager : MonoBehaviour
     [SerializeField] public Tilemap map;
     private Dictionary<Vector3Int, TileData> dataFromTiles = new();
     public List<Vector3Int> spawnLocations = new();
+    [SerializeField] private Skill onUnlockShips;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
+    private float waterHeight = 0.2f;
+    private float waterTravelCost = 50;
     
     private void Awake()
     {
         Instance = this;
+        onUnlockShips.onUnlocked += updateWaterTravel;
+    }
+
+    private void OnDisable()
+    { 
+        onUnlockShips.onUnlocked -= updateWaterTravel;
     }
 
     public void InitializeTileData(MapExtractor ME)
@@ -32,7 +44,7 @@ public class TileManager : MonoBehaviour
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
                     var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
-                        ME.travelcost[p.x,p.y],
+                        height < waterHeight ? waterTravelCost : ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
                         ME.firmness[p.x,p.y],
                         ME.ore[p.x,p.y],
@@ -40,7 +52,7 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x,p.y],
-                        height <= 0.1 ? 30 : 1,  //water value
+                        height < waterHeight ? 30 : 1,
                         height
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
@@ -100,6 +112,22 @@ public class TileManager : MonoBehaviour
             : -1;
     }
 
+    public bool isOcean(Vector3Int coords)
+    {
+        return  dataFromTiles.ContainsKey(coords) && dataFromTiles[coords].height < waterHeight;
+    }
+
+    private void updateWaterTravel()
+    {
+        waterTravelCost = 1;
+        print("boat time!");
+        // TODO update all chunks
+        // UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //     new List<Vector2> { chunk }, 
+        //     MapDisplay.MapOverlay.Travelcost
+        // );
+    }
+    
     public TileData getTileDataByWorldCoords(float x, float y, float z)
     {
         return getTileDataByWorldCoords(new Vector3(x, y, z));
