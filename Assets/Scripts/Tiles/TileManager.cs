@@ -17,7 +17,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] private Skill onUnlockShips;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    private float waterHeight = 0.21f;
+    private float waterHeight = 0.22f;
     private float waterTravelCost = 50;
     
     private void Awake()
