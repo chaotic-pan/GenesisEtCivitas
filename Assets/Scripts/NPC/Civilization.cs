@@ -67,6 +67,11 @@ public class Civilization : MonoBehaviour
     public void SetPopulation(int population)
     {
         this.population = population;
+        while (transform.GetChildCount() > 1)
+        {
+            Destroy(transform.GetChild(1));
+        }
+
         GetComponent<NPC>()._npcModel.Population = population;
         for (int i = 0; i < population-1; i++)
         {
@@ -91,11 +96,6 @@ public class Civilization : MonoBehaviour
         ressources = 250; //TODO: adjust ressources dependant on tiles
     }
 
-    private void CheckValues()
-    {
-        if (happiness < 100) SplitCivilisation();
-    }
-
     private void MergeCivilisation(GameObject civAObject, GameObject civBObject)
     {
         if (gameObject == civBObject)
@@ -112,12 +112,6 @@ public class Civilization : MonoBehaviour
             population +=newPop;
             GetComponent<NPC>()._npcModel.Population = population;
         }
-    }
-
-    private void SplitCivilisation()
-    {
-        //TODO: Split a civilisation
-        Debug.Log("TODO: Split a civilisation");
     }
 
     public float Food
