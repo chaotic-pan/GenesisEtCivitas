@@ -32,7 +32,8 @@ namespace UI
             public UnityAction<Civilization> OnSelectCityMessiahAction;
             public UnityAction<PlayerSkillSet> OnOpenSkillTree;
             public UnityAction<Skill> OnOpenSkillItem;
-            
+            public UnityAction OnMouseEnterUI;
+            public UnityAction OnMouseExitUI;
         }
     }
 }

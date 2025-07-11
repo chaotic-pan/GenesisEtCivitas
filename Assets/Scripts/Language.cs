@@ -218,8 +218,8 @@ namespace DefaultNamespace
 
             return value switch
             {
-                < 10 => 1,
-                < 85 => 2,
+                < 15 => 1,
+                < 80 => 2,
                 _ => 3,
             };
         }

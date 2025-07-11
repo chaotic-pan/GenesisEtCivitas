@@ -35,7 +35,7 @@ public class LanguageConfig
 
     public static string[] V1Base = new[]
     {
-        "a", "i", "u", "e", "o", "y"
+        "a", "i", "u", "e", "o",
     };
 
     public static string[] V1Special = new[]
