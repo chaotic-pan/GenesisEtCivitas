@@ -67,13 +67,14 @@ public class Civilization : MonoBehaviour
     public void SetPopulation(int population)
     {
         this.population = population;
-        while (transform.GetChildCount() > 1)
+        int count = transform.childCount;
+        for (int i = 1; i < count; i++)
         {
-            Destroy(transform.GetChild(1));
+            Destroy(transform.GetChild(1).gameObject);
         }
 
         GetComponent<NPC>()._npcModel.Population = population;
-        for (int i = 0; i < population-1; i++)
+        for (int i = 0; i < population; i++)
         {
             var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
             civi.transform.localPosition = _NPCPoints[i];

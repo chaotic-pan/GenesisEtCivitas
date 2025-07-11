@@ -122,10 +122,12 @@ public class NPCSpawner : MonoBehaviour
     private void SplitCiv(GameObject civ)
     {
         Civilization civi = civ.GetComponent<Civilization>();
+        if (civi.population <= 3) return;
         civi.SetPopulation(civi.population/2);
 
-        var newCiv = Instantiate(civ.gameObject);
-        newCiv.GetComponent<Civilization>().city = null;
+        var newCiv = Instantiate(civilisationPrefab, civ.transform.position, Quaternion.identity);
+        civilisations.Add(newCiv);
+        newCiv.GetComponent<Civilization>().SetPopulation(civi.population);
         FindSettlingLocation(newCiv, 25, 5);
     }
 }
