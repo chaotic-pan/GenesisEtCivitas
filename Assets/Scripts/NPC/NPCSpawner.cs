@@ -68,7 +68,7 @@ public class NPCSpawner : MonoBehaviour
         float winValue = 0;
         foreach(Vector3Int loc in locations)
         {
-            if (TM.isOcean(loc))
+            if (TM.IsOcean(loc))
             {
                 continue;
             }

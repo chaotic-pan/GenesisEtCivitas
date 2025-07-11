@@ -18,7 +18,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Main_Light.002
-    second: {fileID: 2100000, guid: f150455851dda094a9f741b67b6fa81b, type: 2}
+    second: {fileID: -876546973899608171, guid: 406c3faa56b803e4386878cca6f24913, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

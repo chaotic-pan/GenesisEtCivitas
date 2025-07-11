@@ -87,20 +87,6 @@ public class Civilization : MonoBehaviour
                 civi.transform.localPosition = _NPCPoints[i];
             }
         }
-        
-        // // destroy old civis
-        // int count = transform.childCount;
-        // for (int i = count; i > 1; i--)
-        // {
-        //     Destroy(transform.GetChild(i-1).gameObject);
-        // }
-        //
-        // // spawn new civis
-        // for (int i = 0; i < population; i++)
-        // {
-        //     var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-        //     civi.transform.localPosition = _NPCPoints[i];
-        // }
     }
 
     public void SetSettlingValues(Vector3Int vec)

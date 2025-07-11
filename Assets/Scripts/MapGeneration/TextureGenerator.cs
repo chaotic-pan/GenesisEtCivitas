@@ -22,7 +22,6 @@ namespace Terrain
     public static class TextureGenerator
     {
         
-
         public static Texture2D TextureFromColorMap(Color[] colorMap, int width)
         {
             var texture = new Texture2D(width, width)

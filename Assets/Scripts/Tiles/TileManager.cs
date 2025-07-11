@@ -112,9 +112,14 @@ public class TileManager : MonoBehaviour
             : -1;
     }
 
-    public bool isOcean(Vector3Int coords)
+    public bool IsOcean(Vector3Int coords)
     {
         return  dataFromTiles.ContainsKey(coords) && dataFromTiles[coords].height < waterHeight;
+    }
+    
+    public float GetTravelCost(Vector3Int coords)
+    {
+        return  dataFromTiles.ContainsKey(coords) ? dataFromTiles[coords].travelCost : 1;
     }
 
     private void updateWaterTravel()

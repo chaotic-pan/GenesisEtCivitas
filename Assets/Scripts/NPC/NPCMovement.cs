@@ -142,14 +142,12 @@ public class NPCMovement : MonoBehaviour
             var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
                 Time.deltaTime);
 
+            var cost = TM.GetTravelCost(map.WorldToCell(position));
+            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+
             transform.rotation = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
             transform.position = AdjustCoordsForHeight(position);
-            
-            // TODO speed
-            // var p = ME.CoordsToPoints(position);
-            // movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
-            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
            
             yield return null;
         }
@@ -162,7 +160,7 @@ public class NPCMovement : MonoBehaviour
         if (!TryGetComponent<Civilization>(out var civ)) return;
         var population = civ.population;
 
-        if (TM.isOcean(map.WorldToCell(target)))
+        if (TM.IsOcean(map.WorldToCell(target)))
         {
             if (boat != null) return;
             boat = Instantiate(boatPrefab, transform.localPosition, transform.localRotation, transform);
