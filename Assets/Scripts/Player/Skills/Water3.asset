@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
   m_Name: Water3
   m_EditorClassIdentifier: 
-  requirement: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
-  cost: 300
+  requirement: {fileID: 0}
+  cost: 1
   uiColor: {r: 0, g: 0.72156864, b: 1, a: 1}
   title: Ship Travel
   description: Enables your followers to traverse water much easier and quicker

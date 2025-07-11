@@ -17,7 +17,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] private Skill onUnlockShips;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    private float waterHeight = 0.22f;
+    private float waterHeight = 0.3f;
     private float waterTravelCost = 50;
     
     private void Awake()
@@ -125,7 +125,12 @@ public class TileManager : MonoBehaviour
     private void updateWaterTravel()
     {
         waterTravelCost = 1;
-        print("boat time!");
+
+        foreach (var tile in dataFromTiles.Values.Where(tile => tile.height < waterHeight))
+        {
+            tile.travelCost = waterTravelCost;
+        }
+        
         // TODO update all chunks
         // UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
         //     new List<Vector2> { chunk }, 
