@@ -219,8 +219,7 @@ namespace DefaultNamespace
             return value switch
             {
                 < 15 => 1,
-                < 80 => 2,
-                _ => 3,
+                _ => 2,
             };
         }
         

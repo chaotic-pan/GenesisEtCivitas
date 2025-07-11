@@ -33,7 +33,7 @@ namespace Player
 		private float _scrollMouseInput;
 		private float _middleMouseInput;
 
-		private bool _canZoom;
+		private bool _canZoom = true;
 		
 		private Vector3 _cameraForward;
 		private Vector3 _cameraRight;
