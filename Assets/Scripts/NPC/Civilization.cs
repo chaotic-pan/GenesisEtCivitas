@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CityStuff;
 using DefaultNamespace;
 using Events;
+using NUnit.Framework;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -67,18 +68,39 @@ public class Civilization : MonoBehaviour
     public void SetPopulation(int population)
     {
         this.population = population;
-        int count = transform.childCount;
-        for (int i = 1; i < count; i++)
-        {
-            Destroy(transform.GetChild(1).gameObject);
-        }
-
         GetComponent<NPC>()._npcModel.Population = population;
-        for (int i = 0; i < population; i++)
+
+        var civPopDif = (transform.childCount-1) - population;
+        
+        if (civPopDif > 0)
         {
-            var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-            civi.transform.localPosition = _NPCPoints[i];
+            for (int i = transform.childCount; i > population+1; i--)
+            {
+                Destroy(transform.GetChild(i-1).gameObject);
+            }
+        } 
+        if (civPopDif < 0)
+        {
+            for (int i = 0; i < -civPopDif; i++)
+            {
+                var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+                civi.transform.localPosition = _NPCPoints[i];
+            }
         }
+        
+        // // destroy old civis
+        // int count = transform.childCount;
+        // for (int i = count; i > 1; i--)
+        // {
+        //     Destroy(transform.GetChild(i-1).gameObject);
+        // }
+        //
+        // // spawn new civis
+        // for (int i = 0; i < population; i++)
+        // {
+        //     var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+        //     civi.transform.localPosition = _NPCPoints[i];
+        // }
     }
 
     public void SetSettlingValues(Vector3Int vec)

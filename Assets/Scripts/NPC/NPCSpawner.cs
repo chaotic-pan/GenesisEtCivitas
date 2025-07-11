@@ -32,18 +32,25 @@ public class NPCSpawner : MonoBehaviour
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
-            var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
-            civilisations.Add(civ);
-            civ.GetComponent<Civilization>().SetPopulation(Random.Range(1,8));
-            StartCoroutine(WaitAndSettle(civ));
+            var population = Random.Range(1, 8);
+            
+            SpawnCiv(spawnLocation, population, 20, 0);
         }
     }
+
+    private void SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
+    {
+        var civ = Instantiate(civilisationPrefab, location, Quaternion.identity,transform);
+        civilisations.Add(civ);
+        civ.GetComponent<Civilization>().SetPopulation(population);
+        StartCoroutine(WaitAndSettle(civ, settleRangeIncl, settleRangeExcl));
+    }
     
-    IEnumerator WaitAndSettle(GameObject civ)
+    IEnumerator WaitAndSettle(GameObject civ, int rangeIncl, int rangeExcl)
     {
         // suspend execution for 2 seconds
         yield return new WaitForSeconds(2);
-        if (civ.GetComponent<Civilization>() != null) FindSettlingLocation(civ, 20, 0);
+        if (civ.GetComponent<Civilization>() != null) FindSettlingLocation(civ, rangeIncl, rangeExcl);
     }
     
     private void FindSettlingLocation(GameObject civ, int range, int excludedRange)
@@ -75,7 +82,7 @@ public class NPCSpawner : MonoBehaviour
         }
         civ.GetComponent<Civilization>().SetSettlingValues(settlingPos);
         
-        civ.GetComponent<NPCMovement>().MovetoTileAndExecute(settlingPos, Settle);
+        civ.GetComponent<NPCMovement>().MovetoTileInRangeAndExecute(settlingPos, TM.GetSpecificRange(gridPos, range), Settle);
     }
     
     private void Settle(GameObject civObject)
@@ -124,10 +131,7 @@ public class NPCSpawner : MonoBehaviour
         Civilization civi = civ.GetComponent<Civilization>();
         if (civi.population <= 3) return;
         civi.SetPopulation(civi.population/2);
-
-        var newCiv = Instantiate(civilisationPrefab, civ.transform.position, Quaternion.identity);
-        civilisations.Add(newCiv);
-        newCiv.GetComponent<Civilization>().SetPopulation(civi.population);
-        FindSettlingLocation(newCiv, 25, 5);
+        
+        SpawnCiv(civ.transform.position, civi.population, 25, 5);
     }
 }
