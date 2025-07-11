@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
+using Player.Skills;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -18,10 +19,30 @@ public class NPCMovement : MonoBehaviour
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
 
+    [SerializeField] private Skill onUnlockBoats;
+    private bool boatUnlocked = false;
+    [SerializeField] private GameObject boatPrefab;
+    private GameObject boat;
+
+    private void OnEnable()
+    {
+        onUnlockBoats.onUnlocked += UnlockBoats;
+    }
+
+    private void OnDisable()
+    {
+        onUnlockBoats.onUnlocked -= UnlockBoats;
+    }
+
     private void Start()
     {
         map = TM?.map;
         transform.position = AdjustCoordsForHeight(transform.position);
+    }
+
+    private void UnlockBoats()
+    {
+        boatUnlocked = true;
     }
 
     # region DEBUG
@@ -109,7 +130,9 @@ public class NPCMovement : MonoBehaviour
     
     IEnumerator MovetoTarget(Vector3 target)
     {
+        boatCheck(target);
         DEBUG_spawnBreadcrumbs(target,2);
+        
         var position = transform.position;
         
         while (Vector3.Distance(position, target) > 5f)
@@ -119,16 +142,44 @@ public class NPCMovement : MonoBehaviour
             var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
                 Time.deltaTime);
 
+            var cost = TM.GetTravelCost(map.WorldToCell(position));
+            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+
             transform.rotation = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
             transform.position = AdjustCoordsForHeight(position);
-            
-            // TODO speed
-            // var p = ME.CoordsToPoints(position);
-            // movementSpeed = maxSpeed - ME.travelcost[p.x, p.y]/2;
-            // movementSpeed = movementSpeed < 1 ? 1 : movementSpeed;
            
             yield return null;
+        }
+    }
+
+    private void boatCheck(Vector3 target)
+    {
+        if (!boatUnlocked) return;
+
+        if (!TryGetComponent<Civilization>(out var civ)) return;
+        var population = civ.population;
+
+        if (TM.IsOcean(map.WorldToCell(target)))
+        {
+            if (boat != null) return;
+            boat = Instantiate(boatPrefab, transform.localPosition, transform.localRotation, transform);
+            boat.transform.localRotation = Quaternion.identity;
+
+            boat.GetComponent<Boat>().spawnBoats(population);
+            for (int i = 1; i <= population; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+        else if (boat != null)
+        {
+            Destroy(boat);
+            for (int i = 1; i <= population; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
+            }
+            GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
         }
     }
     
@@ -148,9 +199,8 @@ public class NPCMovement : MonoBehaviour
         {
             var tileData = TM.getTileDataByGridCoords(gridPos);
             if (tileData == null) continue;
-
-            var p = ME.CoordsToPoints(map.CellToWorld(gridPos));
-            var v = new Node(gridPos, ME.travelcost[p.x, p.y]);
+            
+            var v = new Node(gridPos, TM.getTileDataByGridCoords(gridPos).travelCost);
             Q.Add(gridPos, v);
             if (gridPos == start) v.distance = 0;
         }

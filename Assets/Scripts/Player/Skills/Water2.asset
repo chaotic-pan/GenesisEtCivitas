@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
+  m_Name: Water2
+  m_EditorClassIdentifier: 
+  requirement: {fileID: 11400000, guid: 00e72bc87fda1bc488fbb0813bcd8fec, type: 2}
+  cost: 200
+  uiColor: {r: 0, g: 0.72156864, b: 1, a: 1}
+  title: Well Building
+  description: Your followers discover the knowledge of building wells in their city,
+    to help satisfy their water needs

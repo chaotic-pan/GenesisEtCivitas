@@ -34,7 +34,10 @@ public class AnimManager : MonoBehaviour
         Axe = transform.GetChild(5).gameObject;
         Hoe = transform.GetChild(6).gameObject;
         Pickaxe = transform.GetChild(7).gameObject;
-        
+    }
+
+    private void OnEnable()
+    {    
         GameEvents.Civilization.OnStartWalking += OnStartWalk;
         GameEvents.Civilization.OnStopWalking += OnStopWalk;
         GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;

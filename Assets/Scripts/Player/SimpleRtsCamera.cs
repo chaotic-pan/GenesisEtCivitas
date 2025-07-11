@@ -1,5 +1,6 @@
 using System;
 using Events;
+using UI;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -32,6 +33,8 @@ namespace Player
 		private float _scrollMouseInput;
 		private float _middleMouseInput;
 
+		private bool _canZoom;
+		
 		private Vector3 _cameraForward;
 		private Vector3 _cameraRight;
 		private bool _isDragging;
@@ -42,6 +45,8 @@ namespace Player
 			_playerInput = FindAnyObjectByType<PlayerInput>();
 			
 			GameEvents.Camera.OnJumpToCiv += OnJumpToCiv;
+			UIEvents.UIOpen.OnMouseEnterUI += () => _canZoom = false;
+			UIEvents.UIOpen.OnMouseExitUI += () => _canZoom = true;
 		}
 		
 		private void OnJumpToCiv(GameObject civ)
@@ -113,6 +118,10 @@ namespace Player
 			_playerInput.actions["MiddleMouse"].started -= InitialMousePositionHandler;
 			_playerInput.actions["MiddleMouse"].performed -= MiddleMouseHandler;
 			_playerInput.actions["MiddleMouse"].canceled -= MiddleMouseHandler;
+			
+			GameEvents.Camera.OnJumpToCiv -= OnJumpToCiv;
+			UIEvents.UIOpen.OnMouseEnterUI -= () => _canZoom = false;
+			UIEvents.UIOpen.OnMouseExitUI -= () => _canZoom = true;
 		}
 
 		private void MoveHandler(InputAction.CallbackContext callbackContext) =>
@@ -214,6 +223,7 @@ namespace Player
 
 		private void ZoomCamera()
 		{
+			if (!_canZoom) return;
 			if (Mathf.Approximately(_scrollMouseInput, 0)) return;
 
 			var zoomDirection = transform.forward;

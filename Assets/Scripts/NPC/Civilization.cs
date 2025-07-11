@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CityStuff;
 using DefaultNamespace;
 using Events;
+using NUnit.Framework;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -68,10 +69,23 @@ public class Civilization : MonoBehaviour
     {
         this.population = population;
         GetComponent<NPC>()._npcModel.Population = population;
-        for (int i = 0; i < population; i++)
+
+        var civPopDif = (transform.childCount-1) - population;
+        
+        if (civPopDif > 0)
         {
-            var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-            civi.transform.localPosition = _NPCPoints[i];
+            for (int i = transform.childCount; i > population+1; i--)
+            {
+                Destroy(transform.GetChild(i-1).gameObject);
+            }
+        } 
+        if (civPopDif < 0)
+        {
+            for (int i = 0; i < -civPopDif; i++)
+            {
+                var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+                civi.transform.localPosition = _NPCPoints[i];
+            }
         }
     }
 
@@ -91,11 +105,6 @@ public class Civilization : MonoBehaviour
         ressources = 250; //TODO: adjust ressources dependant on tiles
     }
 
-    private void CheckValues()
-    {
-        if (happiness < 100) SplitCivilisation();
-    }
-
     private void MergeCivilisation(GameObject civAObject, GameObject civBObject)
     {
         if (gameObject == civBObject)
@@ -112,12 +121,6 @@ public class Civilization : MonoBehaviour
             population +=newPop;
             GetComponent<NPC>()._npcModel.Population = population;
         }
-    }
-
-    private void SplitCivilisation()
-    {
-        //TODO: Split a civilisation
-        Debug.Log("TODO: Split a civilisation");
     }
 
     public float Food

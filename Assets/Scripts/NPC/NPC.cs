@@ -30,7 +30,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             civ.Initialize();
             _npcModel.NPCName = civ.Language.GenerateWord();
             _npcModel.NPC = gameObject;
-            GameEvents.Civilization.OnCivilizationSpawn.Invoke(gameObject);
+            GameEvents.Civilization.OnCivilizationSpawn?.Invoke(gameObject);
             
             StartCoroutine(StatsDecay(10));
             influenceArea.Initialize(this);

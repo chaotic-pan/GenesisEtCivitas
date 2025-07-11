@@ -18,7 +18,7 @@ namespace UI.EventLog
             _eventObject = eventObject;
             text.text = message;
 
-            StartCoroutine(RemoveMessage());
+           // StartCoroutine(RemoveMessage());
         }
 
         public void OnClick()

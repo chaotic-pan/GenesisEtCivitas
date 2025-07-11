@@ -21,25 +21,38 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
-    private const int points = 1913;
-    private const int totalPoints = 1913*1913;
+    [SerializeField] private int points = 1914;
+    private int totalPoints;
     private int chunkSize = 240;
     private int chunkCountRoot = 8;
     public AnimationCurve meshHeightCurve;
     [SerializeField] private MapFileLocation SO_fileLoc;
     
-    public readonly float[,] heightMap = new float[points, points];
-    public readonly float[,] travelcost = new float[points, points];
-    public readonly int[,] fertility = new int[points, points];
-    public readonly int[,] firmness = new int[points, points];
-    public readonly int[,] ore = new int[points, points];
-    public readonly int[,] vegetation = new int[points, points];
-    public readonly int[,] animalPopulation = new int[points, points];
-    public readonly int[,] animalHostility = new int[points, points];
-    public readonly int[,] climate = new int[points, points];
+    public float[,] heightMap;
+    public float[,] travelcost;
+    public int[,] fertility;
+    public int[,] firmness;
+    public int[,] ore;
+    public int[,] vegetation;
+    public int[,] animalPopulation;
+    public int[,] animalHostility;
+    public int[,] climate;
 
     private void Awake()
     {
+        totalPoints = points*points;
+        
+        heightMap = new float[points, points];
+        travelcost = new float[points, points];
+        fertility = new int[points, points];
+        firmness = new int[points, points];
+        ore = new int[points, points];
+        vegetation = new int[points, points];
+        animalPopulation = new int[points, points];
+        animalHostility = new int[points, points];
+        climate = new int[points, points];
+        
+        
         Instance = this;
         if (SO_fileLoc.isBuild)
         {

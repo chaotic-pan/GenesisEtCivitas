@@ -1,15 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using Events;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.EventLog
 {
     public class UIEventLog : MonoBehaviour
     {
         [SerializeField] private GameObject eventLogEntryPrefab;
+        [SerializeField] private RectTransform eventLogContainer;
+        [SerializeField] private ScrollRect scrollRect;
+        [SerializeField] private TMP_Text buttonText;
     
         private readonly Queue<EventLogEntryModel> _eventQueue = new();
+        private bool _isOpen;
     
         private void Awake()
         {
@@ -21,6 +27,8 @@ namespace UI.EventLog
             GameEvents.Civilization.OnCityFounded += OnCityFounded;
             GameEvents.Civilization.OnCivilizationLowOnStats += OnCivlizationLowOnStats;
         }
+        
+       
 
         private void OnCivlizationLowOnStats(GameObject npcModelObject)
         {
@@ -36,7 +44,24 @@ namespace UI.EventLog
         {
             StartCoroutine(ShowLogs());
         }
-    
+
+        public void OnToggleMenu()
+        {
+            _isOpen = !_isOpen;
+
+            if (_isOpen)
+            {
+                buttonText.text = "\u02c4";
+                eventLogContainer.anchoredPosition = new Vector2(eventLogContainer.anchoredPosition.x, 64);
+            }
+            else
+            {
+                buttonText.text = "\u02c5";
+                eventLogContainer.anchoredPosition = new Vector2(eventLogContainer.anchoredPosition.x, 328);
+                scrollRect.verticalNormalizedPosition = 0;
+            }
+        }
+        
         IEnumerator ShowLogs()
         {
             while (true)
@@ -44,7 +69,11 @@ namespace UI.EventLog
                 if (_eventQueue.Count > 0)
                 {
                     ShowEventLog(_eventQueue.Dequeue());
-                    yield return new WaitForSeconds(0.5f);
+                    yield return null;
+                    
+                    if (!_isOpen)
+                        scrollRect.verticalNormalizedPosition = 0;
+                    yield return new WaitForSeconds(1f);
                 }
                 else
                 {
@@ -55,17 +84,8 @@ namespace UI.EventLog
 
         private void ShowEventLog(EventLogEntryModel eventLogEntry)
         {
-            MakeSpaceForLogs();
-            
             var messageInstance = Instantiate(eventLogEntryPrefab, transform);
             messageInstance.GetComponent<UIEventLogEntry>().Initialize(eventLogEntry.Message, eventLogEntry.EventObject);
-        }
-
-        private void MakeSpaceForLogs()
-        {
-            if (transform.childCount < 5) return;
-        
-            transform.GetChild(0).GetComponent<UIEventLogEntry>().DestroyMessage();
         }
 
         private string Capitalize(string s)

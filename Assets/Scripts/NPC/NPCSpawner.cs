@@ -15,11 +15,13 @@ public class NPCSpawner : MonoBehaviour
     private void Awake()
     {
         GameEvents.Civilization.OnCivilizationDeath += onCivDeath;
+        GameEvents.Civilization.OnCivilizationLowOnStats += SplitCiv;
     }
 
     private void OnDisable()
     { 
         GameEvents.Civilization.OnCivilizationDeath -= onCivDeath;
+        GameEvents.Civilization.OnCivilizationLowOnStats += SplitCiv;
     }
 
     private void Start()
@@ -30,29 +32,47 @@ public class NPCSpawner : MonoBehaviour
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
-            var civ = Instantiate(civilisationPrefab, spawnLocation, Quaternion.identity,transform);
-            civilisations.Add(civ);
-            civ.GetComponent<Civilization>().SetPopulation(Random.Range(1,8));
-            StartCoroutine(WaitAndSettle(civ));
+            var population = Random.Range(1, 8);
+            
+            SpawnCiv(spawnLocation, population, 20, 0);
         }
     }
+
+    private void SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
+    {
+        var civ = Instantiate(civilisationPrefab, location, Quaternion.identity,transform);
+        civilisations.Add(civ);
+        civ.GetComponent<Civilization>().SetPopulation(population);
+        StartCoroutine(WaitAndSettle(civ, settleRangeIncl, settleRangeExcl));
+    }
     
-    IEnumerator WaitAndSettle(GameObject civ)
+    IEnumerator WaitAndSettle(GameObject civ, int rangeIncl, int rangeExcl)
     {
         // suspend execution for 2 seconds
         yield return new WaitForSeconds(2);
-        if (civ.GetComponent<Civilization>() != null) FindSettlingLocation(civ, 20);
+        if (civ.GetComponent<Civilization>() != null) FindSettlingLocation(civ, rangeIncl, rangeExcl);
     }
     
-    private void FindSettlingLocation(GameObject civ, int range)
+    private void FindSettlingLocation(GameObject civ, int range, int excludedRange)
     {
         Vector3Int gridPos = TM.map.WorldToCell(civ.transform.position);
+
+        List<Vector3Int> excludedLocations = TM.GetSpecificRange(gridPos, excludedRange);
         List<Vector3Int> locations = TM.GetSpecificRange(gridPos, range);
+        foreach (Vector3Int item in excludedLocations)
+        {
+            locations.Remove(item);
+        }
 
         Vector3Int settlingPos = new Vector3Int();
         float winValue = 0;
         foreach(Vector3Int loc in locations)
         {
+            if (TM.IsOcean(loc))
+            {
+                continue;
+            }
+            
             float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
             if(winValue < value)
             {
@@ -62,7 +82,7 @@ public class NPCSpawner : MonoBehaviour
         }
         civ.GetComponent<Civilization>().SetSettlingValues(settlingPos);
         
-        civ.GetComponent<NPCMovement>().MovetoTileAndExecute(settlingPos, Settle);
+        civ.GetComponent<NPCMovement>().MovetoTileInRangeAndExecute(settlingPos, TM.GetSpecificRange(gridPos, range), Settle);
     }
     
     private void Settle(GameObject civObject)
@@ -104,5 +124,14 @@ public class NPCSpawner : MonoBehaviour
         {
             GameEvents.Lifecycle.OnGameEnd.Invoke();
         }
+    }
+
+    private void SplitCiv(GameObject civ)
+    {
+        Civilization civi = civ.GetComponent<Civilization>();
+        if (civi.population <= 3) return;
+        civi.SetPopulation(civi.population/2);
+        
+        SpawnCiv(civ.transform.position, civi.population, 25, 5);
     }
 }
