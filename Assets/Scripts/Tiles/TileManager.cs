@@ -24,11 +24,85 @@ public class TileManager : MonoBehaviour
     {
         Instance = this;
         onUnlockShips.onUnlocked += updateWaterTravel;
+
+        GameEvents.Civilization.OnStatsDecay += ReduceTileStats;
     }
 
     private void OnDisable()
     { 
         onUnlockShips.onUnlocked -= updateWaterTravel;
+        GameEvents.Civilization.OnStatsDecay -= ReduceTileStats;
+    }
+
+    private void ReduceTileStats(GameObject gm)
+    {
+        var tilePos = map.WorldToCell(gm.transform.position);
+
+        var middle = GetSpecificRange(tilePos, 2);
+        var outside = GetSpecificRange(tilePos, 3);
+        var allTiles = outside;
+        foreach (Vector3Int item in middle) { outside.Remove(item); }
+        middle.Remove(tilePos);
+
+        ReduceStats(new List<Vector3Int> { tilePos }, 1f);  // inside: 100%
+        ReduceStats(middle, 0.5f);                          // middle: 50%
+        ReduceStats(outside, 0.25f);                        // outside: 25%
+        
+        // Update heatmaps for all affected chunks.
+        HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
+        foreach (Vector3Int tile in allTiles)
+        {
+            var chunks = getWorldPositionOfTile(tile);
+            foreach (Vector2 chunk in chunks)
+            {
+                affectedChunks.Add(chunk);
+            }
+        }
+
+        // Trigger heatmap updates.
+        foreach (Vector2 chunk in affectedChunks)
+        {
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Fertility
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Firmness
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Vegetation
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Ore
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.AnimalPopulation
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.WaterValue
+            );
+        }
+
+    }
+
+    private void ReduceStats(List<Vector3Int> list, float factor)
+    {
+        foreach (Vector3Int tilePos in list)
+        {
+            if (!dataFromTiles.ContainsKey(tilePos)) continue;
+            Debug.Log("ping from " + factor);
+            dataFromTiles[tilePos].landFertility -= factor;
+            dataFromTiles[tilePos].firmness -= factor;
+            dataFromTiles[tilePos].vegetation -= factor;
+            dataFromTiles[tilePos].ore -= factor;
+            dataFromTiles[tilePos].animalPopulation -= factor;
+            dataFromTiles[tilePos].waterValue -= factor;
+        }
     }
 
     public void InitializeTileData(MapExtractor ME)

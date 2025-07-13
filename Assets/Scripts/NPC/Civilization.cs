@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using CityStuff;
 using DefaultNamespace;
@@ -53,6 +54,7 @@ public class Civilization : MonoBehaviour
     private void Awake()
     {
         GameEvents.Civilization.OnCivilizationMerge += MergeCivilisation;
+        StartCoroutine(StatsDecay(10));
     }
 
     private void OnDisable()
@@ -87,6 +89,19 @@ public class Civilization : MonoBehaviour
                 civi.transform.localPosition = _NPCPoints[i];
             }
         }
+    }
+
+    IEnumerator StatsDecay(float timer)
+    {
+        yield return new WaitForSeconds(timer);
+        if (city == null)
+        {
+            StartCoroutine(StatsDecay(timer));
+            yield return 0;
+        }
+
+        GameEvents.Civilization.OnStatsDecay.Invoke(this.gameObject);
+        StartCoroutine(StatsDecay(timer));
     }
 
     public void SetSettlingValues(Vector3Int vec)
