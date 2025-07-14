@@ -39,12 +39,7 @@ public class NPCMovement : MonoBehaviour
         map = TM?.map;
         transform.position = AdjustCoordsForHeight(transform.position);
     }
-
-    private void UnlockBoats()
-    {
-        boatUnlocked = true;
-    }
-
+    
     # region DEBUG
     [Tooltip("enable to have Civs spawn visual point along their walking path")]
     [SerializeField] private bool DEBUG_PathBreadcrumbs;
@@ -68,91 +63,14 @@ public class NPCMovement : MonoBehaviour
         }
         DEBUG_breadcrumbs.Clear();
     }
-#endregion
+    #endregion
 
-    public void CalculateRange()
-    {
-        var p = transform.position;
-        p.y = -1;
-        range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
+    # region boat stuff
+    private void UnlockBoats()
+    { 
+        boatUnlocked = true;
     }
-
-    private Vector3 AdjustCoordsForHeight(Vector3 coord)
-    {
-        var height = ME.GetHeightByWorldCoord(coord);
-        return new Vector3(coord.x,height , coord.z);
-    }
-    
-    public void MovetoTile(Vector3Int gridPos)
-    {
-        MovetoTileAndExecute(gridPos, null);
-    }
-    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
-    {
-        MovetoTileInRangeAndExecute(gridPos, range, null);
-    }
-    public void MovetoTileAndExecute(Vector3Int gridPos, Action<GameObject> doOnReached)
-    {
-        CalculateRange();
-        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
-    }
-    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
-    {
-        DEBUG_clearBreadcrumbs();
-        StopAllCoroutines();
-        
-        var npcGridPos = map.WorldToCell(transform.position);
-        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
-        
-        DEBUG_spawnBreadcrumbs(AdjustCoordsForHeight(map.CellToWorld(gridPos)),5);
-        
-        StartCoroutine(FollowPath(path, doOnReached));
-    }
-    
-    IEnumerator FollowPath(Stack<Vector3Int> path, Action<GameObject> onReached)
-    {
-        // one pop to remove first path point which is the current pos
-        if (!path.TryPop(out var pather)) yield break;
-        
-        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
-
-        while (path.Count > 0)
-        {
-            yield return StartCoroutine("MovetoTarget", 
-                AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
-        }
-        
-        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
-        DEBUG_clearBreadcrumbs();
-
-        onReached?.Invoke(gameObject);
-    }
-    
-    IEnumerator MovetoTarget(Vector3 target)
-    {
-        boatCheck(target);
-        DEBUG_spawnBreadcrumbs(target,2);
-        
-        var position = transform.position;
-        
-        while (Vector3.Distance(position, target) > 5f)
-        {
-            var direction = (target - position).normalized;
-            var lookRotation = Quaternion.LookRotation(direction);
-            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
-                Time.deltaTime);
-
-            var cost = TM.GetTravelCost(map.WorldToCell(position));
-            movementSpeed = Math.Max(1, maxSpeed - cost/10);
-
-            transform.rotation = rotation;
-            position += transform.forward * (movementSpeed * Time.deltaTime);
-            transform.position = AdjustCoordsForHeight(position);
-           
-            yield return null;
-        }
-    }
-
+   
     private void boatCheck(Vector3 target)
     {
         if (!boatUnlocked) return;
@@ -182,6 +100,93 @@ public class NPCMovement : MonoBehaviour
             GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
         }
     }
+    #endregion
+
+    public void MovetoTile(Vector3Int gridPos)
+    {
+        MovetoTileAndExecute(gridPos, null);
+    }
+    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
+    {
+        MovetoTileInRangeAndExecute(gridPos, range, null);
+    }
+    public void MovetoTileAndExecute(Vector3Int gridPos, Action<GameObject> doOnReached)
+    {
+        CalculateRange();
+        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
+    }
+    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
+    {
+        DEBUG_clearBreadcrumbs();
+        StopAllCoroutines();
+        
+        var npcGridPos = map.WorldToCell(transform.position);
+        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
+
+        var destination = AdjustCoordsForHeight(map.CellToWorld(gridPos));
+        DEBUG_spawnBreadcrumbs(destination,5);
+        
+        StartCoroutine(FollowPath(path, destination, doOnReached));
+    }
+    
+    IEnumerator FollowPath(Stack<Vector3Int> path, Vector3 destination, Action<GameObject> onReached)
+    {
+        // one pop to remove first path point which is the current pos
+        if (!path.TryPop(out var pather)) yield break;
+        
+        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
+
+        while (path.Count > 0)
+        {
+            yield return StartCoroutine("MovetoTarget", 
+                AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+        }
+        
+        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
+        DEBUG_clearBreadcrumbs();
+        transform.position = destination;
+        
+        onReached?.Invoke(gameObject);
+    }
+    
+    IEnumerator MovetoTarget(Vector3 target)
+    {
+        boatCheck(target);
+        DEBUG_spawnBreadcrumbs(target,2);
+        
+        var position = transform.position;
+        
+        while (Vector3.Distance(position, target) > 10f)
+        {
+            var direction = (target - position).normalized;
+            var lookRotation = Quaternion.LookRotation(direction);
+            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
+                Time.deltaTime);
+
+            var cost = TM.GetTravelCost(map.WorldToCell(position));
+            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+
+            transform.rotation = rotation;
+            position += transform.forward * (movementSpeed * Time.deltaTime);
+            transform.position = AdjustCoordsForHeight(position);
+           
+            yield return null;
+        }
+    }
+
+    #region pathfinding
+    public void CalculateRange()
+    {
+        var p = transform.position;
+        p.y = -1;
+        range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
+    }
+
+    private Vector3 AdjustCoordsForHeight(Vector3 coord)
+    {
+        var height = ME.GetHeightByWorldCoord(coord);
+        return new Vector3(coord.x,height , coord.z);
+    }    
     
     private Stack<Vector3Int> Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
     {
@@ -289,5 +294,6 @@ public class NPCMovement : MonoBehaviour
             distance = int.MaxValue;
             neighbors = TileManager.Instance.getNeighbors(gridPos);
         }
-    }
+    } 
+    #endregion
 }

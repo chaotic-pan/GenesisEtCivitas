@@ -31,6 +31,11 @@ public class NPCSpawner : MonoBehaviour
         for(int i=0; i< civilisationCount; i++)
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
+            while (TM.IsOcean(TM.spawnLocations[random]))
+            {
+                random = Random.Range(0, TM.spawnLocations.Count);
+            }
+            
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
             var population = Random.Range(1, 8);
             

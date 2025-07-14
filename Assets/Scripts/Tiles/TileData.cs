@@ -15,8 +15,12 @@ public class TileData
         height
         ;
 
+    public bool isWater;
+
     public TileData(float travelCost, float landFertility, float firmness, float ore, float vegetation,
-        float animalPopulation, float animalHostility, float climate, float waterValue, float height)
+        float animalPopulation, float animalHostility, float climate, float waterValue, float height
+        , bool isWater
+        )
     {
         this.travelCost = travelCost; 
         this.landFertility = landFertility;
@@ -28,5 +32,6 @@ public class TileData
         this.climate = climate;
         this.waterValue = waterValue;
         this.height = height;
+        this.isWater = isWater;
     }
 }

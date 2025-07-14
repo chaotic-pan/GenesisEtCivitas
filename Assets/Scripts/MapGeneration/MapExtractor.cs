@@ -19,6 +19,7 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
+    public float waterheight = 0.21f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
     [SerializeField] private int points = 1914;
@@ -59,7 +60,6 @@ public class MapExtractor : MonoBehaviour
             GenerateMap();
             return;
         }
-
 
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/" + fileName;
@@ -103,8 +103,6 @@ public class MapExtractor : MonoBehaviour
 
             i++;
         }
-        
-        CalculateTravelCost();
     }
 
     public void GenerateMap()
@@ -114,13 +112,22 @@ public class MapExtractor : MonoBehaviour
         {
             DestroyImmediate(chunk);
         }
-
+        
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
-
         var path = "./Assets/GenesisMap/" + fileName;
         if (SO_fileLoc.isBuild && SO_fileLoc.MapLocation != null) path = SO_fileLoc.MapLocation;
         byte[] byteArray = File.ReadAllBytes(path);
 
+        heightMap = new float[points, points];
+        travelcost = new float[points, points];
+        fertility = new int[points, points];
+        firmness = new int[points, points];
+        ore = new int[points, points];
+        vegetation = new int[points, points];
+        animalPopulation = new int[points, points];
+        animalHostility = new int[points, points];
+        climate = new int[points, points];
+        
         // überall wo 0 ist, ist Wasser
         // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
@@ -168,9 +175,6 @@ public class MapExtractor : MonoBehaviour
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot),
             textures);
-
-        CalculateTravelCost();
-
     }
 
     public Dictionary<Vector2, Texture2D> GetTerrainTextures()
@@ -216,15 +220,6 @@ public class MapExtractor : MonoBehaviour
         }
 
         return colorMaps;
-    }
-
-    private void CalculateTravelCost()
-    {
-        foreach (var coord in VectorUtils.GridCoordinates(points, points))
-        {
-            travelcost[coord.x, coord.y] =  heightMap[coord.x, coord.y] <= 0.1f ? 20 :
-                heightMap[coord.x, coord.y]*mapHeightMultiplier;
-        }
     }
 
     public float GetHeightByWorldCoord(Vector3 coord)
