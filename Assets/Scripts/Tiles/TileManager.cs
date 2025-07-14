@@ -13,6 +13,7 @@ public class TileManager : MonoBehaviour
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
     private Dictionary<Vector3Int, TileData> dataFromTiles = new();
+    public Dictionary<Vector3, Vector3Int> worldToGrid = new();
     public List<Vector3Int> spawnLocations = new();
     [SerializeField] private Skill onUnlockShips;
     
@@ -35,6 +36,7 @@ public class TileManager : MonoBehaviour
 
     private void ReduceTileStats(GameObject gm)
     {
+        Debug.Log("REDUCING");
         var tilePos = map.WorldToCell(gm.transform.position);
 
         var middle = GetSpecificRange(tilePos, 2);
@@ -57,36 +59,20 @@ public class TileManager : MonoBehaviour
                 affectedChunks.Add(chunk);
             }
         }
+        
+        var chunksList = affectedChunks.ToList();
 
-        // Trigger heatmap updates.
-        foreach (Vector2 chunk in affectedChunks)
+        var affectedOverlays = new[]
         {
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Fertility
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Firmness
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Vegetation
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Ore
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.AnimalPopulation
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.WaterValue
-            );
-        }
+            MapDisplay.MapOverlay.Fertility,
+            MapDisplay.MapOverlay.Firmness,
+            MapDisplay.MapOverlay.Vegetation,
+            MapDisplay.MapOverlay.Ore,
+            MapDisplay.MapOverlay.AnimalPopulation,
+            MapDisplay.MapOverlay.WaterValue,
+        };
 
+        UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
     }
 
     private void ReduceStats(List<Vector3Int> list, float factor)
@@ -94,7 +80,6 @@ public class TileManager : MonoBehaviour
         foreach (Vector3Int tilePos in list)
         {
             if (!dataFromTiles.ContainsKey(tilePos)) continue;
-            Debug.Log("ping from " + factor);
             dataFromTiles[tilePos].landFertility -= factor;
             dataFromTiles[tilePos].firmness -= factor;
             dataFromTiles[tilePos].vegetation -= factor;
@@ -113,6 +98,7 @@ public class TileManager : MonoBehaviour
             for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
             {
                 var gridPos = new Vector3Int(x, y, 0);
+                var worldPos = map.CellToWorld(gridPos);
                 TileBase tile = map.GetTile(gridPos);
                 if (tile != null)
                 {
@@ -132,6 +118,7 @@ public class TileManager : MonoBehaviour
                         , height < waterHeight
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
+                    worldToGrid.TryAdd(worldPos, gridPos);
                     if (!dataFromTiles[gridPos].isWater)
                     {
                         spawnLocations.Add(gridPos);
@@ -229,6 +216,12 @@ public class TileManager : MonoBehaviour
         var gridPos = map.WorldToCell(coordinates);
         
         return getTileDataByGridCoords(gridPos);
+    }
+    
+    public Vector3Int getTileDataKeyByWorldCoords(Vector3 coordinates)
+    {
+        var gridPos = map.WorldToCell(coordinates);
+        return gridPos;
     }
 
     public TileData getTileDataByGridCoords(int gridX, int gridY)

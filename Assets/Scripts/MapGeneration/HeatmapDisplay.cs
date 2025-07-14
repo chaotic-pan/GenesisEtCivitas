@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Events;
 using Terrain;
 using UI;
+using Unity.Jobs;
 using UnityEngine;
 using Utilities;
 
@@ -22,14 +25,18 @@ namespace MapGeneration
         private Dictionary<MapDisplay.MapOverlay, Func<TileData, float>> _overlayValueByTile;
         private Dictionary<MapDisplay.MapOverlay, Heatmap> _heatmapDict;
         private int _chunkSize;
+        private Dictionary<Vector2, Dictionary<Vector2Int, Vector3Int>> _tileDict = new();
         
         public static HeatmapDisplay Instance;
+
+        private float _halfChunkSize;
         
         private void Awake()
         {
             Instance = this;
             UIEvents.UIMap.OnOpenHeatmap += OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
+            UIEvents.UIMap.OnUpdateMultipleHeatmapChunks += UpdateMultipleHeatMapChunks;
 
             if (SO_fileLoc.isBuild)
                 GameEvents.Lifecycle.OnTileManagerFinishedInitializing += LoadTextures;
@@ -39,6 +46,7 @@ namespace MapGeneration
         {
             UIEvents.UIMap.OnOpenHeatmap -= OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks -= UpdateHeatMapChunks;
+            UIEvents.UIMap.OnUpdateMultipleHeatmapChunks -= UpdateMultipleHeatMapChunks;
             GameEvents.Lifecycle.OnTileManagerFinishedInitializing -= LoadTextures;
         }
 
@@ -60,6 +68,9 @@ namespace MapGeneration
 
         private void LoadTextures()
         {
+            _halfChunkSize = _chunkSize / 2;
+            _tileManager = TileManager.Instance;
+            var _worldPosition = new Vector3(0, 0, 0);
             var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
             var heatmaps = heatmapGenerator.GenerateAllHeatmaps(tilemapGen);
 
@@ -69,11 +80,19 @@ namespace MapGeneration
             {
                 for (var x = 0; x < 8; x++)
                 {
+                    _tileDict[new Vector2(x, y)] = new Dictionary<Vector2Int, Vector3Int>();
                     foreach (var overlay in _overlayValueByTile.Keys)
                     {
                         var chunk = new Vector2(x, y);
                         var tex = heatmaps[chunk][overlay];
                         _maps[overlay].Add(chunk, tex);
+                        
+                        foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+                        {
+                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - _halfChunkSize) + 1;
+                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - _halfChunkSize);
+                            _tileDict[new Vector2(x, y)][coord] = _tileManager.getTileDataKeyByWorldCoords(_worldPosition);
+                        }
                     }
                 }
             }
@@ -93,6 +112,13 @@ namespace MapGeneration
                         var tex = new Texture2D(_chunkSize, _chunkSize, TextureFormat.ARGB32, false);
                         tex.LoadImage(bytes);
                         _maps[overlay].Add(new Vector2(x, y), tex);
+                        
+                        /*foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+                        {
+                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - halfChunkSize) + 1;
+                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - halfChunkSize);
+                            _tileDict[new Vector2(x, y)][coord] = tileManager.getTileDataByWorldCoords(_worldPosition);
+                        }*/
                     }
                 }
             }
@@ -106,55 +132,70 @@ namespace MapGeneration
             } 
         }
         
-        private void UpdateHeatMapChunks(List<Vector2> chunkPos, MapDisplay.MapOverlay overlay)
+        private async void UpdateHeatMapChunks(List<Vector2> chunkPos, MapDisplay.MapOverlay overlay)
         {
+            
             foreach (var pos in chunkPos)
             {
-                OnSingleHeatmapOnChunk(pos, overlay);
+                var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
+                _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
             }
             
             if (_currentMapOverlay == overlay)
                 mapDisplay.ReplaceTexture(_maps[overlay]);
         }
         
-        private void OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
+        private async void UpdateMultipleHeatMapChunks(List<Vector2> chunkPos, MapDisplay.MapOverlay[] overlays)
         {
-            var tileManager = TileManager.Instance;
-            var worldPosition = new Vector3(0, 0, 0);
-            var halfChunkSize = _chunkSize / 2;
-            var colorMap = new Color[_chunkSize * _chunkSize];
-            
-            foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+            foreach (var overlay in overlays)
             {
-                    worldPosition.x = (chunk.x * (_chunkSize - 1)) + (coord.x - halfChunkSize) + 1;
-                    worldPosition.z = -(chunk.y * (_chunkSize - 1)) + (coord.y - halfChunkSize);
-                    
-                    var tile = tileManager.getTileDataByWorldCoords(worldPosition);
-                    
+                foreach (var pos in chunkPos)
+                {
+                    var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
+                    _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+                }
+            }
+            
+            if (overlays.Contains(_currentMapOverlay))
+                mapDisplay.ReplaceTexture(_maps[_currentMapOverlay]);
+        }
+        
+        private async Task<Color[]> OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
+        {
+            var colorMap = new Color[_chunkSize * _chunkSize];
+            var tileChunk = _tileDict[chunk];
+            
+            var heatmapOverlay = _heatmapDict[overlay];
+            var min = heatmapOverlay.min;
+            var max = heatmapOverlay.max;
+            var gradient = heatmapOverlay.gradient;
+            var heatPointNull = HeatToColor(gradient, min, min, max);
+            
+            return await Task.Run(() =>
+            {
+                foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+                {
+                    var tileGridCoords = tileChunk[coord];
+                    var tile = _tileManager.getTileDataByGridCoords(tileGridCoords);
+
                     var colorMapCoordinate = (_chunkSize - 1 - coord.y) * _chunkSize + coord.x;
 
                     if (tile == null)
                     {
-                        var heatPointNull = HeatToColor(_heatmapDict[overlay].gradient,
-                            _heatmapDict[overlay].min, _heatmapDict[overlay].min,
-                            _heatmapDict[overlay].max);
-
                         colorMap[colorMapCoordinate] = heatPointNull;
                         continue;
                     }
-                    
+
                     var tileValue = _overlayValueByTile[overlay](tile);
-                        
-                    var heatPoint = HeatToColor(_heatmapDict[overlay].gradient,
-                        tileValue, _heatmapDict[overlay].min,
-                        _heatmapDict[overlay].max);
+
+                    var heatPoint = HeatToColor(gradient, tileValue, min, max);
 
                     colorMap[colorMapCoordinate] = heatPoint;
-            }
+                }
 
-            _maps[overlay][chunk] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+                return colorMap;
+            });
         }
-        
         
 
         private void OnChangeMap(MapDisplay.MapOverlay mapOverlay)

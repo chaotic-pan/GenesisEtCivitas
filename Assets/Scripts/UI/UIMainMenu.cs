@@ -10,7 +10,6 @@ public class UIMainMenu : MonoBehaviour
     [SerializeField] private UILoadingScreen loadingScreen;
     [SerializeField] private TMP_InputField mapInput;
     [SerializeField] private MapFileLocation mapFileLocation;
-    [SerializeField] private Toggle tutorial;
 
     public void OnStart()
     {

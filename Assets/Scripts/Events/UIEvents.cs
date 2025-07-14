@@ -17,6 +17,7 @@ namespace UI
         {
             public UnityAction<MapDisplay.MapOverlay> OnOpenHeatmap;
             public UnityAction<List<Vector2>, MapDisplay.MapOverlay> OnUpdateHeatmapChunks;
+            public UnityAction<List<Vector2>, MapDisplay.MapOverlay[]> OnUpdateMultipleHeatmapChunks;
         }
         
         public class UIUpdateEvents
