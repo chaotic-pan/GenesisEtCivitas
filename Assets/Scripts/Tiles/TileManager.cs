@@ -17,22 +17,97 @@ public class TileManager : MonoBehaviour
     [SerializeField] private Skill onUnlockShips;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    private float waterHeight = 0.3f;
+    private float waterHeight = 0.1f;
     private float waterTravelCost = 50;
-    
     private void Awake()
     {
         Instance = this;
         onUnlockShips.onUnlocked += updateWaterTravel;
+
+        GameEvents.Civilization.OnStatsDecay += ReduceTileStats;
     }
 
     private void OnDisable()
     { 
         onUnlockShips.onUnlocked -= updateWaterTravel;
+        GameEvents.Civilization.OnStatsDecay -= ReduceTileStats;
+    }
+
+    private void ReduceTileStats(GameObject gm)
+    {
+        var tilePos = map.WorldToCell(gm.transform.position);
+
+        var middle = GetSpecificRange(tilePos, 2);
+        var outside = GetSpecificRange(tilePos, 3);
+        var allTiles = outside;
+        foreach (Vector3Int item in middle) { outside.Remove(item); }
+        middle.Remove(tilePos);
+
+        ReduceStats(new List<Vector3Int> { tilePos }, 1f);  // inside: 100%
+        ReduceStats(middle, 0.5f);                          // middle: 50%
+        ReduceStats(outside, 0.25f);                        // outside: 25%
+        
+        // Update heatmaps for all affected chunks.
+        HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
+        foreach (Vector3Int tile in allTiles)
+        {
+            var chunks = getWorldPositionOfTile(tile);
+            foreach (Vector2 chunk in chunks)
+            {
+                affectedChunks.Add(chunk);
+            }
+        }
+
+        // Trigger heatmap updates.
+        foreach (Vector2 chunk in affectedChunks)
+        {
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Fertility
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Firmness
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Vegetation
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.Ore
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.AnimalPopulation
+            );
+            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                new List<Vector2> { chunk },
+                MapDisplay.MapOverlay.WaterValue
+            );
+        }
+
+    }
+
+    private void ReduceStats(List<Vector3Int> list, float factor)
+    {
+        foreach (Vector3Int tilePos in list)
+        {
+            if (!dataFromTiles.ContainsKey(tilePos)) continue;
+            Debug.Log("ping from " + factor);
+            dataFromTiles[tilePos].landFertility -= factor;
+            dataFromTiles[tilePos].firmness -= factor;
+            dataFromTiles[tilePos].vegetation -= factor;
+            dataFromTiles[tilePos].ore -= factor;
+            dataFromTiles[tilePos].animalPopulation -= factor;
+            dataFromTiles[tilePos].waterValue -= factor;
+        }
     }
 
     public void InitializeTileData(MapExtractor ME)
     {
+        waterHeight = ME.meshHeightCurve.Evaluate(ME.waterheight) * ME.mapHeightMultiplier;
+        
         for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
         {
             for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
@@ -54,11 +129,20 @@ public class TileManager : MonoBehaviour
                         ME.climate[p.x,p.y],
                         height < waterHeight ? 30 : 1,
                         height
+                        , height < waterHeight
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
-                    if (height > waterHeight)
+                    if (!dataFromTiles[gridPos].isWater)
                     {
                         spawnLocations.Add(gridPos);
+                    }
+                    else
+                    {
+                        // var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        // var a = map.CellToWorld(gridPos);
+                        // var b = new Vector3(a.x,height , a.z);
+                        // s.transform.localScale = new Vector3(3,3,3);
+                        // s.transform.position = b;
                     }
                 }
             }
@@ -73,8 +157,6 @@ public class TileManager : MonoBehaviour
      * Safety: animalHostility, heightMap
      * Shelter: firmness, ore, vegetation
      * Energy: climate */
-
-
     public float GetFood(Vector3Int coords)
     {
         return dataFromTiles.ContainsKey(coords) ? 
@@ -114,7 +196,7 @@ public class TileManager : MonoBehaviour
 
     public bool IsOcean(Vector3Int coords)
     {
-        return  dataFromTiles.ContainsKey(coords) && dataFromTiles[coords].height < waterHeight;
+        return !dataFromTiles.ContainsKey(coords) || dataFromTiles[coords].isWater;
     }
     
     public float GetTravelCost(Vector3Int coords)
