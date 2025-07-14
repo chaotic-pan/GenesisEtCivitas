@@ -96,9 +96,7 @@ public class NPCSpawner : MonoBehaviour
         
         foreach (var civil in civilisations)
         {
-            if (civil == civObject) continue;
-            
-            if (civil == null) continue;
+            if (civil == null || civil == civObject) continue;
             var civilPos = TM.map.WorldToCell(civil.transform.position);
             
             if (civPos == civilPos)
@@ -117,6 +115,7 @@ public class NPCSpawner : MonoBehaviour
             {
                 civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
                 GameEvents.Civilization.OnCityFounded.Invoke(civObject);
+                civ.GetComponent<Civilization>().spawnCivis(0);
             }
         }
         

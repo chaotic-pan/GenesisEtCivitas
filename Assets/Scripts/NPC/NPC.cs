@@ -112,7 +112,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
 
     }
     
-    private void UpdateValues()
+    public void UpdateValues()
     {
         if (civ == null) return;
         _npcModel.Food = civ.Food;

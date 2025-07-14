@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using CityStuff;
 using DefaultNamespace;
 using Events;
-using NUnit.Framework;
 using UnityEngine;
 
 public class Civilization : MonoBehaviour
@@ -12,7 +10,6 @@ public class Civilization : MonoBehaviour
     // base scores food, water, safety, shelter and energy go from 0 to 500
     // combined scores belief and happiness are calculated
     // ressources are gathered and go up to 500
-
     
     [SerializeField] public string civilisationName;
     [SerializeField] private float food = 250;
@@ -71,22 +68,33 @@ public class Civilization : MonoBehaviour
     {
         this.population = population;
         GetComponent<NPC>()._npcModel.Population = population;
+        spawnCivis(population);
+    }
 
-        var civPopDif = (transform.childCount-1) - population;
+    public void spawnCivis(int count)
+    {
+        var civPopDif = (transform.childCount-1) - count;
         
-        if (civPopDif > 0)
+        switch (civPopDif)
         {
-            for (int i = transform.childCount; i > population+1; i--)
+            case > 0:
             {
-                Destroy(transform.GetChild(i-1).gameObject);
+                for (int i = transform.childCount; i > count+1; i--)
+                {
+                    Destroy(transform.GetChild(i-1).gameObject);
+                }
+
+                break;
             }
-        } 
-        if (civPopDif < 0)
-        {
-            for (int i = 0; i < -civPopDif; i++)
+            case < 0:
             {
-                var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-                civi.transform.localPosition = _NPCPoints[i];
+                for (int i = 0; i < -civPopDif; i++)
+                {
+                    var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+                    civi.transform.localPosition = _NPCPoints[i];
+                }
+
+                break;
             }
         }
     }
@@ -111,6 +119,9 @@ public class Civilization : MonoBehaviour
         safety = TM.GetSafety(vec);
         shelter = TM.GetShelter(vec);
         energy = TM.GetEnergy(vec);
+
+        CalcValues();
+        if (TryGetComponent<NPC>(out var npc)) npc.UpdateValues();
     }
 
     public void CalcValues()
@@ -126,13 +137,13 @@ public class Civilization : MonoBehaviour
         {
             var newPop = civAObject.GetComponent<Civilization>().population;
             
-            for (int i = population; i < population+newPop; i++)
-            {
-                if (i >= _NPCPoints.Count) break;
-                var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-                civi.transform.localPosition = _NPCPoints[i];
-                civi.transform.LookAt(transform.position);
-            }
+            // for (int i = population; i < population+newPop; i++)
+            // {
+            //     if (i >= _NPCPoints.Count) break;
+            //     var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
+            //     civi.transform.localPosition = _NPCPoints[i];
+            //     civi.transform.LookAt(transform.position);
+            // }
             population +=newPop;
             GetComponent<NPC>()._npcModel.Population = population;
         }
