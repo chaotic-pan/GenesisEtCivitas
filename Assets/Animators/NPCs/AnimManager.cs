@@ -104,12 +104,11 @@ public class AnimManager : MonoBehaviour
         Axe.SetActive(isTreeCutting);
     }
 
-    private void Preach(GameObject go, float duration)
+    private void Preach(GameObject go)
     {
         if (go == transform.parent.gameObject)
         {
-            StartCoroutine(Preach(duration));
-            SetIsPreaching(true);
+            StartCoroutine(Preach(20));
         }
     }
 
@@ -122,6 +121,9 @@ public class AnimManager : MonoBehaviour
     
     IEnumerator Preach(float duration)
     {
+        yield return new WaitForSecondsRealtime(5f);
+        
+        SetIsPreaching(true);
         float timer = 0;
         while (timer < duration)
         {
@@ -129,6 +131,7 @@ public class AnimManager : MonoBehaviour
             timer += 2f;
             yield return new WaitForSecondsRealtime(2f);
         }
+        GameEvents.Civilization.OnPreachEnd.Invoke(transform.parent.gameObject);
         SetIsPreaching(false);
     }
 

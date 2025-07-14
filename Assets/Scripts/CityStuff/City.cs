@@ -15,6 +15,7 @@ namespace CityStuff
         [SerializeField] private GameObject houseGameObject;
         [SerializeField] private GameObject wellGameObject;
         [SerializeField] private GameObject churchGameObject;
+        [SerializeField] private GameObject citycentre;
     
         private House _house;
         private Well _well;
@@ -47,6 +48,12 @@ namespace CityStuff
             CityName = civ.Language.GenerateWord();
             
             BuildHouse();
+            
+            // build city centre hex
+            var instance = Instantiate(citycentre, transform);
+            instance.transform.localPosition = Vector3.zero;
+            var desiredHeight = MapExtractor.Instance.GetHeightByWorldCoord(instance.transform.position);
+            instance.transform.position = new Vector3(instance.transform.position.x, desiredHeight, instance.transform.position.z);
         }
 
         public void BuildChurch()

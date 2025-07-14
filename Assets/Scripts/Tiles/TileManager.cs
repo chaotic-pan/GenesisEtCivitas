@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Events;
 using Player.Skills;
-using Terrain;
-using UI;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -47,45 +45,45 @@ public class TileManager : MonoBehaviour
         ReduceStats(middle, 0.5f);                          // middle: 50%
         ReduceStats(outside, 0.25f);                        // outside: 25%
         
-        // Update heatmaps for all affected chunks.
-        HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
-        foreach (Vector3Int tile in allTiles)
-        {
-            var chunks = getWorldPositionOfTile(tile);
-            foreach (Vector2 chunk in chunks)
-            {
-                affectedChunks.Add(chunk);
-            }
-        }
-
-        // Trigger heatmap updates.
-        foreach (Vector2 chunk in affectedChunks)
-        {
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Fertility
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Firmness
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Vegetation
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.Ore
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.AnimalPopulation
-            );
-            UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-                new List<Vector2> { chunk },
-                MapDisplay.MapOverlay.WaterValue
-            );
-        }
+        // // Update heatmaps for all affected chunks.
+        // HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
+        // foreach (Vector3Int tile in allTiles)
+        // {
+        //     var chunks = getWorldPositionOfTile(tile);
+        //     foreach (Vector2 chunk in chunks)
+        //     {
+        //         affectedChunks.Add(chunk);
+        //     }
+        // }
+        //
+        // // Trigger heatmap updates.
+        // foreach (Vector2 chunk in affectedChunks)
+        // {
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.Fertility
+        //     );
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.Firmness
+        //     );
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.Vegetation
+        //     );
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.Ore
+        //     );
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.AnimalPopulation
+        //     );
+        //     UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+        //         new List<Vector2> { chunk },
+        //         MapDisplay.MapOverlay.WaterValue
+        //     );
+        // }
 
     }
 
@@ -94,7 +92,6 @@ public class TileManager : MonoBehaviour
         foreach (Vector3Int tilePos in list)
         {
             if (!dataFromTiles.ContainsKey(tilePos)) continue;
-            Debug.Log("ping from " + factor);
             dataFromTiles[tilePos].landFertility -= factor;
             dataFromTiles[tilePos].firmness -= factor;
             dataFromTiles[tilePos].vegetation -= factor;
@@ -135,14 +132,6 @@ public class TileManager : MonoBehaviour
                     if (!dataFromTiles[gridPos].isWater)
                     {
                         spawnLocations.Add(gridPos);
-                    }
-                    else
-                    {
-                        // var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                        // var a = map.CellToWorld(gridPos);
-                        // var b = new Vector3(a.x,height , a.z);
-                        // s.transform.localScale = new Vector3(3,3,3);
-                        // s.transform.position = b;
                     }
                 }
             }
@@ -214,10 +203,6 @@ public class TileManager : MonoBehaviour
         }
         
         // TODO update all chunks
-        // UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-        //     new List<Vector2> { chunk }, 
-        //     MapDisplay.MapOverlay.Travelcost
-        // );
     }
     
     public TileData getTileDataByWorldCoords(float x, float y, float z)

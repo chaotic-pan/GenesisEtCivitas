@@ -103,6 +103,8 @@ public class MapExtractor : MonoBehaviour
 
             i++;
         }
+
+        CalculateTravelCost();
     }
 
     public void GenerateMap()
@@ -175,8 +177,17 @@ public class MapExtractor : MonoBehaviour
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot),
             textures);
+        CalculateTravelCost();
     }
 
+    private void CalculateTravelCost()
+    {
+        foreach (var coord in VectorUtils.GridCoordinates(points, points))
+        {
+            travelcost[coord.x, coord.y] =  heightMap[coord.x, coord.y] <= 0.1f ? 20 :
+                heightMap[coord.x, coord.y]*mapHeightMultiplier;
+        }
+    }
     public Dictionary<Vector2, Texture2D> GetTerrainTextures()
     {
         var colorMap = WriteColorMap(heightMap, chunkCountRoot);

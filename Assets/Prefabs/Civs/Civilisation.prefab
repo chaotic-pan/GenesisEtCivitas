@@ -81,6 +81,7 @@ GameObject:
   - component: {fileID: 7232340983693077581}
   - component: {fileID: 6283251092642932171}
   - component: {fileID: 4585757020402315898}
+  - component: {fileID: 5446797983808942996}
   m_Layer: 0
   m_Name: Civilisation
   m_TagString: Untagged
@@ -186,6 +187,19 @@ MonoBehaviour:
   energy: 1
   population: 0
   city: {fileID: 0}
+  civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
+--- !u!114 &5446797983808942996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618963362583421363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd222129a4c49d19bb845318b2cff57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
 --- !u!1001 &709583843340835750
 PrefabInstance:
