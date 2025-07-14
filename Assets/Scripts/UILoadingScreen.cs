@@ -9,6 +9,7 @@ public class UILoadingScreen : MonoBehaviour
 {
      [Header("Level To Load")]
      [SerializeField] private string levelName;
+     [SerializeField] private string tutorialName;
      
      [Header("Creature feature")]
      [SerializeField] private AnimManager animManager;
@@ -24,6 +25,8 @@ public class UILoadingScreen : MonoBehaviour
      [SerializeField] private CanvasGroup loadingPanel;
      [SerializeField] private GameObject creatureFeature;
      
+     [SerializeField] private MapFileLocation mapFileLocation;
+     
      private bool _isLoading;
      
      public void LoadLevel()
@@ -32,22 +35,31 @@ public class UILoadingScreen : MonoBehaviour
           
           animManager.SetIsDancing(true);
           _isLoading = true;
-          StartCoroutine(LoadLevelAsync());
+          StartCoroutine(LoadLevelAsync(levelName));
      }
 
+     public void LoadTutorial()
+     {
+          Destroy(eventSystem);
+          
+          animManager.SetIsDancing(true);
+          _isLoading = true;
+          StartCoroutine(LoadLevelAsync(tutorialName));
+     }
+     
      private void Update()
      {
           if (_isLoading)
                cameraContainer.transform.Rotate(new Vector3(0f, 0.1f, 0f));
      }
 
-     IEnumerator LoadLevelAsync()
+     IEnumerator LoadLevelAsync(string level)
      {
           // fade in loading screen
           yield return StartCoroutine(FadeIn());
           
           // load level additively
-          var asyncLoad = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
+          var asyncLoad = SceneManager.LoadSceneAsync(level, LoadSceneMode.Additive);
           
           while (asyncLoad.progress < 0.9f)
           {

@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 4585757020402315898}
   m_Layer: 0
   m_Name: Civilisation
-  m_TagString: Untagged
+  m_TagString: Civi
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

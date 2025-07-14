@@ -34,6 +34,8 @@ namespace UI
             public UnityAction<Skill> OnOpenSkillItem;
             public UnityAction OnMouseEnterUI;
             public UnityAction OnMouseExitUI;
+            public UnityAction OnBuySkill;
+            public UnityAction OnUseSkill;
         }
     }
 }
