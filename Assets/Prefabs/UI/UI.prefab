@@ -63,7 +63,7 @@ MonoBehaviour:
   _playerController: {fileID: 0}
   onUnlockRain: {fileID: 11400000, guid: 00e72bc87fda1bc488fbb0813bcd8fec, type: 2}
   onUnlockEarthquake: {fileID: 11400000, guid: ae37a0204b4746449939f3c1dcfe96d1, type: 2}
-  onUnlockPlantGrowth: {fileID: 0}
+  onUnlockPlantGrowth: {fileID: 11400000, guid: 51e5ecb276c70f74e9ab4fe3c7b87aab, type: 2}
 --- !u!114 &8644050630092386230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1701,7 +1701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3781283525328816861, guid: 310520ec7da58f140b9108af16761f37, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6131753761699059737, guid: 310520ec7da58f140b9108af16761f37, type: 3}
       propertyPath: m_AnchorMax.y
