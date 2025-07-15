@@ -50,6 +50,12 @@ namespace Player
 
         private void HandleTileClick()
         {
+            if (_playerModel.InfluencePoints < _activeAbility.Cost)
+            {
+                Debug.Log("Not enough IP!");
+                CancelAbility();
+                return;
+            }
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             var plane = new Plane(Vector3.up, Vector3.zero);
             if (plane.Raycast(ray, out var distance))
@@ -118,6 +124,7 @@ namespace Player
                 AbilityType.Rain => gameObject.AddComponent<RainAbility>(),
                 AbilityType.Earthquake => gameObject.AddComponent<EarthquakeAbility>(),
                 AbilityType.SendSaviour => gameObject.AddComponent<SendSaviourAbility>(),
+                AbilityType.PlantGrowth => gameObject.AddComponent<PlantGrowthAbility>(),
                 _ => null
             };
             if (!_activeAbility) return;

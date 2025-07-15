@@ -6,7 +6,8 @@ namespace Player.Abilities
     {
         Rain,
         Earthquake,
-        SendSaviour
+        SendSaviour,
+        PlantGrowth
     }
     
     public class PlayerAbility : MonoBehaviour
@@ -14,6 +15,7 @@ namespace Player.Abilities
         public virtual int Cost { get; set; }
         public virtual AbilityType Type { get; set; }
         public virtual int EffectDiameter { get; } = 1;
+        public virtual float InfluenceAmount { get; } = 10f;
 
         public virtual void EnterAbility() {}
         public virtual void CastAbility(Vector3Int tileGridPos) {}

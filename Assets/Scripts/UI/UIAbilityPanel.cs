@@ -14,17 +14,20 @@ namespace UI
         public PlayerController _playerController;
         [SerializeField] private Skill onUnlockRain;
         [SerializeField] private Skill onUnlockEarthquake;
+        [SerializeField] private Skill onUnlockPlantGrowth;
 
         private void Awake()
         {
             onUnlockRain.onUnlocked += unlockRain;
             onUnlockEarthquake.onUnlocked += unlockEarthquake;
+            onUnlockPlantGrowth.onUnlocked += unlockPlantGrowth;
         }
 
         private void OnDisable()
         {
             onUnlockRain.onUnlocked -= unlockRain;
             onUnlockEarthquake.onUnlocked -= unlockEarthquake;
+            onUnlockPlantGrowth.onUnlocked -= unlockPlantGrowth;
         }
 
         private void SpawnAbilityButton(String label, AbilityType ability)
@@ -42,6 +45,11 @@ namespace UI
         private void unlockEarthquake()
         {
             SpawnAbilityButton("EARTHQUAKE", AbilityType.Earthquake);
+        }
+        
+        private void unlockPlantGrowth()
+        {
+            SpawnAbilityButton("PLANT GROWTH", AbilityType.PlantGrowth);
         }
     }
 }
