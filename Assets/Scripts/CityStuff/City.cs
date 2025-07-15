@@ -105,5 +105,10 @@ namespace CityStuff
                 UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
             }
         }
+
+        public Vector3 GetHousePos()
+        {
+            return _house.transform.position;
+        }
     }
 }

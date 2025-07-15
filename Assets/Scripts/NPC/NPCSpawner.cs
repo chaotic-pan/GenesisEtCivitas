@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Events;
@@ -115,7 +114,7 @@ public class NPCSpawner : MonoBehaviour
             {
                 civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
                 GameEvents.Civilization.OnCityFounded.Invoke(civObject);
-                civ.GetComponent<Civilization>().spawnCivis(0);
+                civ.spawnCivis(0);
             }
         }
         

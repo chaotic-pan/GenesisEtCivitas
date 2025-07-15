@@ -12,6 +12,8 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsTreeCutting = "isTreeCutting";
     private static readonly string IsFishing = "isFishing";
     private static readonly string IsPreaching = "isPreaching";
+    private static readonly string IsPraying = "isPraying";
+    private static readonly string IsListening = "isListening";
     private static readonly string IsDancing = "isDancing";
     private static readonly string IsMoving = "isMoving";
     private static readonly string TrDeath = "TrDeath";
@@ -42,6 +44,8 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnStopWalking += OnStopWalk;
         GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;
         GameEvents.Civilization.OnPreach += Preach;
+        GameEvents.Civilization.OnPray += Pray;
+        GameEvents.Civilization.OnListen += Listen;
     }
 
     private void OnDisable()
@@ -50,31 +54,32 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnStopWalking -= OnStopWalk;
         GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
         GameEvents.Civilization.OnPreach -= Preach;
+        GameEvents.Civilization.OnPray -= Pray;
+        GameEvents.Civilization.OnListen -= Listen;
     }
 
     private void OnStartWalk(GameObject go)
     {
-        if (go == transform.parent.gameObject)
+        if (go == gameObject || go == transform.parent.gameObject)
         {
             resetBools();
             float randTime = Random.Range(1,50);
             StartCoroutine(delayedWalk(randTime/100f));
         }
     }
-    
     IEnumerator delayedWalk(float wait)
     {
         yield return new WaitForSecondsRealtime(wait);
         mAnimator.SetBool(IsMoving, true);
     }
-    
     private void OnStopWalk(GameObject go)
     {
-        if (go == transform.parent.gameObject)
+        if (go == gameObject || go == transform.parent.gameObject)
         {
             resetBools(); 
         }
     }
+    
     
     public void SetIsDancing(bool isDancing)
     {
@@ -82,46 +87,26 @@ public class AnimManager : MonoBehaviour
         if (isDancing) mAnimator.SetInteger(DanceRandomizer, Random.Range(0, 2));
         mAnimator.SetBool(IsDancing, isDancing);
     }
-    
-    public void SetIsMining(bool isMining)
-    {
-        resetBools();
-        mAnimator.SetBool(IsFarming, isMining);
-        Pickaxe.SetActive(isMining);
-    }
-    
-    public void SetIsFarming(bool isFarming)
-    {
-        resetBools();
-        mAnimator.SetBool(IsFarming, isFarming);
-        Hoe.SetActive(isFarming);
-    }
-    
-    public void SetIsTreeCutting(bool isTreeCutting)
-    {
-        resetBools();
-        mAnimator.SetBool(IsTreeCutting, isTreeCutting);
-        Axe.SetActive(isTreeCutting);
-    }
+
 
     private void Preach(GameObject go)
     {
         if (go == transform.parent.gameObject)
         {
-            StartCoroutine(Preach(20));
+            StartCoroutine(Preach(15));
         }
     }
-
     public void SetIsPreaching(bool isPreaching)
     {
         resetBools();
         mAnimator.SetBool(IsPreaching, isPreaching);
         Podium.SetActive(isPreaching);
     }
-    
     IEnumerator Preach(float duration)
     {
-        yield return new WaitForSecondsRealtime(5f);
+        SetIsPraying(true);
+        Podium.SetActive(true);
+        yield return new WaitForSecondsRealtime(10f);
         
         SetIsPreaching(true);
         float timer = 0;
@@ -133,7 +118,35 @@ public class AnimManager : MonoBehaviour
         }
         GameEvents.Civilization.OnPreachEnd.Invoke(transform.parent.gameObject);
         SetIsPreaching(false);
+        
+        SetIsPraying(true);
+        Podium.SetActive(true); 
+        yield return new WaitForSecondsRealtime(5f);
+        SetIsPraying(false);
     }
+    
+    private void Pray(GameObject go)
+    {
+        if (go == gameObject || go == transform.parent.gameObject)
+        {
+            SetIsPraying(true);
+        }
+    }
+    public void SetIsPraying(bool isPraying)
+    {
+        resetBools();
+        mAnimator.SetBool(IsPraying, isPraying);
+    }
+
+    private void Listen(GameObject go)
+    {
+        if (go == gameObject || go == transform.parent.gameObject)
+        {
+            resetBools();
+            mAnimator.SetBool(IsListening, true);
+        }
+    }
+
 
     public void SetIsFishing(bool isFishing)
     {
@@ -142,6 +155,25 @@ public class AnimManager : MonoBehaviour
         FishingPole.SetActive(isFishing);
         Stool.SetActive(isFishing);
     }
+    public void SetIsMining(bool isMining)
+    {
+        resetBools();
+        mAnimator.SetBool(IsFarming, isMining);
+        Pickaxe.SetActive(isMining);
+    }
+    public void SetIsFarming(bool isFarming)
+    {
+        resetBools();
+        mAnimator.SetBool(IsFarming, isFarming);
+        Hoe.SetActive(isFarming);
+    }
+    public void SetIsTreeCutting(bool isTreeCutting)
+    {
+        resetBools();
+        mAnimator.SetBool(IsTreeCutting, isTreeCutting);
+        Axe.SetActive(isTreeCutting);
+    }
+    
     
     private void OnTriggerDeath(GameObject civObject)
     {
@@ -168,6 +200,8 @@ public class AnimManager : MonoBehaviour
         mAnimator.SetBool(IsFarming, false);
         mAnimator.SetBool(IsTreeCutting, false);
         mAnimator.SetBool(IsPreaching, false);
+        mAnimator.SetBool(IsPraying, false);
+        mAnimator.SetBool(IsListening, false);
         mAnimator.SetBool(IsFishing, false);
         
         FishingPole.SetActive(false);

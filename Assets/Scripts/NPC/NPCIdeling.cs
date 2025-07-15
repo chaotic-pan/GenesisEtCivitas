@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -10,27 +10,93 @@ class NPCIdeling : MonoBehaviour
     public GameObject civiPrefab;
 
     private Civilization civ;
+    private Vector3 housePos;
     private List<GameObject> idles = new();
-
+    private Transform focusPoint;
+    private MapExtractor ME = MapExtractor.Instance;
+    
     private void OnEnable()
     { 
         civ = GetComponent<Civilization>(); 
-        GameEvents.Civilization.OnPreach += SaviourAudience; 
-        GameEvents.Civilization.OnPreachEnd += YeetSaviourAudience;
+        GameEvents.Civilization.OnCityFounded += OnCityFounded;
+        GameEvents.Civilization.OnPreach += onPreach; 
+        GameEvents.Civilization.OnPreachEnd += onPreachEnd;
     }
+    
 
     private void OnDisable()
     { 
-        GameEvents.Civilization.OnPreach -= SaviourAudience;
-        GameEvents.Civilization.OnPreachEnd -= YeetSaviourAudience;
+        GameEvents.Civilization.OnCityFounded -= OnCityFounded;
+        GameEvents.Civilization.OnPreach -= onPreach;
+        GameEvents.Civilization.OnPreachEnd -= onPreachEnd;
+    }
+
+    public void OnCityFounded(GameObject civObject)
+    {
+        if (civObject != gameObject) return;
+        var city = civObject.GetComponent<Civilization>().city;
+        housePos = city.GetHousePos();
+    }
+
+    
+    IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
+    {
+        foreach (var des in destinations)
+        {
+            var civi= Instantiate(civiPrefab, housePos, Quaternion.identity, transform);
+            idles.Add(civi);
+            StartCoroutine(Walk(civi, des, onReached));
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+    IEnumerator Walk(GameObject civi, Vector3 destination, Action<GameObject> onReached)
+    {
+        GameEvents.Civilization.OnStartWalking.Invoke(civi);
+        
+        var position = civi.transform.position;
+        
+        while (Vector3.Distance(position, destination) > 0.1f)
+        {
+            Vector3 direction = (destination - position).normalized;
+            position += direction * (10f * Time.deltaTime);
+            var height = ME.GetHeightByWorldCoord(position);
+            civi.transform.position = new Vector3(position.x,height , position.z);
+            civi.transform.rotation = Quaternion.LookRotation(direction);
+           
+            yield return null;
+        }
+        
+        GameEvents.Civilization.OnStopWalking.Invoke(civi);
+        if (focusPoint != null) civi.transform.LookAt(focusPoint);
+        onReached?.Invoke(civi);
     }
     
-    private void SaviourAudience(GameObject saviour)
+    private void EndIdleAction(GameObject gObject)
+    {
+        if (transform.position != gObject.transform.position) return;
+        
+        focusPoint = null;
+        foreach (var civi in idles)
+        {
+            StartCoroutine(Walk(civi, housePos, Despawn));
+        }
+        idles.Clear();
+    }
+    private void Despawn(GameObject civi)
+    {
+        Destroy(civi);
+    }
+    
+    
+
+    private void onPreach(GameObject saviour)
     {
         var saviourPos = saviour.transform.position;
         if (transform.position != saviourPos) return;
 
-        int audience = 0;
+        focusPoint = saviour.transform;
+        List<Vector3> audience = new();
+        
         float distance = 2;
         int count = 0;
         for (var j = 0; j < 3; j++)
@@ -39,28 +105,33 @@ class NPCIdeling : MonoBehaviour
             count += 4;
             for (var i=0; i<count; i++) 
             {
-                if (audience >= civ.population) return;
-
-                audience++;
+                if (audience.Count >= civ.population) goto end;
+                
                 var angle = Math.PI*2/count * i + Random.Range(-0.2f, 0.2f);
                 float x = (float)(saviourPos.x + (distance+Random.Range(0f, 3f)) * Math.Cos(angle)) ;
                 float z = (float)(saviourPos.z + (distance+Random.Range(0f, 3f)) * Math.Sin(angle));
-                var civi= Instantiate(civiPrefab, new Vector3(x, saviourPos.y, z), Quaternion.LookRotation(saviourPos), transform);
-                civi.transform.LookAt(saviour.transform);
-                idles.Add(civi);
+
+                audience.Add(new Vector3(x, saviourPos.y, z));
             }
         }
+        
+        end:
+        StartCoroutine(SpawnAndGo(audience, Listen));
+        
+    }
+    private void Listen(GameObject go)
+    {
+        GameEvents.Civilization.OnListen.Invoke(go);
     }
     
-    private void YeetSaviourAudience(GameObject saviour)
+    private void onPreachEnd(GameObject gObject) 
     {
-        var saviourPos = saviour.transform.position;
-        if (transform.position != saviourPos) return;
-
-        foreach (var civi in idles)
-        {
-            Destroy(civi);
-        }
-        idles.Clear();
+        GameEvents.Civilization.OnPray.Invoke(gameObject);
+        StartCoroutine(Pray(gObject));
+    }
+    IEnumerator Pray(GameObject gObject)
+    {
+        yield return new WaitForSeconds(5);
+        EndIdleAction(gObject);
     }
 }
