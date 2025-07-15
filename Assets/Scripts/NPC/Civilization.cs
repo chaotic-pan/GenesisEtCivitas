@@ -54,7 +54,7 @@ public class Civilization : MonoBehaviour
     private void Awake()
     {
         GameEvents.Civilization.OnCivilizationMerge += MergeCivilisation;
-        StartCoroutine(StatsDecay(10));
+        StartCoroutine(TileStatsDecay(10));
     }
 
     private void OnDisable()
@@ -91,17 +91,14 @@ public class Civilization : MonoBehaviour
         }
     }
 
-    IEnumerator StatsDecay(float timer)
+    IEnumerator TileStatsDecay(float timer)
     {
         yield return new WaitForSeconds(timer);
-        if (city == null)
+        if (city != null)
         {
-            StartCoroutine(StatsDecay(timer));
-            yield return 0;
+            GameEvents.Civilization.OnTileStatsDecay.Invoke(gameObject);
         }
-
-        GameEvents.Civilization.OnStatsDecay.Invoke(this.gameObject);
-        StartCoroutine(StatsDecay(timer));
+        StartCoroutine(TileStatsDecay(timer));
     }
 
     public void SetSettlingValues(Vector3Int vec)

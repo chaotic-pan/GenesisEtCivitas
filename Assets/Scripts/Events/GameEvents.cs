@@ -33,7 +33,7 @@ namespace Events
             public UnityAction<GameObject> OnStopWalking;
             public UnityAction<GameObject, float> OnPreach;
 
-            public UnityAction<GameObject> OnStatsDecay;
+            public UnityAction<GameObject> OnTileStatsDecay;
         }
         
         public class LifecycleEvents

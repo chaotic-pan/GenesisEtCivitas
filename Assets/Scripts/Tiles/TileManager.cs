@@ -25,13 +25,13 @@ public class TileManager : MonoBehaviour
         Instance = this;
         onUnlockShips.onUnlocked += updateWaterTravel;
 
-        GameEvents.Civilization.OnStatsDecay += ReduceTileStats;
+        GameEvents.Civilization.OnTileStatsDecay += ReduceTileStats;
     }
 
     private void OnDisable()
     { 
         onUnlockShips.onUnlocked -= updateWaterTravel;
-        GameEvents.Civilization.OnStatsDecay -= ReduceTileStats;
+        GameEvents.Civilization.OnTileStatsDecay -= ReduceTileStats;
     }
 
     private void ReduceTileStats(GameObject gm)
@@ -71,8 +71,8 @@ public class TileManager : MonoBehaviour
             MapDisplay.MapOverlay.AnimalPopulation,
             MapDisplay.MapOverlay.WaterValue,
         };
-
-        UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
+        
+        // UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
     }
 
     private void ReduceStats(List<Vector3Int> list, float factor)
