@@ -17,6 +17,7 @@ namespace UI
         {
             public UnityAction<MapDisplay.MapOverlay> OnOpenHeatmap;
             public UnityAction<List<Vector2>, MapDisplay.MapOverlay> OnUpdateHeatmapChunks;
+            public UnityAction<List<Vector2>, MapDisplay.MapOverlay[]> OnUpdateMultipleHeatmapChunks;
         }
         
         public class UIUpdateEvents
@@ -34,6 +35,8 @@ namespace UI
             public UnityAction<Skill> OnOpenSkillItem;
             public UnityAction OnMouseEnterUI;
             public UnityAction OnMouseExitUI;
+            public UnityAction OnBuySkill;
+            public UnityAction OnUseSkill;
         }
     }
 }

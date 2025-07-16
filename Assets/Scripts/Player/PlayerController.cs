@@ -139,7 +139,8 @@ namespace Player
             // Debug.Log("Cost: " + _activeAbility.Cost);
             
             _activeAbility = null;
-            GridOverlayManager.Instance.HideAoeOverlay();        
+            GridOverlayManager.Instance.HideAoeOverlay();       
+            UIEvents.UIOpen.OnUseSkill?.Invoke();
         }
 
         public PlayerSkillSet GetPlayerSkillSet()

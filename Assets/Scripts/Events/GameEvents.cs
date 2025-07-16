@@ -36,7 +36,7 @@ namespace Events
             public UnityAction<GameObject> OnPray;
             public UnityAction<GameObject> OnListen;
 
-            public UnityAction<GameObject> OnStatsDecay;
+            public UnityAction<GameObject> OnTileStatsDecay;
         }
         
         public class LifecycleEvents
