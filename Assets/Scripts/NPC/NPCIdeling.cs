@@ -35,7 +35,7 @@ class NPCIdeling : MonoBehaviour
     {
         if (civObject != gameObject) return;
         var city = civObject.GetComponent<Civilization>().city;
-        housePos = city.GetHousePos();
+        housePos = ME.AdjustCoordsForHeight(city.GetHousePos());
     }
 
     
@@ -45,7 +45,7 @@ class NPCIdeling : MonoBehaviour
         {
             var civi= Instantiate(civiPrefab, housePos, Quaternion.identity, transform);
             idles.Add(civi);
-            StartCoroutine(Walk(civi, des, onReached));
+            StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(des), onReached));
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -58,10 +58,10 @@ class NPCIdeling : MonoBehaviour
         while (Vector3.Distance(position, destination) > 0.1f)
         {
             Vector3 direction = (destination - position).normalized;
-            position += direction * (10f * Time.deltaTime);
-            var height = ME.GetHeightByWorldCoord(position);
-            civi.transform.position = new Vector3(position.x,height , position.z);
-            civi.transform.rotation = Quaternion.LookRotation(direction);
+            var newPos = position + direction * (10f * Time.deltaTime);
+            civi.transform.position = ME.AdjustCoordsForHeight(newPos);
+            civi.transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
+            position = newPos;
            
             yield return null;
         }
@@ -88,7 +88,6 @@ class NPCIdeling : MonoBehaviour
     }
     
     
-
     private void onPreach(GameObject saviour)
     {
         var saviourPos = saviour.transform.position;

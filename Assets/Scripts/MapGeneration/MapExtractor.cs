@@ -244,5 +244,11 @@ public class MapExtractor : MonoBehaviour
     {
         return new Vector2Int((int)coord.x + chunkSize / 2, -(int)coord.z + chunkSize / 2);
     }
+    
+    public Vector3 AdjustCoordsForHeight(Vector3 coord)
+    {
+        var height = GetHeightByWorldCoord(coord);
+        return new Vector3(coord.x,height , coord.z);
+    }    
 
 }

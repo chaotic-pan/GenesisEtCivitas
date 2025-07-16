@@ -37,7 +37,7 @@ public class NPCMovement : MonoBehaviour
     private void Start()
     {
         map = TM?.map;
-        transform.position = AdjustCoordsForHeight(transform.position);
+        transform.position = ME.AdjustCoordsForHeight(transform.position);
     }
     
     # region DEBUG
@@ -123,7 +123,7 @@ public class NPCMovement : MonoBehaviour
         var npcGridPos = map.WorldToCell(transform.position);
         var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
 
-        var destination = AdjustCoordsForHeight(map.CellToWorld(gridPos));
+        var destination = ME.AdjustCoordsForHeight(map.CellToWorld(gridPos));
         DEBUG_spawnBreadcrumbs(destination,5);
         
         StartCoroutine(FollowPath(path, destination, doOnReached));
@@ -139,7 +139,7 @@ public class NPCMovement : MonoBehaviour
         while (path.Count > 0)
         {
             yield return StartCoroutine("MovetoTarget", 
-                AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+                ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
         }
         
         GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
@@ -168,13 +168,19 @@ public class NPCMovement : MonoBehaviour
 
             transform.rotation = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
-            transform.position = AdjustCoordsForHeight(position);
+            transform.position = ME.AdjustCoordsForHeight(position);
+            
+            for (int i = transform.childCount; i > 1; i--)
+            {
+                var p = transform.GetChild(i-1).position;
+                transform.GetChild(i-1).position = ME.AdjustCoordsForHeight(p);
+            }
            
             yield return null;
         }
     }
 
-    #region pathfinding
+#region pathfinding
     public void CalculateRange()
     {
         var p = transform.position;
@@ -182,12 +188,6 @@ public class NPCMovement : MonoBehaviour
         range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
     }
 
-    private Vector3 AdjustCoordsForHeight(Vector3 coord)
-    {
-        var height = ME.GetHeightByWorldCoord(coord);
-        return new Vector3(coord.x,height , coord.z);
-    }    
-    
     private Stack<Vector3Int> Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
     {
         if (!SearchRange.Contains(destination))
@@ -295,5 +295,5 @@ public class NPCMovement : MonoBehaviour
             neighbors = TileManager.Instance.getNeighbors(gridPos);
         }
     } 
-    #endregion
+#endregion
 }
