@@ -30,6 +30,7 @@ namespace Events
             public UnityAction<GameObject> OnCivilizationLowOnStats;
 
             public UnityAction<GameObject> OnStartWalking;
+            public UnityAction<GameObject, bool> OnSwim;
             public UnityAction<GameObject> OnStopWalking;
             public UnityAction<GameObject> OnPreach;
             public UnityAction<GameObject> OnPreachEnd;

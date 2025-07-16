@@ -56,11 +56,10 @@ public class NPCMovement : MonoBehaviour
     # region boat stuff
    private void boatCheck(Vector3Int gridPos)
     {
-        if (!TM.boatsUnlocked) return;
-
-        if (!TryGetComponent<Civilization>(out var civ)) return;
+        if (!TM.boatsUnlocked || !TryGetComponent<Civilization>(out var civ)) return;
+        
         var population = civ.population;
-
+        
         if (TM.IsOcean(gridPos))
         {
             if (boat != null) return;
@@ -157,8 +156,12 @@ public class NPCMovement : MonoBehaviour
             
             for (int i = transform.childCount; i > 1; i--)
             {
-                var p = transform.GetChild(i-1).position;
-                transform.GetChild(i-1).position = ME.AdjustCoordsForHeight(p);
+                var civi = transform.GetChild(i - 1);
+                var p = civi.position;
+                var height = ME.GetHeightByWorldCoord(p);
+                civi.position = new Vector3(p.x,height , p.z);
+                GameEvents.Civilization.OnSwim.Invoke(civi.gameObject, 
+                    !TM.boatsUnlocked && height < ME.waterheight*ME.mapHeightMultiplier);
             }
            
             yield return null;

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Events;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -16,6 +14,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsListening = "isListening";
     private static readonly string IsDancing = "isDancing";
     private static readonly string IsMoving = "isMoving";
+    private static readonly string Water = "Water";
     private static readonly string TrDeath = "TrDeath";
     private static readonly string PreachRandomizer = "PreachRandomizer";
     private static readonly string DanceRandomizer = "DanceRandomizer";
@@ -42,6 +41,7 @@ public class AnimManager : MonoBehaviour
     {    
         GameEvents.Civilization.OnStartWalking += OnStartWalk;
         GameEvents.Civilization.OnStopWalking += OnStopWalk;
+        GameEvents.Civilization.OnSwim += Swim;
         GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;
         GameEvents.Civilization.OnPreach += Preach;
         GameEvents.Civilization.OnPray += Pray;
@@ -52,6 +52,7 @@ public class AnimManager : MonoBehaviour
     {
         GameEvents.Civilization.OnStartWalking -= OnStartWalk;
         GameEvents.Civilization.OnStopWalking -= OnStopWalk;
+        GameEvents.Civilization.OnSwim -= Swim;
         GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
         GameEvents.Civilization.OnPreach -= Preach;
         GameEvents.Civilization.OnPray -= Pray;
@@ -77,6 +78,14 @@ public class AnimManager : MonoBehaviour
         if (go == gameObject || go == transform.parent.gameObject)
         {
             resetBools(); 
+        }
+    }
+
+    private void Swim(GameObject go, bool swim)
+    {
+        if (go == gameObject || go == transform.parent.gameObject)
+        {
+            mAnimator.SetFloat(Water, swim? 1 : 0);
         }
     }
     

@@ -1419,7 +1419,7 @@ BlendTree:
     m_DirectBlendParameter: DanceRandomizer
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 3a0a50089209dca4eaea804e4806ac47, type: 2}
+    m_Motion: {fileID: 7400000, guid: d158dca5fb2623b48a2cdf1dd616cb02, type: 2}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
