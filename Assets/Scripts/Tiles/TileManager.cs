@@ -16,8 +16,10 @@ public class TileManager : MonoBehaviour
     public Dictionary<Vector3, Vector3Int> worldToGrid = new();
     public List<Vector3Int> spawnLocations = new();
     [SerializeField] private Skill onUnlockShips;
+    [SerializeField] private bool WATERDEBUG;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
+    public bool boatsUnlocked = false;
     private float waterHeight = 0.1f;
     private float waterTravelCost = 50;
     private void Awake()
@@ -91,6 +93,9 @@ public class TileManager : MonoBehaviour
 
     public void InitializeTileData(MapExtractor ME)
     {
+        GameObject waterMarkers = null;
+        if (WATERDEBUG) waterMarkers = new GameObject("Water Markers");
+        
         waterHeight = ME.meshHeightCurve.Evaluate(ME.waterheight) * ME.mapHeightMultiplier;
         
         for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
@@ -119,17 +124,18 @@ public class TileManager : MonoBehaviour
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
                     worldToGrid.TryAdd(worldPos, gridPos);
-                    if (!dataFromTiles[gridPos].isWater)
+                    if (!IsOcean(gridPos))
                     {
                         spawnLocations.Add(gridPos);
                     }
-                    else
+                    else  if (WATERDEBUG) 
                     {
-                        // var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                        // var a = map.CellToWorld(gridPos);
-                        // var b = new Vector3(a.x,height , a.z);
-                        // s.transform.localScale = new Vector3(3,3,3);
-                        // s.transform.position = b;
+                        var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        var a = map.CellToWorld(gridPos);
+                        var b = new Vector3(a.x,height , a.z);
+                        s.transform.localScale = new Vector3(3,3,3);
+                        s.transform.position = b;
+                        s.transform.SetParent(waterMarkers.transform);
                     }
                 }
             }
@@ -194,6 +200,7 @@ public class TileManager : MonoBehaviour
     private void updateWaterTravel()
     {
         waterTravelCost = 1;
+        boatsUnlocked = true;
 
         foreach (var tile in dataFromTiles.Values.Where(tile => tile.height < waterHeight))
         {
@@ -205,6 +212,11 @@ public class TileManager : MonoBehaviour
         //     new List<Vector2> { chunk }, 
         //     MapDisplay.MapOverlay.Travelcost
         // );
+    }
+
+    public Vector3Int WorldToCell(Vector3 worldPos)
+    {
+        return map.WorldToCell(new Vector3(worldPos.x, -1, worldPos.z));
     }
     
     public TileData getTileDataByWorldCoords(float x, float y, float z)

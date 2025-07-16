@@ -117,6 +117,8 @@ public class MapExtractor : MonoBehaviour
         var path = "./Assets/GenesisMap/" + fileName;
         if (SO_fileLoc.isBuild && SO_fileLoc.MapLocation != null) path = SO_fileLoc.MapLocation;
         byte[] byteArray = File.ReadAllBytes(path);
+        
+        totalPoints = points*points;
 
         heightMap = new float[points, points];
         travelcost = new float[points, points];

@@ -18,21 +18,9 @@ public class NPCMovement : MonoBehaviour
 
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
-
-    [SerializeField] private Skill onUnlockBoats;
-    private bool boatUnlocked = false;
+    
     [SerializeField] private GameObject boatPrefab;
     private GameObject boat;
-
-    private void OnEnable()
-    {
-        onUnlockBoats.onUnlocked += UnlockBoats;
-    }
-
-    private void OnDisable()
-    {
-        onUnlockBoats.onUnlocked -= UnlockBoats;
-    }
 
     private void Start()
     {
@@ -66,19 +54,14 @@ public class NPCMovement : MonoBehaviour
     #endregion
 
     # region boat stuff
-    private void UnlockBoats()
-    { 
-        boatUnlocked = true;
-    }
-   
-    private void boatCheck(Vector3 target)
+   private void boatCheck(Vector3Int gridPos)
     {
-        if (!boatUnlocked) return;
+        if (!TM.boatsUnlocked) return;
 
         if (!TryGetComponent<Civilization>(out var civ)) return;
         var population = civ.population;
 
-        if (TM.IsOcean(map.WorldToCell(target)))
+        if (TM.IsOcean(gridPos))
         {
             if (boat != null) return;
             boat = Instantiate(boatPrefab, transform.localPosition, transform.localRotation, transform);
@@ -120,7 +103,7 @@ public class NPCMovement : MonoBehaviour
         DEBUG_clearBreadcrumbs();
         StopAllCoroutines();
         
-        var npcGridPos = map.WorldToCell(transform.position);
+        var npcGridPos = TM.WorldToCell(transform.position);
         var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
 
         var destination = AdjustCoordsForHeight(map.CellToWorld(gridPos));
@@ -151,7 +134,6 @@ public class NPCMovement : MonoBehaviour
     
     IEnumerator MovetoTarget(Vector3 target)
     {
-        boatCheck(target);
         DEBUG_spawnBreadcrumbs(target,2);
         
         var position = transform.position;
@@ -162,8 +144,11 @@ public class NPCMovement : MonoBehaviour
             var lookRotation = Quaternion.LookRotation(direction);
             var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
                 Time.deltaTime);
-
-            var cost = TM.GetTravelCost(map.WorldToCell(position));
+            
+            var gridPos = TM.WorldToCell(position);
+            boatCheck(gridPos);
+            
+            var cost = TM.GetTravelCost(gridPos);
             movementSpeed = Math.Max(1, maxSpeed - cost/10);
 
             transform.rotation = rotation;
@@ -177,9 +162,7 @@ public class NPCMovement : MonoBehaviour
     #region pathfinding
     public void CalculateRange()
     {
-        var p = transform.position;
-        p.y = -1;
-        range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
+        range = TM.GetSpecificRange(TM.WorldToCell(transform.position), rangeRadius);
     }
 
     private Vector3 AdjustCoordsForHeight(Vector3 coord)
