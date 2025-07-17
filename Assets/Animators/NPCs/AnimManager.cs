@@ -85,7 +85,7 @@ public class AnimManager : MonoBehaviour
     {
         if (go == gameObject || go == transform.parent.gameObject)
         {
-            mAnimator.SetFloat(Water, swim? 1 : 0);
+            mAnimator.SetFloat(Water, swim? 1 : 0, 0.2f, Time.deltaTime);
         }
     }
     
