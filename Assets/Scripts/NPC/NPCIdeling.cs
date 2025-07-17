@@ -22,8 +22,6 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnPreachEnd += onPreachEnd;
         GameEvents.Civilization.OnCivilizationMerge += OnCityMerge;
     }
-    
-
     private void OnDisable()
     { 
         GameEvents.Civilization.OnCityFounded -= OnCityFounded;
@@ -41,36 +39,34 @@ class NPCIdeling : MonoBehaviour
         
         for (int i = transform.childCount; i > 1; i--)
         {
-            var civiCiv = transform.GetChild(i - 1);
-            var civiIdle= Instantiate(civiPrefab, civiCiv.position, civiCiv.rotation, transform);
-            idles.Add(civiIdle);
-            Destroy(civiCiv.gameObject);
+            var civi = transform.GetChild(i - 1);
+            idles.Add(civi.gameObject);
+            StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
         }
-        EndIdleAction(gameObject);
     }
-
-    public void OnCityMerge(GameObject arrivingCivObject, GameObject cityCivObject)
+    public void OnCityMerge(GameObject newCivObject, GameObject oldCivObject)
     {
-        if (cityCivObject != gameObject) return;
+        // reparent newCiv.civis to oldCiv
+        if (oldCivObject != gameObject) return;
         
-        for (int i = arrivingCivObject.transform.childCount; i > 1; i--)
-        {
-            var civiCiv = arrivingCivObject.transform.GetChild(i - 1);
-            var civiIdle= Instantiate(civiPrefab, civiCiv.position, civiCiv.rotation, transform);
-            idles.Add(civiIdle);
+        for (int i = newCivObject.transform.childCount; i > 1; i--)
+        { 
+            var civi = newCivObject.transform.GetChild(i - 1);
+            civi.SetParent(transform);
+            idles.Add(civi.gameObject);
+            StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
         }
         
-        Destroy(arrivingCivObject);
-        EndIdleAction(gameObject);
+        Destroy(newCivObject);
     }
     
     IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
     {
-        foreach (var des in destinations)
+        for (int i = 0; i < destinations.Count; i++)
         {
-            var civi= Instantiate(civiPrefab, housePos, Quaternion.identity, transform);
-            idles.Add(civi);
-            StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(des), onReached));
+            var civi = idles[i];
+            civi.SetActive(true);
+            StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -82,6 +78,11 @@ class NPCIdeling : MonoBehaviour
         
         while (Vector3.Distance(position, destination) > 0.1f)
         {
+            if (civi == null)
+            {
+                onReached?.Invoke(civi);
+                yield break;
+            }
             Vector3 direction = (destination - position).normalized;
             var newPos = position + direction * (10f * Time.deltaTime);
             civi.transform.position = ME.AdjustCoordsForHeight(newPos);
@@ -105,11 +106,14 @@ class NPCIdeling : MonoBehaviour
         {
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
+        
+        // var a= Instantiate(civiPrefab, housePos, Quaternion.identity, transform);
+        // idles.Add(a);
+        // StartCoroutine(Walk(a, ME.AdjustCoordsForHeight(new Vector3(housePos.x+10, housePos.y, housePos.z+10)), null));
     }
     private void Despawn(GameObject civi)
     {
-        idles.Remove(civi);
-        Destroy(civi);
+        civi.SetActive(false);
     }
     
     
@@ -117,6 +121,7 @@ class NPCIdeling : MonoBehaviour
     {
         var saviourPos = saviour.transform.position;
         if (transform.position != saviourPos) return;
+        
 
         focusPoint = saviour.transform;
         List<Vector3> audience = new();
@@ -129,9 +134,9 @@ class NPCIdeling : MonoBehaviour
             count += 4;
             for (var i=0; i<count; i++) 
             {
-                if (audience.Count >= civ.population) goto end;
+                if (audience.Count >= idles.Count) goto end;
                 
-                var angle = Math.PI*2/count * i + Random.Range(-0.2f, 0.2f);
+                var angle = Math.PI*2/count * i + Random.Range(-0.2f, 0.2f) + Math.PI/8*j;
                 float x = (float)(saviourPos.x + (distance+Random.Range(0f, 3f)) * Math.Cos(angle)) ;
                 float z = (float)(saviourPos.z + (distance+Random.Range(0f, 3f)) * Math.Sin(angle));
 
@@ -140,6 +145,7 @@ class NPCIdeling : MonoBehaviour
         }
         
         end:
+        StopAllCoroutines();
         StartCoroutine(SpawnAndGo(audience, Listen));
         
     }

@@ -139,6 +139,7 @@ public class NPCMovement : MonoBehaviour
         
         GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
+        transform.position = destination;
         
         onReached?.Invoke(gameObject);
     }
