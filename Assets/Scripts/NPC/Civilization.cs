@@ -134,13 +134,6 @@ public class Civilization : MonoBehaviour
         {
             var newPop = civAObject.GetComponent<Civilization>().population;
             
-            // for (int i = population; i < population+newPop; i++)
-            // {
-            //     if (i >= _NPCPoints.Count) break;
-            //     var civi = Instantiate(civiPrefab, Vector3.zero, Quaternion.identity, transform);
-            //     civi.transform.localPosition = _NPCPoints[i];
-            //     civi.transform.LookAt(transform.position);
-            // }
             population +=newPop;
             GetComponent<NPC>()._npcModel.Population = population;
         }

@@ -45,12 +45,13 @@ public class NPCSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
+    private GameObject SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
     {
         var civ = Instantiate(civilisationPrefab, location, Quaternion.identity,transform);
         civilisations.Add(civ);
         civ.GetComponent<Civilization>().SetPopulation(population);
         StartCoroutine(WaitAndSettle(civ, settleRangeIncl, settleRangeExcl));
+        return civ;
     }
     
     IEnumerator WaitAndSettle(GameObject civ, int rangeIncl, int rangeExcl)
@@ -137,13 +138,14 @@ public class NPCSpawner : MonoBehaviour
         }
     }
 
-    private void SplitCiv(GameObject civ)
+    private void SplitCiv(GameObject civObject)
     {
-        Civilization civi = civ.GetComponent<Civilization>();
-        if (civi.population <= 3) return;
-        civi.SetPopulation(civi.population/2);
-        civi.spawnCivis(0);
+        Civilization civ = civObject.GetComponent<Civilization>();
+        if (civ.population <= 3) return;
         
-        SpawnCiv(civ.transform.position, civi.population, 25, 5);
+        civ.SetPopulation(civ.population/2);
+        var newCiv = SpawnCiv(civObject.transform.position, civ.population, 25, 5);
+        
+        GameEvents.Civilization.OnCivilizationSplit.Invoke(newCiv, civObject);
     }
 }

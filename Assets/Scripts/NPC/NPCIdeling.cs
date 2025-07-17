@@ -21,6 +21,7 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnPreach += onPreach; 
         GameEvents.Civilization.OnPreachEnd += onPreachEnd;
         GameEvents.Civilization.OnCivilizationMerge += OnCityMerge;
+        GameEvents.Civilization.OnCivilizationSplit += OnCivSplit;
     }
     private void OnDisable()
     { 
@@ -28,6 +29,7 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnPreach -= onPreach;
         GameEvents.Civilization.OnPreachEnd -= onPreachEnd;
         GameEvents.Civilization.OnCivilizationMerge -= OnCityMerge;
+        GameEvents.Civilization.OnCivilizationSplit -= OnCivSplit;
     }
 
     public void OnCityFounded(GameObject civObject)
@@ -58,6 +60,17 @@ class NPCIdeling : MonoBehaviour
         }
         
         Destroy(newCivObject);
+    }
+    public void OnCivSplit(GameObject newCivObject, GameObject oldCivObject)
+    {
+        if (oldCivObject != gameObject) return;
+        
+        for (int i = newCivObject.transform.childCount; i > 1; i--)
+        { 
+            var civi = oldCivObject.transform.GetChild(oldCivObject.transform.childCount - 1).gameObject;
+            idles.Remove(civi);
+            Destroy(civi);
+        }
     }
     
     IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
