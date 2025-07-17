@@ -96,9 +96,7 @@ public class NPCSpawner : MonoBehaviour
     {
         var civPos = TM.WorldToCell(civObject.transform.position);
         
-        // check if there is already another city in this postion
-        // TODO in range
-
+        // check if there is already another city in this area
         var tileDistance = 3; //min amount of tiles between two cities
         
         foreach (var city in cities)
@@ -110,7 +108,6 @@ public class NPCSpawner : MonoBehaviour
             {
                 GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, city.civ.gameObject);
                 civilisations.Remove(civObject);
-                Destroy(civObject);
                 return;
             }
             // if another city is in rage, go there
@@ -127,7 +124,6 @@ public class NPCSpawner : MonoBehaviour
             civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
             cities.Add(civ.city);
             GameEvents.Civilization.OnCityFounded.Invoke(civObject);
-            civ.spawnCivis(0);
         }
         
     }
@@ -146,6 +142,7 @@ public class NPCSpawner : MonoBehaviour
         Civilization civi = civ.GetComponent<Civilization>();
         if (civi.population <= 3) return;
         civi.SetPopulation(civi.population/2);
+        civi.spawnCivis(0);
         
         SpawnCiv(civ.transform.position, civi.population, 25, 5);
     }

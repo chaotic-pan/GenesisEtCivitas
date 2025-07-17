@@ -17,10 +17,10 @@ class NPCIdeling : MonoBehaviour
     
     private void OnEnable()
     { 
-        civ = GetComponent<Civilization>(); 
         GameEvents.Civilization.OnCityFounded += OnCityFounded;
         GameEvents.Civilization.OnPreach += onPreach; 
         GameEvents.Civilization.OnPreachEnd += onPreachEnd;
+        GameEvents.Civilization.OnCivilizationMerge += OnCityMerge;
     }
     
 
@@ -29,15 +29,40 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnCityFounded -= OnCityFounded;
         GameEvents.Civilization.OnPreach -= onPreach;
         GameEvents.Civilization.OnPreachEnd -= onPreachEnd;
+        GameEvents.Civilization.OnCivilizationMerge -= OnCityMerge;
     }
 
     public void OnCityFounded(GameObject civObject)
     {
         if (civObject != gameObject) return;
-        var city = civObject.GetComponent<Civilization>().city;
+        civ = civObject.GetComponent<Civilization>(); 
+        var city = civ.GetComponent<Civilization>().city;
         housePos = ME.AdjustCoordsForHeight(city.GetHousePos());
+        
+        for (int i = transform.childCount; i > 1; i--)
+        {
+            var civiCiv = transform.GetChild(i - 1);
+            var civiIdle= Instantiate(civiPrefab, civiCiv.position, civiCiv.rotation, transform);
+            idles.Add(civiIdle);
+            Destroy(civiCiv.gameObject);
+        }
+        EndIdleAction(gameObject);
     }
 
+    public void OnCityMerge(GameObject arrivingCivObject, GameObject cityCivObject)
+    {
+        if (cityCivObject != gameObject) return;
+        
+        for (int i = arrivingCivObject.transform.childCount; i > 1; i--)
+        {
+            var civiCiv = arrivingCivObject.transform.GetChild(i - 1);
+            var civiIdle= Instantiate(civiPrefab, civiCiv.position, civiCiv.rotation, transform);
+            idles.Add(civiIdle);
+        }
+        
+        Destroy(arrivingCivObject);
+        EndIdleAction(gameObject);
+    }
     
     IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
     {
@@ -80,10 +105,10 @@ class NPCIdeling : MonoBehaviour
         {
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
-        idles.Clear();
     }
     private void Despawn(GameObject civi)
     {
+        idles.Remove(civi);
         Destroy(civi);
     }
     
