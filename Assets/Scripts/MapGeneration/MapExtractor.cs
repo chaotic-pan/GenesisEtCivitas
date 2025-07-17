@@ -16,17 +16,19 @@ public class MapExtractor : MonoBehaviour
 {
     public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
+    [SerializeField] private bool newMapType;
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
     public float waterheight = 0.21f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
-    [SerializeField] private int points = 1914;
+    private int points = 1914;
     private int totalPoints;
     private int chunkSize = 240;
     private int chunkCountRoot = 8;
-    public AnimationCurve meshHeightCurve;
+    [SerializeField] private AnimationCurve HeightCurve;
+    [NonSerialized] public AnimationCurve meshHeightCurve;
     [SerializeField] private MapFileLocation SO_fileLoc;
     
     public float[,] heightMap;
@@ -41,6 +43,9 @@ public class MapExtractor : MonoBehaviour
 
     private void Awake()
     {
+        if (!fileName.Contains(".txt")) fileName += ".txt";
+        points = newMapType ? 1914 : 1913;
+        meshHeightCurve = newMapType ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
         totalPoints = points*points;
         
         heightMap = new float[points, points];
@@ -115,12 +120,15 @@ public class MapExtractor : MonoBehaviour
             DestroyImmediate(chunk);
         }
         
+        if (!fileName.Contains(".txt")) fileName += ".txt";
+        points = newMapType ? 1914 : 1913;
+        meshHeightCurve = newMapType ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
+        totalPoints = points*points;
+        
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/" + fileName;
         if (SO_fileLoc.isBuild && SO_fileLoc.MapLocation != null) path = SO_fileLoc.MapLocation;
         byte[] byteArray = File.ReadAllBytes(path);
-        
-        totalPoints = points*points;
 
         heightMap = new float[points, points];
         travelcost = new float[points, points];
