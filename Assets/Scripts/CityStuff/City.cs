@@ -21,7 +21,7 @@ namespace CityStuff
         private Well _well;
         private Church _church;
 
-        private Civilization civ;
+        public Civilization civ;
         private MapExtractor ME = MapExtractor.Instance;
 
         public string CityName;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using CityStuff;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,6 +10,8 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] private GameObject civilisationPrefab;
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
+    
+    public List<City> cities;
     private TileManager TM;
 
     private void Awake()
@@ -91,31 +94,40 @@ public class NPCSpawner : MonoBehaviour
     
     private void Settle(GameObject civObject)
     {
-        var civPos = TM.map.WorldToCell(civObject.transform.position);
+        var civPos = TM.WorldToCell(civObject.transform.position);
         
-        foreach (var civil in civilisations)
+        // check if there is already another city in this postion
+        // TODO in range
+
+        var tileDistance = 3; //min amount of tiles between two cities
+        
+        foreach (var city in cities)
         {
-            if (civil == null || civil == civObject) continue;
-            var civilPos = TM.map.WorldToCell(civil.transform.position);
+           var cityPos = TM.WorldToCell(city.transform.position);
             
-            if (civPos == civilPos)
+            // if other city found, merge
+            if (civPos == cityPos)
             {
-                GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, civil);
+                GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, city.civ.gameObject);
                 civilisations.Remove(civObject);
                 Destroy(civObject);
                 return;
             }
+            // if another city is in rage, go there
+            if (TM.GetTileDistance(civPos, cityPos) <= tileDistance)
+            {
+                civObject.GetComponent<NPCMovement>().MovetoTileAndExecute(cityPos, Settle);
+                return;
+            }
         }
 
-        // Build city if no city is existent at location after movement
-        if (civObject.TryGetComponent<Civilization>(out var civ))
+        // if no other city found, build new city
+        if (civObject.TryGetComponent<Civilization>(out var civ) && civ.city == null)
         {
-            if (civ.city == null)
-            {
-                civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
-                GameEvents.Civilization.OnCityFounded.Invoke(civObject);
-                civ.spawnCivis(0);
-            }
+            civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
+            cities.Add(civ.city);
+            GameEvents.Civilization.OnCityFounded.Invoke(civObject);
+            civ.spawnCivis(0);
         }
         
     }

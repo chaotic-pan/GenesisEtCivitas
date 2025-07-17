@@ -124,9 +124,21 @@ public class NPCMovement : MonoBehaviour
                 ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
         }
         
+        
+        var position = transform.position;
+        while (Vector3.Distance(position, destination) > 0.1f)
+        {
+            Vector3 direction = (destination - position).normalized;
+            var newPos = position + direction * (10f * Time.deltaTime);
+            transform.position = ME.AdjustCoordsForHeight(newPos);
+            transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
+            position = newPos;
+           
+            yield return null;
+        }
+        
         GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
-        transform.position = destination;
         
         onReached?.Invoke(gameObject);
     }

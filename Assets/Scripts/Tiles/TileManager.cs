@@ -400,4 +400,12 @@ public class TileManager : MonoBehaviour
     {
         return dataFromTiles.Keys.ToList();
     }
+
+    public int GetTileDistance(Vector3Int a, Vector3Int b)
+    {
+        a = GridToCube(a);
+        b = GridToCube(b);
+        
+        return (Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y) + Math.Abs(a.z - b.z)) / 2;
+    }
 }
