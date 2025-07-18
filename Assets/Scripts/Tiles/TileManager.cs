@@ -4,6 +4,7 @@ using System.Linq;
 using Events;
 using Player.Skills;
 using Terrain;
+using UI;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -37,7 +38,6 @@ public class TileManager : MonoBehaviour
 
     private void ReduceTileStats(GameObject gm)
     {
-        Debug.Log("REDUCING");
         var tilePos = map.WorldToCell(gm.transform.position);
 
         var middle = GetSpecificRange(tilePos, 2);
@@ -73,7 +73,7 @@ public class TileManager : MonoBehaviour
             MapDisplay.MapOverlay.WaterValue,
         };
         
-        // UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
+         UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
     }
 
     private void ReduceStats(List<Vector3Int> list, float factor)
@@ -140,7 +140,7 @@ public class TileManager : MonoBehaviour
             }
         }
         if (SO_fileLoc != null && SO_fileLoc.isBuild) 
-            GameEvents.Lifecycle.OnTileManagerFinishedInitializing.Invoke();
+            GameEvents.Lifecycle.OnTileManagerFinishedInitializing?.Invoke();
     }
 
 
@@ -407,5 +407,15 @@ public class TileManager : MonoBehaviour
         b = GridToCube(b);
         
         return (Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y) + Math.Abs(a.z - b.z)) / 2;
+    }
+    
+    public Vector3 TileToWorld(Vector3Int gridPos)
+    {
+        return map.CellToWorld(gridPos);
+    }
+    
+    public Dictionary<Vector3Int, TileData> GetAllTileDataDict()
+    {
+        return dataFromTiles;
     }
 }

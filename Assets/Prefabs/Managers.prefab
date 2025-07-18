@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6362208822355190539}
   - component: {fileID: 2050289209017274225}
   - component: {fileID: 9166940963492807670}
+  - component: {fileID: 1991331896503691669}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -124,3 +125,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aoeHighlightColor: {r: 0, g: 0.5, b: 1, a: 0.7}
+--- !u!114 &1991331896503691669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7911803923150710883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e296f00929e0eeb479b7f2429fada253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simplePlants:
+  - {fileID: -8606855333443085332, guid: d02055dd40d81a54a8c84b46e34a5293, type: 3}
+  - {fileID: -4748626505853944793, guid: b84c7fde49c4a0a4d9485a96056bf089, type: 3}
+  - {fileID: -316046109595110636, guid: 0e795ae29de798745a5edf58c8342658, type: 3}
+  - {fileID: -8013952668767749334, guid: b979767717a47484c9da491b3431335a, type: 3}
+  - {fileID: -8416251075107555769, guid: 92b9a137367142d47bf27c0fad7f8a63, type: 3}
+  - {fileID: 8254687373856176130, guid: abb3e19eac85cbf48b908fc22b842e6e, type: 3}
+  simplePlantMaterials:
+  - {fileID: 2100000, guid: 4a575871faf7fb440babe23ceb111d4b, type: 2}
+  - {fileID: 2100000, guid: 0d84ce8f540d69b4a9c7b77e910a53cb, type: 2}
+  - {fileID: 2100000, guid: 78d5de00b7bb5ad4e983bec2fc7089b5, type: 2}
+  - {fileID: 2100000, guid: f032ef6e1640c184192c32441bc2ae80, type: 2}

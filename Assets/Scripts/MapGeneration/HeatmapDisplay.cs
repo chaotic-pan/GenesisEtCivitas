@@ -70,6 +70,7 @@ namespace MapGeneration
         {
             _halfChunkSize = _chunkSize / 2;
             _tileManager = TileManager.Instance;
+            
             var _worldPosition = new Vector3(0, 0, 0);
             var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
             var heatmaps = heatmapGenerator.GenerateAllHeatmaps(tilemapGen);
@@ -100,12 +101,19 @@ namespace MapGeneration
         
         private void LoadTexturesFromDrive()
         {
+            _halfChunkSize = _chunkSize / 2;
+            _tileManager = TileManager.Instance;
+            
+            var _worldPosition = new Vector3(0, 0, 0);
+            
             _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
             
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
+                    _tileDict[new Vector2(x, y)] = new Dictionary<Vector2Int, Vector3Int>();
+                    
                     foreach (var overlay in _overlayValueByTile.Keys)
                     {
                         var bytes = File.ReadAllBytes($"{Application.dataPath}/2D/GeneratedHeatmaps/{overlay}_{x}_{y}.jpg");
@@ -113,12 +121,12 @@ namespace MapGeneration
                         tex.LoadImage(bytes);
                         _maps[overlay].Add(new Vector2(x, y), tex);
                         
-                        /*foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+                        foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
                         {
-                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - halfChunkSize) + 1;
-                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - halfChunkSize);
-                            _tileDict[new Vector2(x, y)][coord] = tileManager.getTileDataByWorldCoords(_worldPosition);
-                        }*/
+                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - _halfChunkSize) + 1;
+                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - _halfChunkSize);
+                            _tileDict[new Vector2(x, y)][coord] = _tileManager.getTileDataKeyByWorldCoords(_worldPosition);
+                        }
                     }
                 }
             }
