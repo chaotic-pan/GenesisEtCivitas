@@ -43,8 +43,8 @@ class NPCIdeling : MonoBehaviour
         {
             var civi = transform.GetChild(i - 1);
             idles.Add(civi.gameObject);
-            StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
         }
+        surroundFocusPoint(city._house.gameObject, startBuild);   
     }
     public void OnCityMerge(GameObject newCivObject, GameObject oldCivObject)
     {
@@ -69,14 +69,15 @@ class NPCIdeling : MonoBehaviour
         { 
             var civi = oldCivObject.transform.GetChild(oldCivObject.transform.childCount - 1).gameObject;
             idles.Remove(civi);
-            Destroy(civi);
+            // Destroy(civi);
         }
     }
     
     IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
     {
-        for (int i = 0; i < destinations.Count; i++)
+        for (int i = 0; i < idles.Count; i++)
         {
+            if (i >= destinations.Count) yield break;
             var civi = idles[i];
             civi.SetActive(true);
             StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
@@ -112,7 +113,7 @@ class NPCIdeling : MonoBehaviour
     
     private void EndIdleAction(GameObject gObject)
     {
-        if (transform.position != gObject.transform.position) return;
+        if (gObject == null || transform.position != gObject.transform.position) return;
         
         focusPoint = null;
         foreach (var civi in idles)
@@ -128,15 +129,12 @@ class NPCIdeling : MonoBehaviour
     {
         if (civi != null) civi.SetActive(false);
     }
-    
-    
-    private void onPreach(GameObject saviour)
-    {
-        var saviourPos = saviour.transform.position;
-        if (transform.position != saviourPos) return;
-        
 
-        focusPoint = saviour.transform;
+    private void surroundFocusPoint(GameObject focusPoint,  Action<GameObject> onReached)
+    {
+        this.focusPoint = focusPoint.transform;
+        var focusPos = focusPoint.transform.position;
+        
         List<Vector3> audience = new();
         
         float distance = 2;
@@ -150,17 +148,22 @@ class NPCIdeling : MonoBehaviour
                 if (audience.Count >= idles.Count) goto end;
                 
                 var angle = Math.PI*2/count * i + Random.Range(-0.2f, 0.2f) + Math.PI/8*j;
-                float x = (float)(saviourPos.x + (distance+Random.Range(0f, 3f)) * Math.Cos(angle)) ;
-                float z = (float)(saviourPos.z + (distance+Random.Range(0f, 3f)) * Math.Sin(angle));
+                float x = (float)(focusPos.x + (distance+Random.Range(0f, 3f)) * Math.Cos(angle)) ;
+                float z = (float)(focusPos.z + (distance+Random.Range(0f, 3f)) * Math.Sin(angle));
 
-                audience.Add(new Vector3(x, saviourPos.y, z));
+                audience.Add(new Vector3(x, focusPos.y, z));
             }
         }
         
         end:
         StopAllCoroutines();
-        StartCoroutine(SpawnAndGo(audience, Listen));
-        
+        StartCoroutine(SpawnAndGo(audience, onReached));
+    }
+    
+    private void onPreach(GameObject saviour)
+    {
+        if (transform.position != saviour.transform.position) return;
+        surroundFocusPoint(saviour, Listen);
     }
     private void Listen(GameObject go)
     {
@@ -170,11 +173,17 @@ class NPCIdeling : MonoBehaviour
     private void onPreachEnd(GameObject gObject) 
     {
         GameEvents.Civilization.OnPray.Invoke(gameObject);
-        StartCoroutine(Pray(gObject));
+        StartCoroutine(WaitForEnd(gObject, 5));
     }
-    IEnumerator Pray(GameObject gObject)
+    IEnumerator WaitForEnd(GameObject gObject, float wait)
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(wait);
         EndIdleAction(gObject);
+    }
+
+    private void startBuild(GameObject civi)
+    {
+        GameEvents.Civilization.OnBuild.Invoke(civi);
+        StartCoroutine(WaitForEnd(civi,10));
     }
 }

@@ -36,6 +36,7 @@ namespace Events
             public UnityAction<GameObject> OnPreachEnd;
             public UnityAction<GameObject> OnPray;
             public UnityAction<GameObject> OnListen;
+            public UnityAction<GameObject> OnBuild;
 
             public UnityAction<GameObject> OnTileStatsDecay;
         }

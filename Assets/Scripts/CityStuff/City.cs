@@ -17,7 +17,7 @@ namespace CityStuff
         [SerializeField] private GameObject churchGameObject;
         [SerializeField] private GameObject citycentre;
     
-        private House _house;
+        public House _house;
         private Well _well;
         private Church _church;
 

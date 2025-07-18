@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,6 +10,7 @@ public class AnimManager : MonoBehaviour
     private static readonly string IsFarming = "isFarming";
     private static readonly string IsTreeCutting = "isTreeCutting";
     private static readonly string IsFishing = "isFishing";
+    private static readonly string IsBuilding = "isBuilding";
     private static readonly string IsPreaching = "isPreaching";
     private static readonly string IsPraying = "isPraying";
     private static readonly string IsListening = "isListening";
@@ -48,6 +50,7 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnPreach += Preach;
         GameEvents.Civilization.OnPray += Pray;
         GameEvents.Civilization.OnListen += Listen;
+        GameEvents.Civilization.OnBuild += Build;
     }
 
     private void OnDisable()
@@ -59,6 +62,7 @@ public class AnimManager : MonoBehaviour
         GameEvents.Civilization.OnPreach -= Preach;
         GameEvents.Civilization.OnPray -= Pray;
         GameEvents.Civilization.OnListen -= Listen;
+        GameEvents.Civilization.OnBuild -= Build;
     }
 
     private void OnStartWalk(GameObject go)
@@ -94,9 +98,8 @@ public class AnimManager : MonoBehaviour
     
     public void SetIsDancing(bool isDancing)
     {
-        resetBools();
         if (isDancing) mAnimator.SetInteger(DanceRandomizer, Random.Range(0, 2));
-        mAnimator.SetBool(IsDancing, isDancing);
+        setBool(IsDancing, null, isDancing);
     }
 
 
@@ -107,19 +110,12 @@ public class AnimManager : MonoBehaviour
             StartCoroutine(Preach(15));
         }
     }
-    public void SetIsPreaching(bool isPreaching)
-    {
-        resetBools();
-        mAnimator.SetBool(IsPreaching, isPreaching);
-        Podium.SetActive(isPreaching);
-    }
     IEnumerator Preach(float duration)
     {
-        SetIsPraying(true);
-        Podium.SetActive(true);
+        setBool(IsPraying, new List<GameObject>{Podium}, true);
         yield return new WaitForSecondsRealtime(10f);
         
-        SetIsPreaching(true);
+        setBool(IsPreaching, new List<GameObject>{Podium}, true);
         float timer = 0;
         while (timer < duration)
         {
@@ -128,25 +124,19 @@ public class AnimManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(2f);
         }
         GameEvents.Civilization.OnPreachEnd.Invoke(transform.parent.gameObject);
-        SetIsPreaching(false);
+        setBool(IsPreaching, null, false);
         
-        SetIsPraying(true);
-        Podium.SetActive(true); 
+        setBool(IsPraying, new List<GameObject>{Podium}, true);
         yield return new WaitForSecondsRealtime(5f);
-        SetIsPraying(false);
+        setBool(IsPraying, null, false);
     }
     
     private void Pray(GameObject go)
     {
         if (go == gameObject || go == transform.parent.gameObject)
         {
-            SetIsPraying(true);
+            setBool(IsPraying, null, true);
         }
-    }
-    public void SetIsPraying(bool isPraying)
-    {
-        resetBools();
-        mAnimator.SetBool(IsPraying, isPraying);
     }
 
     private void Listen(GameObject go)
@@ -154,35 +144,24 @@ public class AnimManager : MonoBehaviour
         if (go == gameObject || go == transform.parent.gameObject)
         {
             resetBools();
-            mAnimator.SetBool(IsListening, true);
+            setBool(IsListening, null, true);
         }
     }
-
-
-    public void SetIsFishing(bool isFishing)
+    
+    
+    private void Build(GameObject go)
     {
-        resetBools();
-        mAnimator.SetBool(IsFishing, isFishing);
-        FishingPole.SetActive(isFishing);
-        Stool.SetActive(isFishing);
+        if (go == gameObject || go == transform.parent.gameObject)
+        {
+            StartCoroutine(Build(10));
+        }
     }
-    public void SetIsMining(bool isMining)
+    IEnumerator Build(float duration)
     {
-        resetBools();
-        mAnimator.SetBool(IsFarming, isMining);
-        Pickaxe.SetActive(isMining);
-    }
-    public void SetIsFarming(bool isFarming)
-    {
-        resetBools();
-        mAnimator.SetBool(IsFarming, isFarming);
-        Hoe.SetActive(isFarming);
-    }
-    public void SetIsTreeCutting(bool isTreeCutting)
-    {
-        resetBools();
-        mAnimator.SetBool(IsTreeCutting, isTreeCutting);
-        Axe.SetActive(isTreeCutting);
+        setBool(IsBuilding, new List<GameObject>{Hammer}, true);
+        print("AYYYYY! I'm buildin' here!");
+        yield return new WaitForSecondsRealtime(duration);
+        setBool(IsBuilding, null, false);
     }
     
     
@@ -204,6 +183,17 @@ public class AnimManager : MonoBehaviour
         Destroy(transform.parent.gameObject);
     }
 
+
+    private void setBool(string name, List<GameObject> activeProbs, bool isActive)
+    {
+        resetBools();
+        mAnimator.SetBool(name, isActive);
+        if (activeProbs == null) return;
+        foreach (var prob in activeProbs)
+        {
+            prob.SetActive(isActive);
+        }
+    }
     private void resetBools()
     {
         mAnimator.SetBool(IsMoving, false);
@@ -220,6 +210,7 @@ public class AnimManager : MonoBehaviour
         Podium.SetActive(false);
         Axe.SetActive(false);
         Hoe.SetActive(false);
+        Hammer.SetActive(false);
         Pickaxe.SetActive(false);
     }
 }
