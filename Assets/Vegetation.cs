@@ -19,20 +19,18 @@ public class Vegetation : MonoBehaviour
 
     private Vector3 _scale = new (300, 300, 300);
     private int _maxTileVegetationHalfed = 3;
-    
-    private void Start()
+
+    private void Awake()
     {
         _vegMatrices = new Dictionary<(int, int), List<Matrix4x4>>();
         _tileMatrixDict  = new Dictionary<Vector3Int, List<VegData>>();
-        
-        _tileManager = TileManager.Instance;
-        _mapExtractor = MapExtractor.Instance;
-        
         GameEvents.Lifecycle.OnTileManagerFinishedInitializing += UpdateVegetation;
     }
 
     private void UpdateVegetation()
     {
+        _mapExtractor = MapExtractor.Instance;
+        _tileManager = TileManager.Instance;
         var subset = _tileManager.GetAllTileDataDict();
         _subsetDict = subset.Where(tile => !tile.Value.isWater).ToDictionary(tile => tile.Key, tile => tile.Value);
         

@@ -139,8 +139,8 @@ public class TileManager : MonoBehaviour
                 }
             }
         }
-        if (SO_fileLoc != null && SO_fileLoc.isBuild) 
-            GameEvents.Lifecycle.OnTileManagerFinishedInitializing?.Invoke();
+        
+        GameEvents.Lifecycle.OnTileManagerFinishedInitializing?.Invoke(); 
     }
 
 
