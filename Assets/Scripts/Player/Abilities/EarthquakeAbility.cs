@@ -14,7 +14,6 @@ namespace Player.Abilities
         public override void EnterAbility()
         {
             Debug.Log("Entered Earthquake Ability");
-            // Set a distinct color for earthquake AoE (orange-red)
             GridOverlayManager.Instance.aoeHighlightColor = new Color(1f, 0.4f, 0f, 0.7f);
         }
 
@@ -30,7 +29,6 @@ namespace Player.Abilities
                 var tileData = TileManager.Instance.getTileDataByGridCoords(tilePos);
                 if (tileData != null)
                 {
-                    // Reduce firmness by 3 (clamped to minimum 0).
                     tileData.firmness = Mathf.Max(tileData.firmness - 3, 0);
                 }
             }
@@ -54,6 +52,7 @@ namespace Player.Abilities
                     MapDisplay.MapOverlay.Firmness
                 );
             }
+            SpawnEffectOnTiles(affectedTiles, "Earthquake", heightOffset: 5f, scaleMultiplier: 1.2f);
         }
     }
 }

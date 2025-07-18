@@ -70,6 +70,7 @@ namespace MapGeneration
         {
             _halfChunkSize = _chunkSize / 2;
             _tileManager = TileManager.Instance;
+            
             var _worldPosition = new Vector3(0, 0, 0);
             var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
             var heatmaps = heatmapGenerator.GenerateAllHeatmaps(tilemapGen);
@@ -100,12 +101,19 @@ namespace MapGeneration
         
         private void LoadTexturesFromDrive()
         {
+            _halfChunkSize = _chunkSize / 2;
+            _tileManager = TileManager.Instance;
+            
+            var _worldPosition = new Vector3(0, 0, 0);
+            
             _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
             
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
+                    _tileDict[new Vector2(x, y)] = new Dictionary<Vector2Int, Vector3Int>();
+                    
                     foreach (var overlay in _overlayValueByTile.Keys)
                     {
                         var bytes = File.ReadAllBytes($"{Application.dataPath}/2D/GeneratedHeatmaps/{overlay}_{x}_{y}.jpg");
@@ -113,12 +121,12 @@ namespace MapGeneration
                         tex.LoadImage(bytes);
                         _maps[overlay].Add(new Vector2(x, y), tex);
                         
-                        /*foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
+                        foreach (var coord in VectorUtils.GridCoordinates(_chunkSize, _chunkSize))
                         {
-                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - halfChunkSize) + 1;
-                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - halfChunkSize);
-                            _tileDict[new Vector2(x, y)][coord] = tileManager.getTileDataByWorldCoords(_worldPosition);
-                        }*/
+                            _worldPosition.x = (x * (_chunkSize - 1)) + (coord.x - _halfChunkSize) + 1;
+                            _worldPosition.z = -(y * (_chunkSize - 1)) + (coord.y - _halfChunkSize);
+                            _tileDict[new Vector2(x, y)][coord] = _tileManager.getTileDataKeyByWorldCoords(_worldPosition);
+                        }
                     }
                 }
             }
@@ -147,17 +155,26 @@ namespace MapGeneration
         
         private async void UpdateMultipleHeatMapChunks(List<Vector2> chunkPos, MapDisplay.MapOverlay[] overlays)
         {
+            var tasks = new List<Task>();
+            
             foreach (var overlay in overlays)
             {
                 foreach (var pos in chunkPos)
                 {
-                    var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
-                    _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+                    tasks.Add(ProcessSingleChunk(pos, overlay));
                 }
             }
             
+            await Task.WhenAll(tasks);
+            
             if (overlays.Contains(_currentMapOverlay))
                 mapDisplay.ReplaceTexture(_maps[_currentMapOverlay]);
+        }
+
+        private async Task ProcessSingleChunk(Vector2 pos, MapDisplay.MapOverlay overlay)
+        {
+            var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
+            _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
         }
         
         private async Task<Color[]> OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
@@ -194,7 +211,7 @@ namespace MapGeneration
                 }
 
                 return colorMap;
-            });
+            }).ConfigureAwait(false);;
         }
         
 

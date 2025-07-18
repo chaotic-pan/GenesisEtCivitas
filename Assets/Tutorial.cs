@@ -93,7 +93,8 @@ public class Tutorial : MonoBehaviour, IPointerClickHandler
     private void Advance()
     {
         if (_requiresNpcClick || _requiresSkillOpen || _requiresSkillBuy || _requiresSkillUse) return;
-        if (_currentScreen >= tutorialScreens.Length) return;
+        if (_currentScreen > tutorialScreens.Length -2) return;
+
         
         tutorialScreens[_currentScreen].SetActive(false);
         tutorialScreens[_currentScreen+1].SetActive(true);
