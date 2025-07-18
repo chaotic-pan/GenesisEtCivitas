@@ -28,7 +28,7 @@ namespace Events
             public UnityAction<GameObject> OnCivilizationDeath;
             public UnityAction<GameObject> OnCityFounded;
             public UnityAction<GameObject> OnCivilizationLowOnStats;
-
+            
             public UnityAction<GameObject> OnStartWalking;
             public UnityAction<GameObject, bool> OnSwim;
             public UnityAction<GameObject> OnStopWalking;
@@ -36,7 +36,10 @@ namespace Events
             public UnityAction<GameObject> OnPreachEnd;
             public UnityAction<GameObject> OnPray;
             public UnityAction<GameObject> OnListen;
+            public UnityAction<GameObject> OnBuild;
 
+            public UnityAction<GameObject, GameObject> CreateBuilding; //civObject, building
+            
             public UnityAction<GameObject> OnTileStatsDecay;
         }
         

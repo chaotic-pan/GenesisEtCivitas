@@ -7,28 +7,28 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material.003
-    second: {fileID: 2100000, guid: 5d47496811499854ca2b12d954ca7cfd, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.004
-    second: {fileID: 2100000, guid: cdcd4f7a054c54e47be44f357eb8692c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.005
-    second: {fileID: -876546973899608171, guid: 4ec92ff67d5d5af48bc22d3fb023b68e, type: 3}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.006
+      name: Blue
     second: {fileID: 2100000, guid: 2e69c8d51a6ea9a4b9fa8e1a2d080851, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material.008
+      name: Brown
+    second: {fileID: 2100000, guid: cdcd4f7a054c54e47be44f357eb8692c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Red
     second: {fileID: 2100000, guid: d45815be6b35be044865f7b880bb8a93, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Silver
+    second: {fileID: -876546973899608171, guid: 4ec92ff67d5d5af48bc22d3fb023b68e, type: 3}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: white
+    second: {fileID: 2100000, guid: 5d47496811499854ca2b12d954ca7cfd, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

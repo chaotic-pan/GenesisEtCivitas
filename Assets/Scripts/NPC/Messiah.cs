@@ -14,6 +14,7 @@ public class Messiah : MonoBehaviour
     private void Start()
     {
         npcMove = gameObject.GetComponent<NPCMovement>();
+        GetComponentInChildren<Animator>().SetFloat("isSaviour", 1);
         UseMessiah.AddListener(GrantScoreImprovements);
         SendMessiah.AddListener(OnSendMessiah);
     }

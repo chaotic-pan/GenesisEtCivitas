@@ -102,7 +102,13 @@ public class NPCSpawner : MonoBehaviour
         
         foreach (var city in cities)
         {
-           var cityPos = TM.WorldToCell(city.transform.position);
+            if (city == null)
+            {
+                cities.Remove(city);
+                continue;
+            }
+            
+            var cityPos = TM.WorldToCell(city.transform.position);
             
             // if other city found, merge
             if (civPos == cityPos)
