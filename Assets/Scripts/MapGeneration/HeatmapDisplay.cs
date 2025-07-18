@@ -155,17 +155,26 @@ namespace MapGeneration
         
         private async void UpdateMultipleHeatMapChunks(List<Vector2> chunkPos, MapDisplay.MapOverlay[] overlays)
         {
+            var tasks = new List<Task>();
+            
             foreach (var overlay in overlays)
             {
                 foreach (var pos in chunkPos)
                 {
-                    var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
-                    _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+                    tasks.Add(ProcessSingleChunk(pos, overlay));
                 }
             }
             
+            await Task.WhenAll(tasks);
+            
             if (overlays.Contains(_currentMapOverlay))
                 mapDisplay.ReplaceTexture(_maps[_currentMapOverlay]);
+        }
+
+        private async Task ProcessSingleChunk(Vector2 pos, MapDisplay.MapOverlay overlay)
+        {
+            var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
+            _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
         }
         
         private async Task<Color[]> OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
@@ -202,7 +211,7 @@ namespace MapGeneration
                 }
 
                 return colorMap;
-            });
+            }).ConfigureAwait(false);;
         }
         
 
