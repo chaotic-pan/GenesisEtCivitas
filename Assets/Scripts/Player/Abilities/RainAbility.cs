@@ -19,39 +19,32 @@ namespace Player.Abilities
 
         public override void CastAbility(Vector3Int centerTilePos)
         {
-            // Get all tiles in AoE.
-            int radius = (EffectDiameter - 1) / 2;
-            List<Vector3Int> affectedTiles = TileManager.Instance.GetSpecificRange(centerTilePos, radius);
+            // Get affected tiles.
+            var radius = (EffectDiameter - 1) / 2;
+            var affectedTiles = TileManager.Instance.GetSpecificRange(centerTilePos, radius);
             
-            // Apply water increase to each tile.
-            foreach (Vector3Int tilePos in affectedTiles)
+            // Apply water increase to tiles.
+            foreach (var tilePos in affectedTiles)
             {
                 var tileData = TileManager.Instance.getTileDataByGridCoords(tilePos);
-                if (tileData != null)
-                {
-                    tileData.waterValue += 20;
-                }
+                if (tileData != null) tileData.waterValue += 20;
             }
             
-            // Update heatmaps for all affected chunks.
-            HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
-            foreach (Vector3Int tilePos in affectedTiles)
+            // Update heatmaps.
+            var affectedChunks = new HashSet<Vector2>();
+            foreach (var tilePos in affectedTiles)
             {
                 var chunks = TileManager.Instance.getWorldPositionOfTile(tilePos);
-                foreach (Vector2 chunk in chunks)
-                {
-                    affectedChunks.Add(chunk);
-                }
+                foreach (var chunk in chunks) affectedChunks.Add(chunk);
             }
-            
-            // Trigger heatmap updates.
-            foreach (Vector2 chunk in affectedChunks)
+            foreach (var chunk in affectedChunks)
             {
                 UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
                     new List<Vector2> { chunk }, 
                     MapDisplay.MapOverlay.WaterValue
                 );
             }
+            SpawnEffectOnTiles(affectedTiles, "Rain", heightOffset: 20f, scaleMultiplier: 1.5f);
         }
     }
 }
