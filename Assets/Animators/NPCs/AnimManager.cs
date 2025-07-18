@@ -24,6 +24,7 @@ public class AnimManager : MonoBehaviour
     private GameObject Podium;
     private GameObject Axe;
     private GameObject Hoe;
+    private GameObject Hammer;
     private GameObject Pickaxe;
 
     private void Awake()
@@ -34,7 +35,8 @@ public class AnimManager : MonoBehaviour
         Podium = transform.GetChild(4).gameObject;
         Axe = transform.GetChild(5).gameObject;
         Hoe = transform.GetChild(6).gameObject;
-        Pickaxe = transform.GetChild(7).gameObject;
+        Hammer = transform.GetChild(7).gameObject;
+        Pickaxe = transform.GetChild(8).gameObject;
     }
 
     private void OnEnable()

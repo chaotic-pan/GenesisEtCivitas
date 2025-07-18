@@ -126,7 +126,7 @@ class NPCIdeling : MonoBehaviour
     }
     private void Despawn(GameObject civi)
     {
-        civi.SetActive(false);
+        if (civi != null) civi.SetActive(false);
     }
     
     
