@@ -28,11 +28,16 @@ namespace Events
             public UnityAction<GameObject> OnCivilizationDeath;
             public UnityAction<GameObject> OnCityFounded;
             public UnityAction<GameObject> OnCivilizationLowOnStats;
-            
+
             public UnityAction<GameObject> OnStartWalking;
+            public UnityAction<GameObject, bool> OnSwim;
             public UnityAction<GameObject> OnStopWalking;
-            public UnityAction<GameObject, float> OnPreach;
-            
+            public UnityAction<GameObject> OnPreach;
+            public UnityAction<GameObject> OnPreachEnd;
+            public UnityAction<GameObject> OnPray;
+            public UnityAction<GameObject> OnListen;
+
+            public UnityAction<GameObject> OnTileStatsDecay;
         }
         
         public class LifecycleEvents

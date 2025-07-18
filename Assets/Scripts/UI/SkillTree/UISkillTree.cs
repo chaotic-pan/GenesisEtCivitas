@@ -69,6 +69,7 @@ public class UISkillTree : MonoBehaviour
         
         displayedSkill.Unlock();
         UIEvents.UIOpen.OnOpenSkillTree.Invoke(playerSkillSet);
+        UIEvents.UIOpen.OnBuySkill?.Invoke();
         UpdateDisplay(displayedSkill);
     }
 

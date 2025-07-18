@@ -13,31 +13,96 @@ public class TileManager : MonoBehaviour
     public static TileManager Instance;
     [SerializeField] public Tilemap map;
     private Dictionary<Vector3Int, TileData> dataFromTiles = new();
+    public Dictionary<Vector3, Vector3Int> worldToGrid = new();
     public List<Vector3Int> spawnLocations = new();
     [SerializeField] private Skill onUnlockShips;
+    [SerializeField] private bool WATERDEBUG;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    private float waterHeight = 0.3f;
+    public bool boatsUnlocked = false;
+    private float waterHeight = 0.1f;
     private float waterTravelCost = 50;
-    
     private void Awake()
     {
         Instance = this;
         onUnlockShips.onUnlocked += updateWaterTravel;
+
+        GameEvents.Civilization.OnTileStatsDecay += ReduceTileStats;
     }
 
     private void OnDisable()
     { 
         onUnlockShips.onUnlocked -= updateWaterTravel;
+        GameEvents.Civilization.OnTileStatsDecay -= ReduceTileStats;
+    }
+
+    private void ReduceTileStats(GameObject gm)
+    {
+        var tilePos = map.WorldToCell(gm.transform.position);
+
+        var middle = GetSpecificRange(tilePos, 2);
+        var outside = GetSpecificRange(tilePos, 3);
+        var allTiles = outside;
+        foreach (Vector3Int item in middle) { outside.Remove(item); }
+        middle.Remove(tilePos);
+
+        ReduceStats(new List<Vector3Int> { tilePos }, 1f);  // inside: 100%
+        ReduceStats(middle, 0.5f);                          // middle: 50%
+        ReduceStats(outside, 0.25f);                        // outside: 25%
+        
+        // Update heatmaps for all affected chunks.
+        HashSet<Vector2> affectedChunks = new HashSet<Vector2>();
+        foreach (Vector3Int tile in allTiles)
+        {
+            var chunks = getWorldPositionOfTile(tile);
+            foreach (Vector2 chunk in chunks)
+            {
+                affectedChunks.Add(chunk);
+            }
+        }
+        
+        var chunksList = affectedChunks.ToList();
+
+        var affectedOverlays = new[]
+        {
+            MapDisplay.MapOverlay.Fertility,
+            MapDisplay.MapOverlay.Firmness,
+            MapDisplay.MapOverlay.Vegetation,
+            MapDisplay.MapOverlay.Ore,
+            MapDisplay.MapOverlay.AnimalPopulation,
+            MapDisplay.MapOverlay.WaterValue,
+        };
+        
+         UIEvents.UIMap.OnUpdateMultipleHeatmapChunks.Invoke(chunksList, affectedOverlays);
+    }
+
+    private void ReduceStats(List<Vector3Int> list, float factor)
+    {
+        foreach (Vector3Int tilePos in list)
+        {
+            if (!dataFromTiles.ContainsKey(tilePos)) continue;
+            dataFromTiles[tilePos].landFertility -= factor;
+            dataFromTiles[tilePos].firmness -= factor;
+            dataFromTiles[tilePos].vegetation -= factor;
+            dataFromTiles[tilePos].ore -= factor;
+            dataFromTiles[tilePos].animalPopulation -= factor;
+            dataFromTiles[tilePos].waterValue -= factor;
+        }
     }
 
     public void InitializeTileData(MapExtractor ME)
     {
+        GameObject waterMarkers = null;
+        if (WATERDEBUG) waterMarkers = new GameObject("Water Markers");
+        
+        waterHeight = ME.meshHeightCurve.Evaluate(ME.waterheight) * ME.mapHeightMultiplier;
+        
         for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
         {
             for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
             {
                 var gridPos = new Vector3Int(x, y, 0);
+                var worldPos = map.CellToWorld(gridPos);
                 TileBase tile = map.GetTile(gridPos);
                 if (tile != null)
                 {
@@ -54,17 +119,28 @@ public class TileManager : MonoBehaviour
                         ME.climate[p.x,p.y],
                         height < waterHeight ? 30 : 1,
                         height
+                        , height < waterHeight
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
-                    if (height > waterHeight)
+                    worldToGrid.TryAdd(worldPos, gridPos);
+                    if (!IsOcean(gridPos))
                     {
                         spawnLocations.Add(gridPos);
+                    }
+                    else  if (WATERDEBUG) 
+                    {
+                        var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        var a = map.CellToWorld(gridPos);
+                        var b = new Vector3(a.x,height , a.z);
+                        s.transform.localScale = new Vector3(3,3,3);
+                        s.transform.position = b;
+                        s.transform.SetParent(waterMarkers.transform);
                     }
                 }
             }
         }
-        if (SO_fileLoc != null && SO_fileLoc.isBuild) 
-            GameEvents.Lifecycle.OnTileManagerFinishedInitializing.Invoke();
+        
+        GameEvents.Lifecycle.OnTileManagerFinishedInitializing?.Invoke(); 
     }
 
 
@@ -73,8 +149,6 @@ public class TileManager : MonoBehaviour
      * Safety: animalHostility, heightMap
      * Shelter: firmness, ore, vegetation
      * Energy: climate */
-
-
     public float GetFood(Vector3Int coords)
     {
         return dataFromTiles.ContainsKey(coords) ? 
@@ -114,7 +188,7 @@ public class TileManager : MonoBehaviour
 
     public bool IsOcean(Vector3Int coords)
     {
-        return  dataFromTiles.ContainsKey(coords) && dataFromTiles[coords].height < waterHeight;
+        return !dataFromTiles.ContainsKey(coords) || dataFromTiles[coords].isWater;
     }
     
     public float GetTravelCost(Vector3Int coords)
@@ -125,6 +199,7 @@ public class TileManager : MonoBehaviour
     private void updateWaterTravel()
     {
         waterTravelCost = 1;
+        boatsUnlocked = true;
 
         foreach (var tile in dataFromTiles.Values.Where(tile => tile.height < waterHeight))
         {
@@ -137,6 +212,11 @@ public class TileManager : MonoBehaviour
         //     MapDisplay.MapOverlay.Travelcost
         // );
     }
+
+    public Vector3Int WorldToCell(Vector3 worldPos)
+    {
+        return map.WorldToCell(new Vector3(worldPos.x, -1, worldPos.z));
+    }
     
     public TileData getTileDataByWorldCoords(float x, float y, float z)
     {
@@ -147,6 +227,12 @@ public class TileManager : MonoBehaviour
         var gridPos = map.WorldToCell(coordinates);
         
         return getTileDataByGridCoords(gridPos);
+    }
+    
+    public Vector3Int getTileDataKeyByWorldCoords(Vector3 coordinates)
+    {
+        var gridPos = map.WorldToCell(coordinates);
+        return gridPos;
     }
 
     public TileData getTileDataByGridCoords(int gridX, int gridY)
@@ -313,5 +399,23 @@ public class TileManager : MonoBehaviour
     public List<Vector3Int> GetFullRange()
     {
         return dataFromTiles.Keys.ToList();
+    }
+
+    public int GetTileDistance(Vector3Int a, Vector3Int b)
+    {
+        a = GridToCube(a);
+        b = GridToCube(b);
+        
+        return (Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y) + Math.Abs(a.z - b.z)) / 2;
+    }
+    
+    public Vector3 TileToWorld(Vector3Int gridPos)
+    {
+        return map.CellToWorld(gridPos);
+    }
+    
+    public Dictionary<Vector3Int, TileData> GetAllTileDataDict()
+    {
+        return dataFromTiles;
     }
 }

@@ -24,12 +24,13 @@ namespace Managers
 
         private void InitializePool(string effectName, GameObject prefab, int count)
         {
+            GameObject go = new GameObject(effectName+" Particles");
             if (pools.ContainsKey(effectName)) return;
             pools[effectName] = new Queue<GameObject>();
 
             for (var i = 0; i < count; i++)
             {
-                var effect = Instantiate(prefab);
+                var effect = Instantiate(prefab, go.transform, true);
                 effect.SetActive(false);
                 pools[effectName].Enqueue(effect);
             }

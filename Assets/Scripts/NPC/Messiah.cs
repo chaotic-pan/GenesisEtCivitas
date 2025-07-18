@@ -1,4 +1,3 @@
-using System;
 using Events;
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,7 +26,9 @@ public class Messiah : MonoBehaviour
     public void GrantScoreImprovements(Civilization civi)
     {
         civ = civi;
-        Vector3Int tilePos = npcMove.map.WorldToCell(civ.transform.position);
+        var civPos = civ.transform.position;
+        civPos.y = 0;
+        Vector3Int tilePos = npcMove.map.WorldToCell(civPos);
         npcMove.MovetoTileInRangeAndExecute(tilePos, TileManager.Instance.GetFullRange(), OnCityReached);
     }
 
@@ -35,7 +36,7 @@ public class Messiah : MonoBehaviour
     {
         if (npc == npcMove.gameObject && civ != null)
         { 
-            GameEvents.Civilization.OnPreach.Invoke(gameObject, 10);
+            GameEvents.Civilization.OnPreach.Invoke(gameObject);
             ChangeCiviScores();
         }
     }

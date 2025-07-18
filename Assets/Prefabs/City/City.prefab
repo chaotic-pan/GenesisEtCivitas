@@ -48,6 +48,8 @@ MonoBehaviour:
   houseGameObject: {fileID: 932326612820066371, guid: 05d3fe2a8b4bea34db886d4b836906c7, type: 3}
   wellGameObject: {fileID: 3933647680458739708, guid: 2ff603a0b29705541aa2fa54af6b38b4, type: 3}
   churchGameObject: {fileID: 8697916058072947503, guid: 84805b4b35bd29440a5a579cd5d6b886, type: 3}
+  citycentre: {fileID: 919132149155446097, guid: 63432f4dce9776647a8fcb06f27ec614, type: 3}
+  CityName: 
 --- !u!65 &6230919498672797800
 BoxCollider:
   m_ObjectHideFlags: 0

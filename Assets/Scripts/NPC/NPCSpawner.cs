@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using CityStuff;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -10,6 +10,8 @@ public class NPCSpawner : MonoBehaviour
     [SerializeField] private GameObject civilisationPrefab;
     [SerializeField] public List<GameObject> civilisations;
     [SerializeField] private int civilisationCount = 4;
+    
+    public List<City> cities;
     private TileManager TM;
 
     private void Awake()
@@ -31,6 +33,11 @@ public class NPCSpawner : MonoBehaviour
         for(int i=0; i< civilisationCount; i++)
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
+            while (TM.IsOcean(TM.spawnLocations[random]))
+            {
+                random = Random.Range(0, TM.spawnLocations.Count);
+            }
+            
             Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
             var population = Random.Range(1, 8);
             
@@ -38,12 +45,13 @@ public class NPCSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
+    private GameObject SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
     {
         var civ = Instantiate(civilisationPrefab, location, Quaternion.identity,transform);
         civilisations.Add(civ);
         civ.GetComponent<Civilization>().SetPopulation(population);
         StartCoroutine(WaitAndSettle(civ, settleRangeIncl, settleRangeExcl));
+        return civ;
     }
     
     IEnumerator WaitAndSettle(GameObject civ, int rangeIncl, int rangeExcl)
@@ -87,32 +95,36 @@ public class NPCSpawner : MonoBehaviour
     
     private void Settle(GameObject civObject)
     {
-        var civPos = TM.map.WorldToCell(civObject.transform.position);
+        var civPos = TM.WorldToCell(civObject.transform.position);
         
-        foreach (var civil in civilisations)
+        // check if there is already another city in this area
+        var tileDistance = 3; //min amount of tiles between two cities
+        
+        foreach (var city in cities)
         {
-            if (civil == civObject) continue;
+           var cityPos = TM.WorldToCell(city.transform.position);
             
-            if (civil == null) continue;
-            var civilPos = TM.map.WorldToCell(civil.transform.position);
-            
-            if (civPos == civilPos)
+            // if other city found, merge
+            if (civPos == cityPos)
             {
-                GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, civil);
+                GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, city.civ.gameObject);
                 civilisations.Remove(civObject);
-                Destroy(civObject);
+                return;
+            }
+            // if another city is in rage, go there
+            if (TM.GetTileDistance(civPos, cityPos) <= tileDistance)
+            {
+                civObject.GetComponent<NPCMovement>().MovetoTileAndExecute(cityPos, Settle);
                 return;
             }
         }
 
-        // Build city if no city is existent at location after movement
-        if (civObject.TryGetComponent<Civilization>(out var civ))
+        // if no other city found, build new city
+        if (civObject.TryGetComponent<Civilization>(out var civ) && civ.city == null)
         {
-            if (civ.city == null)
-            {
-                civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
-                GameEvents.Civilization.OnCityFounded.Invoke(civObject);
-            }
+            civ.city = CityBuilder.Instance.BuildCity(civObject.transform.position, civObject.GetComponent<NPC>()._npcModel, civ);
+            cities.Add(civ.city);
+            GameEvents.Civilization.OnCityFounded.Invoke(civObject);
         }
         
     }
@@ -126,12 +138,14 @@ public class NPCSpawner : MonoBehaviour
         }
     }
 
-    private void SplitCiv(GameObject civ)
+    private void SplitCiv(GameObject civObject)
     {
-        Civilization civi = civ.GetComponent<Civilization>();
-        if (civi.population <= 3) return;
-        civi.SetPopulation(civi.population/2);
+        Civilization civ = civObject.GetComponent<Civilization>();
+        if (civ.population <= 3) return;
         
-        SpawnCiv(civ.transform.position, civi.population, 25, 5);
+        civ.SetPopulation(civ.population/2);
+        var newCiv = SpawnCiv(civObject.transform.position, civ.population, 25, 5);
+        
+        GameEvents.Civilization.OnCivilizationSplit.Invoke(newCiv, civObject);
     }
 }

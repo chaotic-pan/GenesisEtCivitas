@@ -18,33 +18,16 @@ public class NPCMovement : MonoBehaviour
 
     private float movementSpeed = 5f;
     private List<Vector3Int> range;
-
-    [SerializeField] private Skill onUnlockBoats;
-    private bool boatUnlocked = false;
+    
     [SerializeField] private GameObject boatPrefab;
     private GameObject boat;
-
-    private void OnEnable()
-    {
-        onUnlockBoats.onUnlocked += UnlockBoats;
-    }
-
-    private void OnDisable()
-    {
-        onUnlockBoats.onUnlocked -= UnlockBoats;
-    }
 
     private void Start()
     {
         map = TM?.map;
-        transform.position = AdjustCoordsForHeight(transform.position);
+        transform.position = ME.AdjustCoordsForHeight(transform.position);
     }
-
-    private void UnlockBoats()
-    {
-        boatUnlocked = true;
-    }
-
+    
     # region DEBUG
     [Tooltip("enable to have Civs spawn visual point along their walking path")]
     [SerializeField] private bool DEBUG_PathBreadcrumbs;
@@ -68,99 +51,16 @@ public class NPCMovement : MonoBehaviour
         }
         DEBUG_breadcrumbs.Clear();
     }
-#endregion
+    #endregion
 
-    public void CalculateRange()
+    # region boat stuff
+   private void boatCheck(Vector3Int gridPos)
     {
-        var p = transform.position;
-        p.y = -1;
-        range = TM.GetSpecificRange(map.WorldToCell(p), rangeRadius);
-    }
-
-    private Vector3 AdjustCoordsForHeight(Vector3 coord)
-    {
-        var height = ME.GetHeightByWorldCoord(coord);
-        return new Vector3(coord.x,height , coord.z);
-    }
-    
-    public void MovetoTile(Vector3Int gridPos)
-    {
-        MovetoTileAndExecute(gridPos, null);
-    }
-    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
-    {
-        MovetoTileInRangeAndExecute(gridPos, range, null);
-    }
-    public void MovetoTileAndExecute(Vector3Int gridPos, Action<GameObject> doOnReached)
-    {
-        CalculateRange();
-        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
-    }
-    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
-    {
-        DEBUG_clearBreadcrumbs();
-        StopAllCoroutines();
+        if (!TM.boatsUnlocked || !TryGetComponent<Civilization>(out var civ)) return;
         
-        var npcGridPos = map.WorldToCell(transform.position);
-        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
-        
-        DEBUG_spawnBreadcrumbs(AdjustCoordsForHeight(map.CellToWorld(gridPos)),5);
-        
-        StartCoroutine(FollowPath(path, doOnReached));
-    }
-    
-    IEnumerator FollowPath(Stack<Vector3Int> path, Action<GameObject> onReached)
-    {
-        // one pop to remove first path point which is the current pos
-        if (!path.TryPop(out var pather)) yield break;
-        
-        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
-
-        while (path.Count > 0)
-        {
-            yield return StartCoroutine("MovetoTarget", 
-                AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
-        }
-        
-        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
-        DEBUG_clearBreadcrumbs();
-
-        onReached?.Invoke(gameObject);
-    }
-    
-    IEnumerator MovetoTarget(Vector3 target)
-    {
-        boatCheck(target);
-        DEBUG_spawnBreadcrumbs(target,2);
-        
-        var position = transform.position;
-        
-        while (Vector3.Distance(position, target) > 5f)
-        {
-            var direction = (target - position).normalized;
-            var lookRotation = Quaternion.LookRotation(direction);
-            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
-                Time.deltaTime);
-
-            var cost = TM.GetTravelCost(map.WorldToCell(position));
-            movementSpeed = Math.Max(1, maxSpeed - cost/10);
-
-            transform.rotation = rotation;
-            position += transform.forward * (movementSpeed * Time.deltaTime);
-            transform.position = AdjustCoordsForHeight(position);
-           
-            yield return null;
-        }
-    }
-
-    private void boatCheck(Vector3 target)
-    {
-        if (!boatUnlocked) return;
-
-        if (!TryGetComponent<Civilization>(out var civ)) return;
         var population = civ.population;
-
-        if (TM.IsOcean(map.WorldToCell(target)))
+        
+        if (TM.IsOcean(gridPos))
         {
             if (boat != null) return;
             boat = Instantiate(boatPrefab, transform.localPosition, transform.localRotation, transform);
@@ -182,7 +82,117 @@ public class NPCMovement : MonoBehaviour
             GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
         }
     }
+    #endregion
+
+    public void MovetoTile(Vector3Int gridPos)
+    {
+        MovetoTileAndExecute(gridPos, null);
+    }
+    public void MovetoTileInRange(Vector3Int gridPos, List<Vector3Int> range) 
+    {
+        MovetoTileInRangeAndExecute(gridPos, range, null);
+    }
+    public void MovetoTileAndExecute(Vector3Int gridPos, Action<GameObject> doOnReached)
+    {
+        CalculateRange();
+        MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
+    }
+    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
+    {
+        DEBUG_clearBreadcrumbs();
+        StopAllCoroutines();
+        
+        var npcGridPos = TM.WorldToCell(transform.position);
+        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
+
+        var destination = ME.AdjustCoordsForHeight(map.CellToWorld(gridPos));
+        DEBUG_spawnBreadcrumbs(destination,5);
+        
+        StartCoroutine(FollowPath(path, destination, doOnReached));
+    }
     
+    IEnumerator FollowPath(Stack<Vector3Int> path, Vector3 destination, Action<GameObject> onReached)
+    {
+        // one pop to remove first path point which is the current pos
+        if (!path.TryPop(out var pather)) yield break;
+        
+        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
+
+        while (path.Count > 0)
+        {
+            yield return StartCoroutine("MovetoTarget", 
+                ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+        }
+        
+        
+        var position = transform.position;
+        while (Vector3.Distance(position, destination) > 0.1f)
+        {
+            Vector3 direction = (destination - position).normalized;
+            var newPos = position + direction * (10f * Time.deltaTime);
+            transform.position = ME.AdjustCoordsForHeight(newPos);
+            transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
+            position = newPos;
+           
+            yield return null;
+        }
+        
+        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
+        DEBUG_clearBreadcrumbs();
+        transform.position = destination;
+        
+        onReached?.Invoke(gameObject);
+    }
+    
+    IEnumerator MovetoTarget(Vector3 target)
+    {
+        DEBUG_spawnBreadcrumbs(target,2);
+        
+        var position = transform.position;
+        
+        while (Vector3.Distance(position, target) > 10f)
+        {
+            var direction = (target - position).normalized;
+            var lookRotation = Quaternion.LookRotation(direction);
+            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
+                Time.deltaTime);
+            
+            var gridPos = TM.WorldToCell(position);
+            boatCheck(gridPos);
+            
+            var cost = TM.GetTravelCost(gridPos);
+            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+
+            transform.rotation = rotation;
+            position += transform.forward * (movementSpeed * Time.deltaTime);
+            transform.position = ME.AdjustCoordsForHeight(position);
+            
+            // set Civi to world height + trigger swimming
+            for (int i = transform.childCount; i > 1; i--)
+            {
+                var civi = transform.GetChild(i - 1);
+                var p = civi.position;
+                var height = ME.GetHeightByWorldCoord(p);
+                civi.position = new Vector3(p.x,height , p.z);
+                
+                // trigger swimming only in civis, not in saviour 
+                if (TryGetComponent<Civilization>(out var NaN))
+                {
+                    GameEvents.Civilization.OnSwim.Invoke(civi.gameObject, 
+                        !TM.boatsUnlocked && height < ME.waterheight*ME.mapHeightMultiplier);
+                }
+            }
+           
+            yield return null;
+        }
+    }
+
+#region pathfinding
+    public void CalculateRange()
+    {
+        range = TM.GetSpecificRange(TM.WorldToCell(transform.position), rangeRadius);
+    }
+
     private Stack<Vector3Int> Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
     {
         if (!SearchRange.Contains(destination))
@@ -289,5 +299,6 @@ public class NPCMovement : MonoBehaviour
             distance = int.MaxValue;
             neighbors = TileManager.Instance.getNeighbors(gridPos);
         }
-    }
+    } 
+#endregion
 }

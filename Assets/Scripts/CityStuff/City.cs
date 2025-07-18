@@ -15,12 +15,14 @@ namespace CityStuff
         [SerializeField] private GameObject houseGameObject;
         [SerializeField] private GameObject wellGameObject;
         [SerializeField] private GameObject churchGameObject;
+        [SerializeField] private GameObject citycentre;
     
         private House _house;
         private Well _well;
         private Church _church;
 
-        private Civilization civ;
+        public Civilization civ;
+        private MapExtractor ME = MapExtractor.Instance;
 
         public string CityName;
         
@@ -47,6 +49,11 @@ namespace CityStuff
             CityName = civ.Language.GenerateWord();
             
             BuildHouse();
+            
+            // build city centre hex
+            var instance = Instantiate(citycentre, transform);
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.position = ME.AdjustCoordsForHeight(instance.transform.position);
         }
 
         public void BuildChurch()
@@ -80,11 +87,9 @@ namespace CityStuff
             var instance = Instantiate(prefab, transform);
             instance.transform.localPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
 
-            var desiredHeight = MapExtractor.Instance.GetHeightByWorldCoord(instance.transform.position);
+            instance.transform.position = ME.AdjustCoordsForHeight(instance.transform.position);
             
-            instance.transform.position = new Vector3(instance.transform.position.x, desiredHeight, instance.transform.position.z);
-            
-            instance.transform.LookAt(transform);
+            instance.transform.LookAt(new Vector3(transform.position.x, instance.transform.position.y, transform.position.z));
             instance.SetActive(true);
         
             return instance;
@@ -97,6 +102,11 @@ namespace CityStuff
                 UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
                 UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
             }
+        }
+
+        public Vector3 GetHousePos()
+        {
+            return _house.transform.position;
         }
     }
 }
