@@ -81,7 +81,7 @@ GameObject:
   - component: {fileID: 7232340983693077581}
   - component: {fileID: 6283251092642932171}
   - component: {fileID: 4585757020402315898}
-  - component: {fileID: 5446797983808942996}
+  - component: {fileID: 8270201688505120929}
   m_Layer: 0
   m_Name: Civilisation
   m_TagString: Civi
@@ -127,7 +127,6 @@ MonoBehaviour:
   maxSpeed: 10
   rangeRadius: 20
   map: {fileID: 0}
-  onUnlockBoats: {fileID: 11400000, guid: 6fdcc435d25473e4f9ccc3a9b754d805, type: 2}
   boatPrefab: {fileID: 6165641262965079714, guid: ad665e2ad35f79b418e1281811fe1eb4, type: 3}
   DEBUG_PathBreadcrumbs: 0
 --- !u!114 &7232340983693077581
@@ -188,7 +187,7 @@ MonoBehaviour:
   population: 0
   city: {fileID: 0}
   civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
---- !u!114 &5446797983808942996
+--- !u!114 &8270201688505120929
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,7 +196,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4618963362583421363}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcd222129a4c49d19bb845318b2cff57, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ebed6ec18de4ab49fe437dbeae924ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
