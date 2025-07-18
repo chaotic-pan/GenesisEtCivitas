@@ -153,13 +153,12 @@ public class AnimManager : MonoBehaviour
     {
         if (go == gameObject || go == transform.parent.gameObject)
         {
-            StartCoroutine(Build(10));
+            StartCoroutine(Build(15));
         }
     }
     IEnumerator Build(float duration)
     {
         setBool(IsBuilding, new List<GameObject>{Hammer}, true);
-        print("AYYYYY! I'm buildin' here!");
         yield return new WaitForSecondsRealtime(duration);
         setBool(IsBuilding, null, false);
     }
@@ -204,6 +203,7 @@ public class AnimManager : MonoBehaviour
         mAnimator.SetBool(IsPraying, false);
         mAnimator.SetBool(IsListening, false);
         mAnimator.SetBool(IsFishing, false);
+        mAnimator.SetBool(IsBuilding, false);
         
         FishingPole.SetActive(false);
         Stool.SetActive(false);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Events;
 using Models;
 using UI;
 using UnityEngine;
@@ -92,6 +93,8 @@ namespace CityStuff
             instance.transform.LookAt(new Vector3(transform.position.x, instance.transform.position.y, transform.position.z));
             instance.SetActive(true);
         
+            GameEvents.Civilization.CreateBuilding?.Invoke(civ.gameObject, instance);
+            
             return instance;
         }
         

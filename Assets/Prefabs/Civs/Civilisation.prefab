@@ -103,7 +103,6 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2262859333894314953}
-  - {fileID: 5278395479329986999}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2681022884032617655
@@ -194,65 +193,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
---- !u!1001 &7655699715906611094
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1231169122205064123}
-    m_Modifications:
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-      propertyPath: m_Name
-      value: Civi
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
---- !u!4 &5278395479329986999 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2557520037830327841, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
-  m_PrefabInstance: {fileID: 7655699715906611094}
-  m_PrefabAsset: {fileID: 0}
