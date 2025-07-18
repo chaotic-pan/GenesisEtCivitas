@@ -138,3 +138,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rainEffectPrefab: {fileID: 6498981455252272956, guid: 14d254dbb24f843a9a30cf15f8341866, type: 3}
+  earthquakeEffectPrefab: {fileID: 6498981455252272956, guid: 14d254dbb24f843a9a30cf15f8341866, type: 3}
+  plantGrowthEffectPrefab: {fileID: 6498981455252272956, guid: 14d254dbb24f843a9a30cf15f8341866, type: 3}

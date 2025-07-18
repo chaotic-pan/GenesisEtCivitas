@@ -52,6 +52,7 @@ namespace Player.Abilities
                     MapDisplay.MapOverlay.Fertility
                 );
             }
+            SpawnEffectOnTiles(affectedTiles, "PlantGrowth", heightOffset: 2f, scaleMultiplier: 1.3f);
         }
     }
 }

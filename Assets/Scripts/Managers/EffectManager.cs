@@ -7,7 +7,10 @@ namespace Managers
     {
         public static EffectManager instance;
 
-        [Header("Effect Prefabs")] public GameObject rainEffectPrefab;
+        [Header("Effect Prefabs")] 
+        public GameObject rainEffectPrefab;
+        public GameObject earthquakeEffectPrefab;
+        public GameObject plantGrowthEffectPrefab;
 
         private Dictionary<string, Queue<GameObject>> pools = new();
 
@@ -15,6 +18,8 @@ namespace Managers
         {
             instance = this;
             InitializePool("Rain", rainEffectPrefab, 50);
+            InitializePool("Earthquake", earthquakeEffectPrefab, 50);
+            InitializePool("PlantGrowth", plantGrowthEffectPrefab, 50);
         }
 
         private void InitializePool(string effectName, GameObject prefab, int count)
