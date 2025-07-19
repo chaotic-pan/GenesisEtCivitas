@@ -40,6 +40,8 @@ namespace UI
         public override void Initialize()
         {
            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
+           UIEvents.UIOpen.OnOpenMessiahMenu += _ => OnClose();
+           UIEvents.UIOpen.OnOpenSkillTree += _ => OnClose();
            UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
 
            onUnlockWell.onUnlocked += UnlockWell;
@@ -55,6 +57,8 @@ namespace UI
             {
                 UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
                 onUnlockWell.onUnlocked -= UnlockWell;
+                UIEvents.UIOpen.OnOpenMessiahMenu -= _ => OnClose();
+                UIEvents.UIOpen.OnOpenSkillTree -= _ => OnClose();
             }
         }
 
