@@ -878,6 +878,7 @@ MonoBehaviour:
   shelterText: {fileID: 3117897568496719778}
   energyText: {fileID: 4411113545231616913}
   populationText: {fileID: 5337862680967753225}
+  SaviourButton: {fileID: 2146900320279862617}
   civObjects:
   - {fileID: 531365343625730337}
   - {fileID: 4019594912740969442}

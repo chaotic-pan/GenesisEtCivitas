@@ -81,15 +81,18 @@ class NPCIdeling : MonoBehaviour
         {
             if (i >= destinations.Count) yield break;
             var civi = idles[i];
+            if (civi == null) continue;
             civi.SetActive(true);
             StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
+
             yield return new WaitForSeconds(0.5f);
         }
     }
     IEnumerator Walk(GameObject civi, Vector3 destination, Action<GameObject> onReached)
     {
-        GameEvents.Civilization.OnStartWalking?.Invoke(civi);
+        if (civi == null) yield break;
         
+        GameEvents.Civilization.OnStartWalking?.Invoke(civi);
         var position = civi.transform.position;
         
         while (Vector3.Distance(position, destination) > 0.1f)
@@ -127,10 +130,6 @@ class NPCIdeling : MonoBehaviour
         {
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
-        
-        // var a= Instantiate(civiPrefab, housePos, Quaternion.identity, transform);
-        // idles.Add(a);
-        // StartCoroutine(Walk(a, ME.AdjustCoordsForHeight(new Vector3(housePos.x+10, housePos.y, housePos.z+10)), null));
     }
     private void Despawn(GameObject civi)
     {

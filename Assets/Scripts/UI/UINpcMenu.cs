@@ -22,6 +22,8 @@ namespace UI
         [SerializeField] private TextMeshProUGUI shelterText;
         [SerializeField] private TextMeshProUGUI energyText;
         [SerializeField] private TextMeshProUGUI populationText;
+        [SerializeField] private Button SaviourButton;
+        
 
         [Header("Tabs")]
         [SerializeField] private List<GameObject> civObjects;
@@ -128,6 +130,7 @@ namespace UI
 
             npcName.text = model.NPCName;
 
+            SaviourButton.gameObject.SetActive(!UIEvents.UIVar.saviourExists);
             civTab.GetComponent<Image>().sprite = tabActive;
             cityTab.GetComponent<Image>().sprite = tabInactive;
         }

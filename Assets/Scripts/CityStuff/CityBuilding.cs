@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class CityBuilding : MonoBehaviour
 {
+    [SerializeField] private GameObject abandonedPrefab; 
     private GameObject model;
     private float height;
     
@@ -12,7 +13,6 @@ public abstract class CityBuilding : MonoBehaviour
         model = transform.GetChild(0).gameObject;
         model.transform.localPosition = new Vector3(0, -height, 0);
         model.SetActive(false);
-        print("AYYYYY! I'm buildin' here!!");
         StartCoroutine(createBuilding());
     }
 
@@ -34,5 +34,12 @@ public abstract class CityBuilding : MonoBehaviour
     protected virtual float getHeight()
     {
         return 1;
+    }
+    
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        var instance = Instantiate(abandonedPrefab, transform.position, transform.rotation, null);
+        instance.transform.localScale = transform.parent.localScale;
     }
 }

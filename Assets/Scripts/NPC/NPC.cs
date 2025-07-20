@@ -2,7 +2,6 @@ using System.Collections;
 using Events;
 using Models;
 using UI;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -47,6 +46,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         {
             var messiah = Instantiate(messiahPrefab, transform.position, Quaternion.identity);
             GameEvents.Civilization.OnMessiahSpawn.Invoke(messiah, gameObject);
+            UIEvents.UIVar.saviourExists = true;
             if (_npcModel.City !=null) Destroy(_npcModel.City.gameObject);
             Destroy(gameObject);
         }
@@ -69,11 +69,18 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         if (civ.Food == 0 && civ.Water == 0)
         {
             GameEvents.Civilization.OnCivilizationDeath.Invoke(gameObject);
+            StartCoroutine(Death(5));
         }
         else
         {
             StartCoroutine(StatsDecay(timer));
         }
+    }
+
+    IEnumerator Death(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        Destroy(gameObject);
     }
 
     private float calculateStat(float stat, float tileStat)
@@ -89,23 +96,51 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         _npcModel.Faith = civ.Belief;   
     }
     
+    int clicked = 0;
+    float clicktime = 0;
+    float clickdelay = 0.5f;
     public void OnPointerClick(PointerEventData eventData)
     {
         int layerMask = ~(1 << LayerMask.NameToLayer("Ability"));
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
-        
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask) 
+            && hit.collider.gameObject == gameObject)
         {
-            if (hit.collider.gameObject == gameObject && civ != null)
+            clicked++;
+            
+            if (clicked > 1)
             {
-                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
-                //TODO: Make this section less bad
-                UpdateValues();
-                
+                if (Time.time - clicktime < clickdelay)
+                {
+                    clicked = 0;
+                    clicktime = 0;
+                    
+                    // do double click stuff
+                    GameEvents.Camera.OnJumpToCiv.Invoke(gameObject);
+                }
+                else
+                {
+                    clicked = 1;
+                    clicktime = Time.time;
+                }
             }
-            else if (hit.collider.gameObject == gameObject && mes != null)
+            
+            if (clicked == 1)
             {
-                UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+                clicktime = Time.time;
+                
+                // do single click stuff
+                if (civ != null)
+                {
+                    UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                    UpdateValues();
+                
+                }
+                else if (mes != null)
+                {
+                    UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+                }
             }
             
         }
