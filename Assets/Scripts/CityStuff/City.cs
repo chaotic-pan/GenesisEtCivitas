@@ -19,8 +19,8 @@ namespace CityStuff
         [SerializeField] private GameObject cityCentrePrefab;
     
         public House _house;
-        private Well _well;
-        private Church _church;
+        public Well _well;
+        public Church _church;
 
         public Civilization civ;
         private MapExtractor ME = MapExtractor.Instance;

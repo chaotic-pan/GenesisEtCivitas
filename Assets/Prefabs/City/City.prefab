@@ -52,8 +52,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 11.509277, y: 5.5245647, z: 12.631287}
-  m_Center: {x: -0.18862915, y: 2.5122824, z: -0.26046753}
+  m_Size: {x: 10, y: 1, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-7373898565699103159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,11 +67,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   housePrefab: {fileID: 932326612820066371, guid: 05d3fe2a8b4bea34db886d4b836906c7, type: 3}
-  abandonedHousePrefab: {fileID: 932326612820066371, guid: 414570be1c46bcf4e902ad19ebd1d515, type: 3}
   wellPrefab: {fileID: 3933647680458739708, guid: 2ff603a0b29705541aa2fa54af6b38b4, type: 3}
-  abandonedWellPrefab: {fileID: 3933647680458739708, guid: f275559e76047b84fb0e8879419a4903, type: 3}
   churchPrefab: {fileID: 8697916058072947503, guid: 84805b4b35bd29440a5a579cd5d6b886, type: 3}
-  abandonedChurchPrefab: {fileID: 8697916058072947503, guid: 2b32cf9f1fb8e5b4c865f5f88e7e03ae, type: 3}
   cityCentrePrefab: {fileID: 919132149155446097, guid: 63432f4dce9776647a8fcb06f27ec614, type: 3}
   _house: {fileID: 0}
   civ: {fileID: 0}
