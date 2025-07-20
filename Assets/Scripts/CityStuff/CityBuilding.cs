@@ -12,7 +12,6 @@ public abstract class CityBuilding : MonoBehaviour
         model = transform.GetChild(0).gameObject;
         model.transform.localPosition = new Vector3(0, -height, 0);
         model.SetActive(false);
-        print("AYYYYY! I'm buildin' here!!");
         StartCoroutine(createBuilding());
     }
 

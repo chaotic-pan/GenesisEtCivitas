@@ -12,6 +12,7 @@ namespace UI
         public static readonly UIUpdateEvents UIUpdate = new ();
         public static readonly UIOpenEvents UIOpen = new ();
         public static readonly UIMapEvents UIMap = new ();
+        public static readonly UIVariable UIVar = new ();
 
         public class UIMapEvents
         {
@@ -37,6 +38,11 @@ namespace UI
             public UnityAction OnMouseExitUI;
             public UnityAction OnBuySkill;
             public UnityAction OnUseSkill;
+        }
+        
+        public class UIVariable
+        {
+            public bool saviourExists = false;
         }
     }
 }

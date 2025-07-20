@@ -2,7 +2,6 @@ using System.Collections;
 using Events;
 using Models;
 using UI;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -47,6 +46,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         {
             var messiah = Instantiate(messiahPrefab, transform.position, Quaternion.identity);
             GameEvents.Civilization.OnMessiahSpawn.Invoke(messiah, gameObject);
+            UIEvents.UIVar.saviourExists = true;
             if (_npcModel.City !=null) Destroy(_npcModel.City.gameObject);
             Destroy(gameObject);
         }
