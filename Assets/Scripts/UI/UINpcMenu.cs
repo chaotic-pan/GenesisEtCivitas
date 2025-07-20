@@ -23,7 +23,6 @@ namespace UI
         [SerializeField] private TextMeshProUGUI energyText;
         [SerializeField] private TextMeshProUGUI populationText;
         [SerializeField] private Button SaviourButton;
-        
 
         [Header("Tabs")]
         [SerializeField] private List<GameObject> civObjects;
@@ -36,6 +35,10 @@ namespace UI
         [Header("Locked Buildings")]
         [SerializeField] private List<GameObject> lockedBuilding;
         [SerializeField] private Skill onUnlockWell;
+        
+        [Header("Buttons")]
+        [SerializeField] private GameObject BuildWellbutton;
+        [SerializeField] private GameObject BuildChurchButton;
         
         private NPCModel model;
         
@@ -103,12 +106,16 @@ namespace UI
         {
             if (!model.City) return;
             model.City.BuildChurch();
+            
+            BuildChurchButton.SetActive(false);
         }
         
         public void OnBuildWell()
         {
             if (!model.City) return;
             model.City.BuildWell();
+            
+            BuildWellbutton.SetActive(false);
         }
 
         public void OnJumpToCiv()
@@ -144,6 +151,12 @@ namespace UI
             
             foreach (var cityObject in cityObjects)
             {
+                if (cityObject.name == "BuildChurch" && model.City._church != null)
+                    continue;
+                
+                if (cityObject.name == "BuildWell" && model.City._well != null)
+                    continue;
+                    
                 cityObject.SetActive(true);
             }
             

@@ -5448,7 +5448,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2407702504676267360, guid: 9b741e5fa9328e24a81e7c622ca5769a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000034332275
+      value: 0.0000076293945
       objectReference: {fileID: 0}
     - target: {fileID: 2764789381616714350, guid: 9b741e5fa9328e24a81e7c622ca5769a, type: 3}
       propertyPath: m_IsActive
@@ -7718,6 +7718,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7992364908116720170, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+      propertyPath: BuildWellbutton
+      value: 
+      objectReference: {fileID: 2989167128632774804}
+    - target: {fileID: 7992364908116720170, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+      propertyPath: BuildChurchButton
+      value: 
+      objectReference: {fileID: 8528190907960794201}
     - target: {fileID: 8091825428344765256, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -7800,8 +7808,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+--- !u!1 &2989167128632774804 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5093028606997510331, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+  m_PrefabInstance: {fileID: 8058546266865625135}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5258330489671219036 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2822880218831003507, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
+  m_PrefabInstance: {fileID: 8058546266865625135}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8528190907960794201 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1841846149354058870, guid: d0f8bcf9c32f3244e9838bbcb4fe7e49, type: 3}
   m_PrefabInstance: {fileID: 8058546266865625135}
   m_PrefabAsset: {fileID: 0}
