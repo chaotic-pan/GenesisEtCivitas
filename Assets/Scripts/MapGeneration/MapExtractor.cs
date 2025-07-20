@@ -208,7 +208,7 @@ public class MapExtractor : MonoBehaviour
 
     private void Start()
     {
-        TileManager.Instance.InitializeTileData(Instance);
+        if (TileManager.Instance != null) TileManager.Instance.InitializeTileData(Instance);
     }
 
     public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks)
