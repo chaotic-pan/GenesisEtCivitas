@@ -419,6 +419,8 @@ GameObject:
   - component: {fileID: 6309690029069101142}
   - component: {fileID: 2470186626656958378}
   - component: {fileID: 7611357014295348186}
+  - component: {fileID: 5900998403877097543}
+  - component: {fileID: 8016946328293114136}
   m_Layer: 0
   m_Name: Saviour
   m_TagString: Untagged
@@ -509,6 +511,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bad106d13c3610479569ecb9f44e2a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5900998403877097543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077861693280709515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 954b95db0a0b7ac48828aa2cbf4635c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clipDistance: 100
+  clipObject: {fileID: 7495523866607430955}
+--- !u!136 &8016946328293114136
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077861693280709515}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.92
+  m_Height: 1.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 21.87, z: 0}
 --- !u!1 &2130946638677017857
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,29 +1511,33 @@ GameObject:
   - component: {fileID: 8842788829295046558}
   - component: {fileID: 8981018459141615339}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Needle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &969403106404662534
-Transform:
+--- !u!224 &969403106404662534
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7495523866607430955}
-  serializedVersion: 2
   m_LocalRotation: {x: -0.1581005, y: -0.0173411, z: 0.0044604386, w: 0.9872607}
-  m_LocalPosition: {x: 0, y: 21.830933, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2889701494623286428}
   - {fileID: 4074193023679539699}
   m_Father: {fileID: 6497785815054769511}
   m_LocalEulerAnglesHint: {x: -18.181, y: -2.15, z: 0.862}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 21.830933}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!33 &8842788829295046558
 MeshFilter:
   m_ObjectHideFlags: 0
