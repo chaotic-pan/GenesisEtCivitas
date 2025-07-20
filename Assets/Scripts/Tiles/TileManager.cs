@@ -411,7 +411,8 @@ public class TileManager : MonoBehaviour
     
     public Vector3 TileToWorld(Vector3Int gridPos)
     {
-        return map.CellToWorld(gridPos);
+        return map!=null? map.CellToWorld(gridPos) : Vector3.zero;
+        
     }
     
     public Dictionary<Vector3Int, TileData> GetAllTileDataDict()

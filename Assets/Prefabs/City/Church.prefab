@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb38ba74c8441f782c00b9b43ab3abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abandonedPrefab: {fileID: 8697916058072947503, guid: 2b32cf9f1fb8e5b4c865f5f88e7e03ae, type: 3}
   influencePoints: 5
   intervalInInGameMinutes: 10
 --- !u!1001 &7096021493571361487

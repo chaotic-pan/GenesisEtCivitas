@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8334140665575610160}
-  - component: {fileID: 8943149529231948454}
   - component: {fileID: 6230919498672797800}
+  - component: {fileID: -7373898565699103159}
   m_Layer: 0
   m_Name: City
   m_TagString: Untagged
@@ -33,23 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8943149529231948454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 419345410134529011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f511b41305b840e4dac83dae635e9871, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  houseGameObject: {fileID: 932326612820066371, guid: 05d3fe2a8b4bea34db886d4b836906c7, type: 3}
-  wellGameObject: {fileID: 3933647680458739708, guid: 2ff603a0b29705541aa2fa54af6b38b4, type: 3}
-  churchGameObject: {fileID: 8697916058072947503, guid: 84805b4b35bd29440a5a579cd5d6b886, type: 3}
-  citycentre: {fileID: 919132149155446097, guid: 63432f4dce9776647a8fcb06f27ec614, type: 3}
-  CityName: 
 --- !u!65 &6230919498672797800
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -69,5 +52,24 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 11.509277, y: 5.5245647, z: 12.631287}
-  m_Center: {x: -0.18862915, y: 2.5122824, z: -0.26046753}
+  m_Size: {x: 10, y: 1, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-7373898565699103159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419345410134529011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f511b41305b840e4dac83dae635e9871, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  housePrefab: {fileID: 932326612820066371, guid: 05d3fe2a8b4bea34db886d4b836906c7, type: 3}
+  wellPrefab: {fileID: 3933647680458739708, guid: 2ff603a0b29705541aa2fa54af6b38b4, type: 3}
+  churchPrefab: {fileID: 8697916058072947503, guid: 84805b4b35bd29440a5a579cd5d6b886, type: 3}
+  cityCentrePrefab: {fileID: 919132149155446097, guid: 63432f4dce9776647a8fcb06f27ec614, type: 3}
+  _house: {fileID: 0}
+  civ: {fileID: 0}
+  CityName: 

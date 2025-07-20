@@ -878,6 +878,7 @@ MonoBehaviour:
   shelterText: {fileID: 3117897568496719778}
   energyText: {fileID: 4411113545231616913}
   populationText: {fileID: 5337862680967753225}
+  SaviourButton: {fileID: 2146900320279862617}
   civObjects:
   - {fileID: 531365343625730337}
   - {fileID: 4019594912740969442}
@@ -896,6 +897,8 @@ MonoBehaviour:
   lockedBuilding:
   - {fileID: 5093028606997510331}
   onUnlockWell: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
+  BuildWellbutton: {fileID: 0}
+  BuildChurchButton: {fileID: 0}
 --- !u!1 &1229143434515906169
 GameObject:
   m_ObjectHideFlags: 0
@@ -1651,7 +1654,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Turn Settlement to Messiahs
+  m_text: Turn Settlement into Saviour
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2892,7 +2895,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0088, y: -418.09006}
+  m_AnchoredPosition: {x: -0.0087890625, y: -418.09006}
   m_SizeDelta: {x: 160.0176, y: 62.8392}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7184516656840664597

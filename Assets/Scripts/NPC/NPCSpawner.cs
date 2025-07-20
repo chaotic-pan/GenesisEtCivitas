@@ -99,19 +99,21 @@ public class NPCSpawner : MonoBehaviour
         
         // check if there is already another city in this area
         var tileDistance = 3; //min amount of tiles between two cities
+
+        City InvalidCity = null;
         
         foreach (var city in cities)
         {
             if (city == null)
             {
-                cities.Remove(city);
+                InvalidCity = city;
                 continue;
             }
             
             var cityPos = TM.WorldToCell(city.transform.position);
             
             // if other city found, merge
-            if (civPos == cityPos)
+            if (civPos == cityPos && city.civ != null)
             {
                 GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, city.civ.gameObject);
                 civilisations.Remove(civObject);
@@ -124,6 +126,9 @@ public class NPCSpawner : MonoBehaviour
                 return;
             }
         }
+
+        if (InvalidCity != null) cities.Remove(InvalidCity);
+
 
         // if no other city found, build new city
         if (civObject.TryGetComponent<Civilization>(out var civ) && civ.city == null)
@@ -145,9 +150,9 @@ public class NPCSpawner : MonoBehaviour
     }
 
     private void SplitCiv(GameObject civObject)
-    {
+    { 
         Civilization civ = civObject.GetComponent<Civilization>();
-        if (civ.population <= 3) return;
+        if (civ.population <= 3 || civ.city == null) return;
         
         civ.SetPopulation(civ.population/2);
         var newCiv = SpawnCiv(civObject.transform.position, civ.population, 25, 5);

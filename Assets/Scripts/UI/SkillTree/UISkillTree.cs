@@ -26,12 +26,16 @@ public class UISkillTree : MonoBehaviour
     {
         UIEvents.UIOpen.OnOpenSkillItem += UpdateDisplay;
         UIEvents.UIUpdate.OnUpdatePlayerData += CostCheck;
+        UIEvents.UIOpen.OnOpenMessiahMenu += _ => setCanvasGroupActive(false);
+        UIEvents.UIOpen.OnOpenNpcMenu += _ => setCanvasGroupActive(false);
     }
 
     private void OnDisable()
     { 
         UIEvents.UIOpen.OnOpenSkillItem -= UpdateDisplay;
         UIEvents.UIUpdate.OnUpdatePlayerData -= CostCheck;
+        UIEvents.UIOpen.OnOpenMessiahMenu -= _ => setCanvasGroupActive(false);
+        UIEvents.UIOpen.OnOpenNpcMenu -= _ => setCanvasGroupActive(false);
     }
 
     private void Start()

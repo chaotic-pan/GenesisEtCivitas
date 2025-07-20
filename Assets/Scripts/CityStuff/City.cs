@@ -13,14 +13,14 @@ namespace CityStuff
     public class City : MonoBehaviour, IPointerClickHandler
     {
 
-        [SerializeField] private GameObject houseGameObject;
-        [SerializeField] private GameObject wellGameObject;
-        [SerializeField] private GameObject churchGameObject;
-        [SerializeField] private GameObject citycentre;
+        [SerializeField] private GameObject housePrefab;
+        [SerializeField] private GameObject wellPrefab;
+        [SerializeField] private GameObject churchPrefab;
+        [SerializeField] private GameObject cityCentrePrefab;
     
         public House _house;
-        private Well _well;
-        private Church _church;
+        public Well _well;
+        public Church _church;
 
         public Civilization civ;
         private MapExtractor ME = MapExtractor.Instance;
@@ -41,6 +41,16 @@ namespace CityStuff
 
         private NPCModel _npcModel;
 
+        private void OnEnable()
+        {
+            GameEvents.Civilization.OnCivilizationDeath += AbandonCity;
+        }
+
+        private void OnDisable()
+        { 
+            GameEvents.Civilization.OnCivilizationDeath -= AbandonCity;
+        }
+
         public void Initialize(NPCModel model, Civilization civi)
         {
             _npcModel = model;
@@ -52,7 +62,7 @@ namespace CityStuff
             BuildHouse();
             
             // build city centre hex
-            var instance = Instantiate(citycentre, transform);
+            var instance = Instantiate(cityCentrePrefab, transform);
             instance.transform.localPosition = Vector3.zero;
             instance.transform.position = ME.AdjustCoordsForHeight(instance.transform.position);
         }
@@ -61,7 +71,7 @@ namespace CityStuff
         {
             if (_church) return;
             
-            _church = InstantiateAtRandomPoint(churchGameObject).GetComponent<Church>();
+            _church = InstantiateAtRandomPoint(churchPrefab).GetComponent<Church>();
             _church.Initialize();
         }
 
@@ -69,14 +79,14 @@ namespace CityStuff
         {
             if (_well) return;
             
-            _well = InstantiateAtRandomPoint(wellGameObject).GetComponent<Well>();
+            _well = InstantiateAtRandomPoint(wellPrefab).GetComponent<Well>();
         }
     
         private void BuildHouse()
         {
             if (_house) return;
             
-            _house = InstantiateAtRandomPoint(houseGameObject).GetComponent<House>();
+            _house = InstantiateAtRandomPoint(housePrefab).GetComponent<House>();
         }
 
         private GameObject InstantiateAtRandomPoint(GameObject prefab)
@@ -98,18 +108,55 @@ namespace CityStuff
             return instance;
         }
         
+        int clicked = 0;
+        float clicktime = 0;
+        float clickdelay = 0.5f;
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
-                UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
+                clicked++;
+            
+                if (clicked > 1)
+                {
+                    if (Time.time - clicktime < clickdelay)
+                    {
+                        clicked = 0;
+                        clicktime = 0;
+                        
+                        // do double click stuff
+                        GameEvents.Camera.OnJumpToCiv.Invoke(gameObject);
+                    }
+                    else
+                    {
+                        clicked = 1;
+                        clicktime = Time.time;
+                    }
+                }
+            
+                if (clicked == 1)
+                {
+                    clicktime = Time.time;
+                
+                    // do single click stuff
+                    UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                    UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
+                }
+
             }
         }
 
         public Vector3 GetHousePos()
         {
             return _house.transform.position;
+        }
+
+        private void AbandonCity(GameObject civObject)
+        {
+            if (civ == null || civObject == null) return;
+            if (civ.gameObject != civObject) return;
+            
+            Destroy(gameObject);
         }
     }
 }
