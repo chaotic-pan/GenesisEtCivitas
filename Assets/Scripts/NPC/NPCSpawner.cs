@@ -150,9 +150,9 @@ public class NPCSpawner : MonoBehaviour
     }
 
     private void SplitCiv(GameObject civObject)
-    {
+    { 
         Civilization civ = civObject.GetComponent<Civilization>();
-        if (civ.population <= 3) return;
+        if (civ.population <= 3 || civ.city == null) return;
         
         civ.SetPopulation(civ.population/2);
         var newCiv = SpawnCiv(civObject.transform.position, civ.population, 25, 5);
