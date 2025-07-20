@@ -69,11 +69,18 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         if (civ.Food == 0 && civ.Water == 0)
         {
             GameEvents.Civilization.OnCivilizationDeath.Invoke(gameObject);
+            StartCoroutine(Death(5));
         }
         else
         {
             StartCoroutine(StatsDecay(timer));
         }
+    }
+
+    IEnumerator Death(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        Destroy(gameObject);
     }
 
     private float calculateStat(float stat, float tileStat)

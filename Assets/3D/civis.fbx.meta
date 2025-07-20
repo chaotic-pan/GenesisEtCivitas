@@ -1,5 +1,5 @@
-﻿fileFormatVersion: 2
-guid: e99138944d362fe419ce2d6df5149514
+fileFormatVersion: 2
+guid: a03312d85b7c2f042a74fe8464090da3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,23 +7,28 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: 688be0e74bdeccf4f94a11fb966a93c1, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.001
-    second: {fileID: 2100000, guid: bdfe5e6c6ee9f8b4b9e00d22aa9293f9, type: 2}
+      name: BLUE
+    second: {fileID: 2100000, guid: 2e69c8d51a6ea9a4b9fa8e1a2d080851, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Metal
-    second: {fileID: 2100000, guid: 6131d2c3713b96845847010a3891f2fa, type: 2}
+    second: {fileID: -876546973899608171, guid: 4ec92ff67d5d5af48bc22d3fb023b68e, type: 3}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: White
+    second: {fileID: -876546973899608171, guid: 406c3faa56b803e4386878cca6f24913, type: 3}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Wood
-    second: {fileID: 2100000, guid: 05cc5f644e4bdfd448ac887ba10d86ec, type: 2}
+    second: {fileID: 2100000, guid: 5609150e264b8764e9893fcba02f9c95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: green
+    second: {fileID: 2100000, guid: fa75e424232c60348afe7a889ada73fa, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -109,7 +114,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: Root
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
@@ -117,7 +122,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

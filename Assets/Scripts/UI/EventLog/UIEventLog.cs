@@ -120,7 +120,14 @@ namespace UI.EventLog
             var npcModel = npcModelObject.GetComponent<NPC>();
             
             var message = $"{Capitalize(npcModel._npcModel.NPCName)} died!";
-            var eventLogEntry = new EventLogEntryModel(message, npcModelObject);
+            GameObject death = new GameObject("Death Spot")
+            {
+                transform =
+                {
+                    position = npcModelObject.transform.position
+                }
+            };
+            var eventLogEntry = new EventLogEntryModel(message, death);
             
             _eventQueue.Enqueue(eventLogEntry);
         }

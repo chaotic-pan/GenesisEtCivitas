@@ -113,7 +113,7 @@ public class NPCSpawner : MonoBehaviour
             var cityPos = TM.WorldToCell(city.transform.position);
             
             // if other city found, merge
-            if (civPos == cityPos)
+            if (civPos == cityPos && city.civ != null)
             {
                 GameEvents.Civilization.OnCivilizationMerge.Invoke(civObject, city.civ.gameObject);
                 civilisations.Remove(civObject);

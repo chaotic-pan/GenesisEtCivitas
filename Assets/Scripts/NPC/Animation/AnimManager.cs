@@ -179,7 +179,7 @@ public class AnimManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(wait);
         mAnimator.SetTrigger(TrDeath);
         yield return new WaitForSecondsRealtime(5);
-        Destroy(transform.parent.gameObject);
+        Destroy(gameObject);
     }
 
 
