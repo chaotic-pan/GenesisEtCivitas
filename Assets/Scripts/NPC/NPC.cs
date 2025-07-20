@@ -89,23 +89,51 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         _npcModel.Faith = civ.Belief;   
     }
     
+    int clicked = 0;
+    float clicktime = 0;
+    float clickdelay = 0.5f;
     public void OnPointerClick(PointerEventData eventData)
     {
         int layerMask = ~(1 << LayerMask.NameToLayer("Ability"));
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
-        
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask) 
+            && hit.collider.gameObject == gameObject)
         {
-            if (hit.collider.gameObject == gameObject && civ != null)
+            clicked++;
+            
+            if (clicked > 1)
             {
-                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
-                //TODO: Make this section less bad
-                UpdateValues();
-                
+                if (Time.time - clicktime < clickdelay)
+                {
+                    clicked = 0;
+                    clicktime = 0;
+                    
+                    // do double click stuff
+                    GameEvents.Camera.OnJumpToCiv.Invoke(gameObject);
+                }
+                else
+                {
+                    clicked = 1;
+                    clicktime = Time.time;
+                }
             }
-            else if (hit.collider.gameObject == gameObject && mes != null)
+            
+            if (clicked == 1)
             {
-                UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+                clicktime = Time.time;
+                
+                // do single click stuff
+                if (civ != null)
+                {
+                    UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                    UpdateValues();
+                
+                }
+                else if (mes != null)
+                {
+                    UIEvents.UIOpen.OnOpenMessiahMenu.Invoke(_npcModel);
+                }
             }
             
         }

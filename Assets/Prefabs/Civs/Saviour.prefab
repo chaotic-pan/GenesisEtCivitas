@@ -523,7 +523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 954b95db0a0b7ac48828aa2cbf4635c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clipDistance: 100
+  clipDistance: 300
   clipObject: {fileID: 7495523866607430955}
 --- !u!136 &8016946328293114136
 CapsuleCollider:

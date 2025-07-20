@@ -98,12 +98,41 @@ namespace CityStuff
             return instance;
         }
         
+        int clicked = 0;
+        float clicktime = 0;
+        float clickdelay = 0.5f;
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
-                UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
+                clicked++;
+            
+                if (clicked > 1)
+                {
+                    if (Time.time - clicktime < clickdelay)
+                    {
+                        clicked = 0;
+                        clicktime = 0;
+                        
+                        // do double click stuff
+                        GameEvents.Camera.OnJumpToCiv.Invoke(gameObject);
+                    }
+                    else
+                    {
+                        clicked = 1;
+                        clicktime = Time.time;
+                    }
+                }
+            
+                if (clicked == 1)
+                {
+                    clicktime = Time.time;
+                
+                    // do single click stuff
+                    UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                    UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
+                }
+
             }
         }
 
