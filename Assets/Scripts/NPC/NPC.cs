@@ -134,6 +134,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
                 if (civ != null)
                 {
                     UIEvents.UIOpen.OnOpenNpcMenu.Invoke(_npcModel);
+                    UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(civ);
                     UpdateValues();
                 
                 }
