@@ -16,7 +16,7 @@ public class MapExtractor : MonoBehaviour
 {
     public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
-    [SerializeField] private bool newMapType;
+    [SerializeField, Range(0, 2)] private int PointsMapType;
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
@@ -40,12 +40,25 @@ public class MapExtractor : MonoBehaviour
     public int[,] animalPopulation;
     public int[,] animalHostility;
     public int[,] climate;
+    public int[,] walkable;
 
     private void Awake()
     {
         if (!fileName.Contains(".txt")) fileName += ".txt";
-        points = newMapType ? 1914 : 1913;
-        meshHeightCurve = newMapType ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
+        switch (PointsMapType)
+        {
+            case 0: points = 1913;
+                break;
+            case 1: points = 1914;
+                break;
+            case 2: points = 2870;
+                chunkCountRoot = 12;
+                break;
+            default:
+                break;
+        }
+
+        meshHeightCurve = PointsMapType>0 ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
         totalPoints = points*points;
         
         heightMap = new float[points, points];
@@ -57,8 +70,8 @@ public class MapExtractor : MonoBehaviour
         animalPopulation = new int[points, points];
         animalHostility = new int[points, points];
         climate = new int[points, points];
-        
-        
+        walkable = new int[points, points];
+
         Instance = this;
         if (SO_fileLoc.isBuild)
         {
@@ -78,6 +91,7 @@ public class MapExtractor : MonoBehaviour
         byte[] oreVegetationMap = new byte[totalPoints];
         byte[] animalPopulationHostilityMap = new byte[totalPoints];
         byte[] climateMap = new byte[totalPoints];
+        byte[] walkableMap = new byte[totalPoints];
 
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
         // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
@@ -92,6 +106,7 @@ public class MapExtractor : MonoBehaviour
             animalPopulationHostilityMap, 0, animalPopulationHostilityMap.Length);
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3),
             climateMap, 0, climateMap.Length);
+        if (PointsMapType == 2) Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 4), walkableMap, 0, walkableMap.Length);
 
         // Separate bytes into 2D arrays for each value
         int i = 0;
@@ -105,7 +120,7 @@ public class MapExtractor : MonoBehaviour
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
-
+            if (PointsMapType == 2) walkable[coord.x, coord.y] = (int)walkableMap[i];
             i++;
         }
 
@@ -119,10 +134,26 @@ public class MapExtractor : MonoBehaviour
         {
             DestroyImmediate(chunk);
         }
-        
         if (!fileName.Contains(".txt")) fileName += ".txt";
-        points = newMapType ? 1914 : 1913;
-        meshHeightCurve = newMapType ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
+        switch (PointsMapType)
+        {
+            case 0:
+                points = 1913;
+                break;
+            case 1:
+                points = 1914;
+                break;
+            case 2:
+                points = 2870;
+                chunkCountRoot = 12;
+                break;
+            default:
+                break;
+        }
+
+
+        if (!fileName.Contains(".txt")) fileName += ".txt";
+        meshHeightCurve = PointsMapType > 0 ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
         totalPoints = points*points;
         
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
@@ -139,7 +170,8 @@ public class MapExtractor : MonoBehaviour
         animalPopulation = new int[points, points];
         animalHostility = new int[points, points];
         climate = new int[points, points];
-        
+        walkable = new int[points, points];
+
         // überall wo 0 ist, ist Wasser
         // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
@@ -148,6 +180,7 @@ public class MapExtractor : MonoBehaviour
         byte[] oreVegetationMap = new byte[totalPoints];
         byte[] animalPopulationHostilityMap = new byte[totalPoints];
         byte[] climateMap = new byte[totalPoints];
+        byte[] walkableMap = new byte[totalPoints];
 
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
         // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
@@ -162,6 +195,7 @@ public class MapExtractor : MonoBehaviour
             animalPopulationHostilityMap, 0, animalPopulationHostilityMap.Length);
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3),
             climateMap, 0, climateMap.Length);
+        if (PointsMapType == 2) Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 4), walkableMap, 0, walkableMap.Length);
 
         // Separate bytes into 2D arrays for each value
         int i = 0;
@@ -175,6 +209,7 @@ public class MapExtractor : MonoBehaviour
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
+            if (PointsMapType == 2) walkable[coord.x, coord.y] = (int)walkableMap[i];
 
             i++;
         }
