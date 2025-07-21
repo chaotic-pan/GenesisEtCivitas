@@ -36,6 +36,7 @@ namespace UI
         [Header("Locked Buildings")]
         [SerializeField] private List<GameObject> lockedBuilding;
         [SerializeField] private Skill onUnlockWell;
+        [SerializeField] private Skill onUnlockChurch;
         [SerializeField] private int unlockingIPCost = 50;
         
         [Header("Buttons")]
@@ -54,11 +55,12 @@ namespace UI
             UIEvents.UIUpdate.OnUpdatePlayerData += CheckWellCost;
             UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
 
-           onUnlockWell.onUnlocked += UnlockWell;
-           foreach (var build in lockedBuilding.Where(build => cityObjects.Contains(build)))
-           {
+            onUnlockWell.onUnlocked += UnlockWell;
+            onUnlockChurch.onUnlocked += UnlockChurch;
+            foreach (var build in lockedBuilding.Where(build => cityObjects.Contains(build)))
+            {
                cityObjects.Remove(build);
-           }
+            }
             pm = GameObject.Find("Player").GetComponent<PlayerModel>();
         }
 
@@ -68,8 +70,11 @@ namespace UI
             {
                 UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
                 onUnlockWell.onUnlocked -= UnlockWell;
+                onUnlockChurch.onUnlocked -= UnlockChurch;
                 UIEvents.UIOpen.OnOpenMessiahMenu -= _ => OnClose();
                 UIEvents.UIOpen.OnOpenSkillTree -= _ => OnClose();
+                UIEvents.UIUpdate.OnUpdatePlayerData -= CheckChurchCost;
+                UIEvents.UIUpdate.OnUpdatePlayerData -= CheckWellCost;
             }
         }
 
@@ -211,6 +216,16 @@ namespace UI
             foreach (var build in lockedBuilding.Where(build => build.ToString().Contains("Well")))
             {
                 cityObjects.Add(build);
+                CheckWellCost(pm);
+                return;
+            }
+        }
+        public void UnlockChurch()
+        {
+            foreach (var build in lockedBuilding.Where(build => build.ToString().Contains("Church")))
+            {
+                cityObjects.Add(build);
+                CheckChurchCost(pm);
                 return;
             }
         }
