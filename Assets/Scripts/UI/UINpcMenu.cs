@@ -7,6 +7,7 @@ using Models;
 using Player.Skills;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI
@@ -35,25 +36,30 @@ namespace UI
         [Header("Locked Buildings")]
         [SerializeField] private List<GameObject> lockedBuilding;
         [SerializeField] private Skill onUnlockWell;
+        [SerializeField] private int unlockingIPCost = 50;
         
         [Header("Buttons")]
         [SerializeField] private GameObject BuildWellbutton;
         [SerializeField] private GameObject BuildChurchButton;
         
         private NPCModel model;
+        private PlayerModel pm;
         
         public override void Initialize()
         {
-           UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
-           UIEvents.UIOpen.OnOpenMessiahMenu += _ => OnClose();
-           UIEvents.UIOpen.OnOpenSkillTree += _ => OnClose();
-           UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
+            UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
+            UIEvents.UIOpen.OnOpenMessiahMenu += _ => OnClose();
+            UIEvents.UIOpen.OnOpenSkillTree += _ => OnClose();
+            UIEvents.UIUpdate.OnUpdatePlayerData += CheckChurchCost;
+            UIEvents.UIUpdate.OnUpdatePlayerData += CheckWellCost;
+            UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
 
            onUnlockWell.onUnlocked += UnlockWell;
            foreach (var build in lockedBuilding.Where(build => cityObjects.Contains(build)))
            {
                cityObjects.Remove(build);
            }
+            pm = GameObject.Find("Player").GetComponent<PlayerModel>();
         }
 
         private void CleanupOnSceneChange(UnityEngine.SceneManagement.Scene scene)
@@ -102,12 +108,44 @@ namespace UI
             model.IsMessiah = true;
             NPC.CheckMessiah.Invoke();
         }
+        public void CheckWellCost(PlayerModel pm)
+        {
+            if (!BuildWellbutton.activeSelf) return;
+            else if (unlockingIPCost > pm.InfluencePoints)
+            {
+                // too expensive
+                BuildWellbutton.GetComponent<Button>().interactable = false;
+                BuildChurchButton.GetComponent<Button>().interactable = false;
+            }
+            else
+            {
+                BuildWellbutton.GetComponent<Button>().interactable = true;
+                BuildChurchButton.GetComponent<Button>().interactable = true;
+            }
+        }
+        public void CheckChurchCost(PlayerModel pm)
+        {
+            if (!BuildChurchButton.activeSelf) return;
+            if (unlockingIPCost > pm.InfluencePoints)
+            {
+                // too expensive
+                BuildWellbutton.GetComponent<Button>().interactable = false;
+                BuildChurchButton.GetComponent<Button>().interactable = false;
+            }
+            else
+            {
+                BuildWellbutton.GetComponent<Button>().interactable = true;
+                BuildChurchButton.GetComponent<Button>().interactable = true;
+            }
+        }
         public void OnBuildChurch()
         {
             if (!model.City) return;
             model.City.BuildChurch();
             
             BuildChurchButton.SetActive(false);
+            pm.InfluencePoints -= unlockingIPCost;
+            CheckWellCost(pm);
         }
         
         public void OnBuildWell()
@@ -116,6 +154,8 @@ namespace UI
             model.City.BuildWell();
             
             BuildWellbutton.SetActive(false);
+            pm.InfluencePoints -= unlockingIPCost;
+            CheckChurchCost(pm);
         }
 
         public void OnJumpToCiv()
