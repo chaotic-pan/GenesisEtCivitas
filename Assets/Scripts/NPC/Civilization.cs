@@ -138,6 +138,12 @@ public class Civilization : MonoBehaviour
             GetComponent<NPC>()._npcModel.Population = population;
         }
     }
+    
+    public void OnMouseEnter()
+    {
+        if (city == null) return;
+        city.OnMouseEnter();
+    }
 
     public float Food
     {

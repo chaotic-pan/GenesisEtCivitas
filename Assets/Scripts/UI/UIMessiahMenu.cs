@@ -8,7 +8,6 @@ namespace UI
 {
     public class UIMessiahMenu : UpdateableMenu<NPCModel>
     {
-        private bool isSelectingCity;
         public PlayerController _playerController;
 
         private IEnumerator coroutine;
@@ -55,17 +54,17 @@ namespace UI
         }
         private void SelectedCity(Civilization civ)
         {
-            if (!isSelectingCity || civ == null) return;
+            if (!UIEvents.UIVar.isCastingSaviourAction || civ == null) return;
             StopCoroutine(coroutine);
-            isSelectingCity = false;
+            UIEvents.UIVar.isCastingSaviourAction = false;
             Debug.Log("City found");
             InvokeMessiahAction(civ);
         }
         IEnumerator SelectCity(float timer)
         {
-            isSelectingCity = true;
+            UIEvents.UIVar.isCastingSaviourAction = true;
             yield return new WaitForSeconds(timer);
-            isSelectingCity = false;
+            UIEvents.UIVar.isCastingSaviourAction = false;
             Debug.Log("No city found");
             
         }

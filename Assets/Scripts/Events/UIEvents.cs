@@ -43,6 +43,7 @@ namespace UI
         public class UIVariable
         {
             public bool saviourExists = false;
+            public bool isCastingSaviourAction = false;
         }
     }
 }
