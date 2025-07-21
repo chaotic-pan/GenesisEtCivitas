@@ -6,7 +6,6 @@ namespace Models
     public class PlayerModel : MonoBehaviour
     {
         private int _influencePoints = 150;
-        public int virtuePoints = 2;
         private int _maxIP = 9999;
 
         public int InfluencePoints

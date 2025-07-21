@@ -13,7 +13,6 @@ namespace Managers
     {
         private PlayerModel _playerModel;
         [SerializeField] private TMP_Text _IpText;
-        [SerializeField] private TMP_Text vpText;
         [SerializeField] private GameObject _SkillTreeMenu;
         
         [SerializeField] private UICityMenu uiCityMenu;
@@ -36,7 +35,6 @@ namespace Managers
         private void Update()
         {
             _IpText.text = _playerModel.InfluencePoints.ToString();
-            vpText.text = _playerModel.virtuePoints.ToString();
             
             if (Input.GetKeyDown(KeyCode.Escape))
                 SceneManager.LoadScene("MainMenu");
