@@ -24,6 +24,7 @@ namespace Player
 		[SerializeField] private float rotateFallback = 1000f;
 
 		[SerializeField] private CinemachineCamera cinemachineCamera;
+		[SerializeField] private CinemachineFollow cinemachineFollow;
 		
 		private PlayerInput _playerInput;
 		private Vector2 _moveInput;
@@ -52,7 +53,9 @@ namespace Player
 		private void OnJumpToCiv(GameObject civ)
 		{
 			if (civ == null) return;
+			cinemachineFollow.FollowOffset = new Vector3(100, 172, -10);
 			cinemachineCamera.Follow = civ.transform;
+			
 		}
 
 		private void OnEnable()
@@ -96,6 +99,8 @@ namespace Player
 				Math.Max(50, Math.Min(pos.y, 1250)),
 				Math.Max(-1730, Math.Min(pos.z, 30))
 				);
+
+			cinemachineFollow.FollowOffset = new Vector3(100, Math.Max(50, Math.Min(cinemachineFollow.FollowOffset.y, 1250)), -10);
 		}
 
 		private void OnDisable()
@@ -227,9 +232,10 @@ namespace Player
 			if (Mathf.Approximately(_scrollMouseInput, 0)) return;
 
 			var zoomDirection = transform.forward;
-			transform.position += zoomDirection * (_scrollMouseInput * heightMultiplier * zoomSpeed * Time.deltaTime);
-			
-			
+			var zoomPos = zoomDirection * (_scrollMouseInput * heightMultiplier * zoomSpeed * Time.deltaTime);
+			transform.position += zoomPos;
+
+			cinemachineFollow.FollowOffset += new Vector3(0, zoomPos.y, 0);
 		}
 
 		private void RotateCamera()
