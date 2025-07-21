@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public class Messiah : MonoBehaviour
 {
-    private NPCMovement npcMove;
+    private SaviourMovement npcMove;
     private Civilization civ;
     
     public static UnityEvent<Civilization> UseMessiah = new ();
@@ -13,7 +13,7 @@ public class Messiah : MonoBehaviour
     
     private void Start()
     {
-        npcMove = gameObject.GetComponent<NPCMovement>();
+        npcMove = gameObject.GetComponent<SaviourMovement>();
         GetComponentInChildren<Animator>().SetFloat("isSaviour", 1);
         UseMessiah.AddListener(GrantScoreImprovements);
         SendMessiah.AddListener(OnSendMessiah);

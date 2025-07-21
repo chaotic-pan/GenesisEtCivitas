@@ -95,7 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6497785815054769511}
-  - component: {fileID: 644694646138497019}
+  - component: {fileID: 4700147628508468580}
   - component: {fileID: 6309690029069101142}
   - component: {fileID: 2470186626656958378}
   - component: {fileID: 7611357014295348186}
@@ -126,7 +126,7 @@ Transform:
   - {fileID: 6921044564113516139}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &644694646138497019
+--- !u!114 &4700147628508468580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,13 +135,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2077861693280709515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3ea2b9f58ababb4f80e92ddef09b72a, type: 3}
+  m_Script: {fileID: 11500000, guid: 171472df50644ba88881178cd15d2ffe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
+  maxSpeed: 50
   rangeRadius: 20
   map: {fileID: 0}
-  boatPrefab: {fileID: 6165641262965079714, guid: ad665e2ad35f79b418e1281811fe1eb4, type: 3}
   DEBUG_PathBreadcrumbs: 0
 --- !u!114 &6309690029069101142
 MonoBehaviour:
