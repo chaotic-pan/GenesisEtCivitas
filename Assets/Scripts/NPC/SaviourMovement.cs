@@ -88,8 +88,7 @@ public class SaviourMovement : MonoBehaviour
             yield return StartCoroutine("MovetoTarget", 
                 ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
         }
-        
-        
+
         var position = transform.position;
         while (Vector3.Distance(position, destination) > 0.1f)
         {
@@ -105,6 +104,8 @@ public class SaviourMovement : MonoBehaviour
         GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
         transform.position = destination;
+        var look = destination += transform.forward;
+        transform.LookAt(new Vector3(look.x, destination.y, look.z));
         
         onReached?.Invoke(gameObject);
     }

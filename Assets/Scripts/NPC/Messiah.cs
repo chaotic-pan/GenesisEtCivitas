@@ -44,11 +44,11 @@ public class Messiah : MonoBehaviour
 
     private void ChangeCiviScores()
     {
-        civ.Food += 5;
-        civ.Water += 5;
-        civ.Safety += 5;
-        civ.Shelter += 5;
-        civ.Energy += 5;
+        civ.Food += 15;
+        civ.Water += 15;
+        civ.Safety += 15;
+        civ.Shelter += 15;
+        civ.Energy += 15;
 
         civ = null;
     }

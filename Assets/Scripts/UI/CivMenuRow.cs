@@ -46,7 +46,9 @@ namespace UI
 
         public void OnClickOnCiv()
         {
-            GameEvents.Camera.OnJumpToCiv(_npcModel.NPC);
+            if (!UIEvents.UIVar.isCastingSaviourAction || _npcModel.City == null) 
+                GameEvents.Camera.OnJumpToCiv(_npcModel.NPC);
+            else UIEvents.UIOpen.OnSelectCityMessiahAction.Invoke(_npcModel.City.civ);
         }
 
         private void RemoveCivRow(GameObject civObject)
