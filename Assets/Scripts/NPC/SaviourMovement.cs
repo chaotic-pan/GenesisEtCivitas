@@ -95,18 +95,23 @@ public class SaviourMovement : MonoBehaviour
             Vector3 direction = (destination - position).normalized;
             var newPos = position + direction * (10f * Time.deltaTime);
             transform.position = ME.AdjustCoordsForHeight(newPos);
-            transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
+
+            // dw about this. this is all totally necessary and efficient . prommie!
+            var oldRot = transform.rotation;
+            transform.rotation = Quaternion.LookRotation(direction);
+            var look = transform.position + transform.forward;
+            transform.LookAt(new Vector3(look.x, transform.position.y, look.z));
+            var newRot = transform.rotation;
+            transform.rotation = Quaternion.RotateTowards(oldRot, newRot, 5);
             position = newPos;
-           
+            
             yield return null;
         }
         
         GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
         transform.position = destination;
-        var look = destination += transform.forward;
-        transform.LookAt(new Vector3(look.x, destination.y, look.z));
-        
+
         onReached?.Invoke(gameObject);
     }
     
@@ -126,9 +131,13 @@ public class SaviourMovement : MonoBehaviour
             var direction = (target - position).normalized;
             var newPos = position + direction * (movementSpeed * Time.deltaTime);
             transform.position = ME.AdjustCoordsForHeight(newPos);
-            
-            var newRot = Quaternion.LookRotation((newPos - position).normalized);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, newRot, 5);
+
+            var oldRot = transform.rotation;
+            transform.rotation = Quaternion.LookRotation(direction);
+            var look = transform.position + transform.forward;
+            transform.LookAt(new Vector3(look.x, transform.position.y, look.z));
+            var newRot = transform.rotation;
+            transform.rotation = Quaternion.RotateTowards(oldRot, newRot, 5);
             position = newPos;
             
             
