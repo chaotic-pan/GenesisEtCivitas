@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
   m_Name: Death2
   m_EditorClassIdentifier: 
-  requirement: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
-  cost: 300
-  uiColor: {r: 0, g: 0.72156864, b: 1, a: 1}
-  title: Ship Travel
-  description: Enables your followers to traverse water much easier and quicker
+  requirement: {fileID: 11400000, guid: ae37a0204b4746449939f3c1dcfe96d1, type: 2}
+  cost: 200
+  uiColor: {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
+  title: Church Building
+  description: Your followers can build churches in their city, to generate more
+    Influence Points for you

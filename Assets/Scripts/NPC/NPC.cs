@@ -105,7 +105,8 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
 
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask) 
-            && hit.collider.gameObject == gameObject)
+            && hit.collider.gameObject == gameObject 
+            && eventData.button == PointerEventData.InputButton.Left)
         {
             clicked++;
             
