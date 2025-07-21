@@ -21,6 +21,7 @@ namespace CityStuff
         public House _house;
         public Well _well;
         public Church _church;
+        private GameObject selectionEffect;
 
         public Civilization civ;
         private MapExtractor ME = MapExtractor.Instance;
@@ -44,6 +45,8 @@ namespace CityStuff
         private void OnEnable()
         {
             GameEvents.Civilization.OnCivilizationDeath += AbandonCity;
+            selectionEffect = transform.GetChild(0).gameObject;
+            selectionEffect.SetActive(false);
         }
 
         private void OnDisable()
@@ -60,11 +63,6 @@ namespace CityStuff
             CityName = civ.Language.GenerateWord();
             
             BuildHouse();
-            
-            // build city centre hex
-            var instance = Instantiate(cityCentrePrefab, transform);
-            instance.transform.localPosition = Vector3.zero;
-            instance.transform.position = ME.AdjustCoordsForHeight(instance.transform.position);
         }
 
         public void BuildChurch()
@@ -157,6 +155,17 @@ namespace CityStuff
             if (civ.gameObject != civObject) return;
             
             Destroy(gameObject);
+        }
+        
+        public void OnMouseEnter()
+        {
+            if (!UIEvents.UIVar.isCastingSaviourAction) return;
+            selectionEffect.SetActive(true);
+        }
+
+        public void OnMouseExit()
+        {
+            selectionEffect.SetActive(false);
         }
     }
 }

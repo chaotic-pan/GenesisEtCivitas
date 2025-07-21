@@ -57,7 +57,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
         if (civ == null) yield return 0;
         yield return new WaitForSeconds(timer);
         
-        var tilePos = TM.map.WorldToCell(civ.transform.position);
+        var tilePos = TM.WorldToCell(civ.transform.position);
 
         civ.Food = calculateStat(civ.Food, TM.GetFood(tilePos));
         civ.Water = calculateStat(civ.Water, TM.GetWater(tilePos));
