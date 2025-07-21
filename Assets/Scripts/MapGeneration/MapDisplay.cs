@@ -47,7 +47,7 @@ namespace Terrain
             foreach (var chunkCoordinate in meshDataDict.Keys)
             {
                 _meshInstances[chunkCoordinate] = Instantiate(meshRendererPrefab, 
-                    new Vector3(scale * size * chunkCoordinate.x-450, 0, -scale * size * chunkCoordinate.y+450),        //CHUNK OFFSET OF -450 ON X AND 450 ON Y
+                    new Vector3(scale * size * chunkCoordinate.x, 0, -scale * size * chunkCoordinate.y),        //CHUNK OFFSET OF -450 ON X AND 450 ON Y REQUIRED; BUT HEAT MAPS DON'T ADJUST
                     Quaternion.identity, 
                     transform);
 

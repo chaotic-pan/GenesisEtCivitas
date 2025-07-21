@@ -215,7 +215,7 @@ public class MapExtractor : MonoBehaviour
         }
 
         // Map wird generiert
-        var colorMap = WriteColorMap(heightMap, chunkCountRoot);
+        var colorMap = WriteColorMap(heightMap, chunkCountRoot, walkable);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
 
         mapDisplay.DrawMeshes(
@@ -235,7 +235,7 @@ public class MapExtractor : MonoBehaviour
     }
     public Dictionary<Vector2, Texture2D> GetTerrainTextures()
     {
-        var colorMap = WriteColorMap(heightMap, chunkCountRoot);
+        var colorMap = WriteColorMap(heightMap, chunkCountRoot, walkable);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
         
         return textures;
@@ -246,7 +246,7 @@ public class MapExtractor : MonoBehaviour
         if (TileManager.Instance != null) TileManager.Instance.InitializeTileData(Instance);
     }
 
-    public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks)
+    public Dictionary<Vector2, Color[]> WriteColorMap(float[,] noiseMap, int nHorizontalChunks, int[,] walkable)
     {
         var colorMaps = new Dictionary<Vector2, Color[]>();
         foreach (var chunkCoord in VectorUtils.GridCoordinates(nHorizontalChunks, nHorizontalChunks))
@@ -264,6 +264,11 @@ public class MapExtractor : MonoBehaviour
 
                 var currentHeight = noiseMap[offsetX, offsetY];
                 
+                if(walkable[offsetX, offsetY] == 0)
+                {
+                    colorMap[colorMapCoordinate] = regions[0].color;
+                    continue;
+                }
                 if (!regions.Any(region => region.height > currentHeight))
                     continue;
                 var matchingRegion = regions.First(region => region.height > currentHeight);
