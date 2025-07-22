@@ -78,7 +78,7 @@ public class Vegetation : MonoBehaviour
                     );
                     
                     var mesh = Random.Range(0, simplePlants.Length);
-                    var posInWorld = _tileManager.TileToWorld(tileKey) + posOffset;
+                    var posInWorld = _tileManager.CellToWorld(tileKey) + posOffset;
                     var height = _mapExtractor.GetHeightByWorldCoord(posInWorld);
 
                     /*if (height > 12)

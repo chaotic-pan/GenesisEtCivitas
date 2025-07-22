@@ -44,7 +44,7 @@ public class NPCSpawner : MonoBehaviour
                 random = Random.Range(0, TM.spawnLocations.Count);
             }
             
-            Vector3 spawnLocation = TM.map.CellToWorld(TM.spawnLocations[random]);
+            Vector3 spawnLocation = TM.CellToWorld(TM.spawnLocations[random]);
             var population = Random.Range(1, 8);
             
             SpawnCiv(spawnLocation, population, 20, 0);
@@ -71,7 +71,7 @@ public class NPCSpawner : MonoBehaviour
     
     private void FindSettlingLocation(GameObject civ, int range, int excludedRange)
     {
-        Vector3Int gridPos = TM.map.WorldToCell(civ.transform.position);
+        Vector3Int gridPos = TM.WorldToCell(civ.transform.position);
 
         List<Vector3Int> excludedLocations = TM.GetSpecificRange(gridPos, excludedRange);
         List<Vector3Int> locations = TM.GetSpecificRange(gridPos, range);

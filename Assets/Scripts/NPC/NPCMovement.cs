@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Events;
 using Player.Skills;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
 
-    public Tilemap map;
+    
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
@@ -24,7 +25,7 @@ public class NPCMovement : MonoBehaviour
 
     private void Start()
     {
-        map = TM?.map;
+        
         transform.position = ME.AdjustCoordsForHeight(transform.position);
     }
     
@@ -97,21 +98,21 @@ public class NPCMovement : MonoBehaviour
         CalculateRange();
         MovetoTileInRangeAndExecute(gridPos, null, doOnReached);
     }
-    public void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
+    public async void MovetoTileInRangeAndExecute(Vector3Int gridPos, List<Vector3Int> range, Action<GameObject> doOnReached)
     {
         DEBUG_clearBreadcrumbs();
         StopAllCoroutines();
         
         var npcGridPos = TM.WorldToCell(transform.position);
-        var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
+        await Dijkstra(npcGridPos, gridPos, range ?? this.range);
 
-        var destination = ME.AdjustCoordsForHeight(map.CellToWorld(gridPos));
+        var destination = ME.AdjustCoordsForHeight(TM.CellToWorld(gridPos));
         DEBUG_spawnBreadcrumbs(destination,5);
         
-        StartCoroutine(FollowPath(path, destination, doOnReached));
+        StartCoroutine(FollowPath(destination, doOnReached));
     }
     
-    IEnumerator FollowPath(Stack<Vector3Int> path, Vector3 destination, Action<GameObject> onReached)
+    IEnumerator FollowPath(Vector3 destination, Action<GameObject> onReached)
     {
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
@@ -121,7 +122,7 @@ public class NPCMovement : MonoBehaviour
         while (path.Count > 0)
         {
             yield return StartCoroutine("MovetoTarget", 
-                ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+                ME.AdjustCoordsForHeight(TM.CellToWorld(path.Pop())));
         }
         
         
@@ -192,81 +193,88 @@ public class NPCMovement : MonoBehaviour
         range = TM.GetSpecificRange(TM.WorldToCell(transform.position), rangeRadius);
     }
 
-    private Stack<Vector3Int> Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
+    private  Stack<Vector3Int> path = new();
+    
+    private async Task Dijkstra(Vector3Int start, Vector3Int destination, List<Vector3Int> SearchRange)
     {
         if (!SearchRange.Contains(destination))
         {
             Debug.LogWarning("DESTINATION BEYOND SEARCH RANGE");
-            return new Stack<Vector3Int>();
+            path = new Stack<Vector3Int>();
+            return;
         }
 
         start.z = 0;
         var Q = new Dictionary<Vector3Int, Node>(); //the unvisited set
         var W = new Dictionary<Vector3Int, Node>(); //the visited set
 
-        foreach (var gridPos in SearchRange)
+        var result = await Task.Run(() =>
         {
-            var tileData = TM.getTileDataByGridCoords(gridPos);
-            if (tileData == null) continue;
-            
-            var v = new Node(gridPos, TM.getTileDataByGridCoords(gridPos).travelCost);
-            Q.Add(gridPos, v);
-            if (gridPos == start) v.distance = 0;
-        }
-
-        while (Q.Count != 0)
-        {
-            var u = GetMinDist(Q);
-            if (u == null)
+            foreach (var gridPos in SearchRange)
             {
-                break;
+                var tileData = TM.getTileDataByGridCoords(gridPos);
+                if (tileData == null) continue;
+
+                var v = new Node(gridPos, TM.getTileDataByGridCoords(gridPos).travelCost);
+                Q.Add(gridPos, v);
+                if (gridPos == start) v.distance = 0;
             }
 
-            Q.Remove(u.gridPos);
-            W.Add(u.gridPos, u);
-
-            foreach (var neig in u.neighbors)
+            while (Q.Count != 0)
             {
-                if (Q.ContainsKey(neig))
+                var u = GetMinDist(Q);
+                if (u == null)
                 {
-                    var newDist = Q[neig].cost + u.distance;
-                    var v = Q[neig];
-
-                    if (newDist < v.distance)
-                    {
-                        v.distance = newDist;
-                        v.prev = u;
-                    }
+                    break;
                 }
-                
+
+                Q.Remove(u.gridPos);
+                W.Add(u.gridPos, u);
+
+                foreach (var neig in u.neighbors)
+                {
+                    if (Q.ContainsKey(neig))
+                    {
+                        var newDist = Q[neig].cost + u.distance;
+                        var v = Q[neig];
+
+                        if (newDist < v.distance)
+                        {
+                            v.distance = newDist;
+                            v.prev = u;
+                        }
+                    }
+
+                }
+
+                if (u.gridPos == destination)
+                {
+                    break;
+                }
             }
-            
-            if (u.gridPos == destination)
+
+            var newPath = new Stack<Vector3Int>();
+
+            if (W.ContainsKey(destination))
             {
-                break;
+                var v = W[destination];
+                newPath.Push(destination);
+
+                while (v.gridPos != start)
+                {
+                    v = v.prev;
+                    newPath.Push(v.gridPos);
+                }
             }
-            
-        }
-
-        var newPath = new Stack<Vector3Int>();
-
-        if (W.ContainsKey(destination))
-        {
-            var v = W[destination];
-            newPath.Push(destination);
-
-            while (v.gridPos != start)
+            else
             {
-                v = v.prev;
-                newPath.Push(v.gridPos);
+                Debug.LogError("UNKNOWN PATH ERROR");
             }
-        }
-        else
-        {
-            Debug.LogError("UNKNOWN PATH ERROR");
-        }
-        
-        return newPath;
+
+            return newPath;
+        });
+
+        path = result;
     }
 
     private Node GetMinDist(Dictionary<Vector3Int, Node> Q)

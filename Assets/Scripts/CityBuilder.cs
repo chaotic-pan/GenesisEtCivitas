@@ -18,8 +18,8 @@ public class CityBuilder : MonoBehaviour
     public City BuildCity(Vector3 worldPosition, NPCModel _npcModel, Civilization civ)
     {
         var cityInstance = Instantiate(cityPrefab);
-        var cell = TileManager.Instance.map.WorldToCell(worldPosition);
-        var cellCenterInWorld = TileManager.Instance.map.CellToWorld(cell);
+        var cell = TileManager.Instance.WorldToCell(worldPosition);
+        var cellCenterInWorld = TileManager.Instance.CellToWorld(cell);
         var cityPosition = AdjustCoordsForHeight(cellCenterInWorld);
         
         var city = cityInstance.GetComponent<City>();

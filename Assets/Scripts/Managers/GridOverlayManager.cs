@@ -104,7 +104,7 @@ public class GridOverlayManager : MonoBehaviour
                     chunkOriginZ + y - HalfChunkSize
                 );
                 
-                Vector3Int gridPos = TileManager.Instance.map.WorldToCell(worldPos);
+                Vector3Int gridPos = TileManager.Instance.WorldToCell(worldPos);
                 
                 if (currentAoeTiles.Contains(gridPos))
                 {
