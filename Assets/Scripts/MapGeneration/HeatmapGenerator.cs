@@ -11,7 +11,10 @@ namespace MapGeneration
     public class HeatmapGenerator : MonoBehaviour
     {
         [SerializeField] private List<Heatmap> heatmaps;
+        [SerializeField] private GameObject tilemap;
+        
         public const int ChunkSize = 240;
+        private const int ChunkCount = 12;
         private const int HalfChunkSize = ChunkSize / 2;
 
         public readonly Dictionary<MapDisplay.MapOverlay, Func<TileData, float>> OverlayValueByTile = new()
@@ -32,12 +35,13 @@ namespace MapGeneration
         private readonly Dictionary<MapDisplay.MapOverlay, Color[]> _colorMapCacheDict = new();
         private MapDisplay.MapOverlay[] _overlayKeys;
         private string generatedHeatmapPath = $"{Application.dataPath}/2D/GeneratedHeatmaps";
+        private float tilemapY;
 
         public void Initialize()
         {
             _heatmapDict = heatmaps.ToDictionary(h => h.overlay, h => h);
             _overlayKeys = OverlayValueByTile.Keys.ToArray();
-            
+            tilemapY = tilemap.transform.position.y;
             InitializeColorMapCacheDict();
         }
         
@@ -47,9 +51,9 @@ namespace MapGeneration
 
             DeleteAllHeatmaps();
             
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < ChunkCount; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < ChunkCount; x++)
                 {
                     var chunkHeatmaps = CreateHeatmapsOnChunk(new Vector2(x, y), tileManager);
                     WriteHeatmapsToDrive(chunkHeatmaps, new Vector2(x, y));
@@ -63,9 +67,9 @@ namespace MapGeneration
 
             var heatmaps = new Dictionary<Vector2, Dictionary<MapDisplay.MapOverlay, Texture2D>>();
             
-            for (var y = 0; y < 8; y++)
+            for (var y = 2; y < ChunkCount - 2; y++)
             {
-                for (var x = 0; x < 8; x++)
+                for (var x = 2; x < ChunkCount - 2; x++)
                 {
                     var chunk = new Vector2(x, y);
                     var chunkHeatmaps = CreateHeatmapsOnChunk(chunk, tileManager);
@@ -75,6 +79,7 @@ namespace MapGeneration
             
             return heatmaps;
         }
+        
 
         private void InitializeColorMapCacheDict()
         {
@@ -88,7 +93,7 @@ namespace MapGeneration
         {
             var chunkOffsetX = chunk.x * (ChunkSize - 1) + 1;
             var chunkOffsetZ = -(chunk.y * (ChunkSize - 1));
-            var worldPosition = new Vector3(0, 0, 0);
+            var worldPosition = new Vector3(0, tilemapY, 0);
 
             foreach (var overlay in _overlayKeys)
             {
@@ -136,8 +141,6 @@ namespace MapGeneration
                 var tex = TextureGenerator.TextureFromColorMap(tileValue, ChunkSize);
 
                 chunkHeatmaps[overlay] = tex;
-                
-                
             }
 
             return chunkHeatmaps;
