@@ -119,7 +119,7 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x,p.y],
-                        ME.walkable[p.x,p.y] == 0 ? 30 : 1,
+                        ME.water[p.x,p.y],
                         height
                         , ME.walkable[p.x,p.y] == 0
                         ); 
