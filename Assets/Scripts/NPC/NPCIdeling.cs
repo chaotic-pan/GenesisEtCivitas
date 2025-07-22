@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,7 +14,6 @@ class NPCIdeling : MonoBehaviour
     {
         NaN, Wandering, Building, Praying
     }
-    public GameObject civiPrefab;
     
     private Civilization civ;
     private Vector3 housePos;
@@ -63,7 +64,7 @@ class NPCIdeling : MonoBehaviour
             var civi = newCivObject.transform.GetChild(i - 1);
             civi.SetParent(transform);
             idles.Add(civi.gameObject, IdleState.NaN);
-            StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
+            EndIdleAction(civi.gameObject);
         }
         
         Destroy(newCivObject);
@@ -113,20 +114,23 @@ class NPCIdeling : MonoBehaviour
         
         GameEvents.Civilization.OnStartWalking?.Invoke(civi);
         var position = civi.transform.position;
+        var swim = false;
         
         while (Vector3.Distance(position, destination) > 0.1f)
         {
-            if (civi == null)
-            {
-                onReached?.Invoke(civi);
-                yield break;
-            }
+            if (civi == null) yield break;
+            
             Vector3 direction = (destination - position).normalized;
             var newPos = position + direction * (10f * Time.deltaTime);
             civi.transform.position = ME.AdjustCoordsForHeight(newPos);
             civi.transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
             position = newPos;
-           
+            if (swim == ME.IsWalkable(newPos))
+            {
+                swim = !swim;
+                GameEvents.Civilization.OnSwim?.Invoke(civi, swim);
+            }
+
             yield return null;
         }
         
@@ -135,23 +139,31 @@ class NPCIdeling : MonoBehaviour
         onReached?.Invoke(civi);
     }
     
-    IEnumerator WaitAndEnd(GameObject gObject, float wait)
+    IEnumerator WaitAndEnd(GameObject civiObject, float wait)
     {
         yield return new WaitForSeconds(wait);
-        EndAllIdleAction(gameObject);
+        EndIdleAction(civiObject);
     }
-    private void EndAllIdleAction(GameObject gObject)
+    private void EndIdleAction(GameObject civi)
     {
-        if (gObject == null || transform.position != gObject.transform.position) return;
+        if (civi == null) return;
         
         focusPoint = null;
-        for (int i = 0; i < idles.Count; i++)
+
+        var i = idles.Keys.ToList().IndexOf(civi);
+        var chance = Random.Range(0, 100);
+        if (i == 0 || 50 >= chance)
         {
-            var civi = idles.ElementAt(i).Key;
-            // TODO WANDER? (or periodic checks??)
+            idles[civi] = IdleState.Wandering;
+            var wanderPos = GetWanderPos(civi);
+            StartCoroutine(Walk(civi, wanderPos, Wandering));
+        }
+        else
+        {
             idles[civi] = IdleState.NaN;
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
+            
     }
     private void Despawn(GameObject civi)
     {
@@ -211,7 +223,28 @@ class NPCIdeling : MonoBehaviour
     }
     private void StartBuild(GameObject civi)
     {
-        GameEvents.Civilization.OnBuild.Invoke(civi);
+        GameEvents.Civilization.OnBuild?.Invoke(civi);
         StartCoroutine(WaitAndEnd(civi,15));
+    }
+
+    private Vector3 GetWanderPos(GameObject civi)
+    {
+        if (transform == null) return Vector3.zero;
+        var cityPos = transform.position;
+
+        var x = cityPos.x + Random.Range(-100, 100);
+        var z = cityPos.z + Random.Range(-100, 100);
+
+        return ME.AdjustCoordsForHeight(new Vector3(x, 0, z));
+    }
+    private async void Wandering(GameObject civi)
+    {
+        if (ME.IsWalkable(civi.transform.position))
+        {
+            var wait = Random.Range(1, 10);
+            await Task.Delay(wait *1000);
+        }
+        var wanderPos = GetWanderPos(civi);
+        StartCoroutine(Walk(civi, wanderPos, Wandering));
     }
 }

@@ -275,6 +275,12 @@ public class MapExtractor : MonoBehaviour
     {
         var height = GetHeightByWorldCoord(coord);
         return new Vector3(coord.x,height , coord.z);
-    }    
+    }
+
+    public bool IsWalkable(Vector3 coord)
+    {
+        var p = CoordsToPoints(coord);
+        return walkable[p.x, p.y] != 0;
+    }
 
 }
