@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 class NPCIdeling : MonoBehaviour
 {
+    private enum IdleState
+    {
+        NaN, Wandering, Building, Praying
+    }
     public GameObject civiPrefab;
-
+    
     private Civilization civ;
     private Vector3 housePos;
-    private List<GameObject> idles = new();
+    private Dictionary<GameObject, IdleState> idles = new();
     private Transform focusPoint;
     private MapExtractor ME = MapExtractor.Instance;
     
@@ -44,9 +49,9 @@ class NPCIdeling : MonoBehaviour
         for (int i = transform.childCount; i > 1; i--)
         {
             var civi = transform.GetChild(i - 1);
-            idles.Add(civi.gameObject);
+            idles.Add(civi.gameObject, IdleState.NaN);
         }
-        SurroundFocusPoint(city._house.gameObject, StartBuild, 5);   
+        SurroundFocusPoint(city._house.gameObject, StartBuild, 5, IdleState.Building);   
     }
     public void OnCityMerge(GameObject newCivObject, GameObject oldCivObject)
     {
@@ -57,7 +62,7 @@ class NPCIdeling : MonoBehaviour
         { 
             var civi = newCivObject.transform.GetChild(i - 1);
             civi.SetParent(transform);
-            idles.Add(civi.gameObject);
+            idles.Add(civi.gameObject, IdleState.NaN);
             StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
         }
         
@@ -75,17 +80,31 @@ class NPCIdeling : MonoBehaviour
         }
     }
     
-    IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
+    IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached, IdleState state)
     {
         for (int i = 0; i < idles.Count; i++)
         {
             if (i >= destinations.Count) yield break;
-            var civi = idles[i];
+            var civi = idles.ElementAt(i).Key;
             if (civi == null) continue;
             civi.SetActive(true);
-            StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
+            
+            var switchChance =  idles[civi] switch
+            {
+                IdleState.Building => 50,
+                IdleState.Praying => 20,
+                _ => 100
+            };
+            var random = Random.Range(0, 100);
+            
+            if (switchChance >= random)
+            {
+                idles[civi] = state;
+                StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
+            }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f);         
+             
         }
     }
     IEnumerator Walk(GameObject civi, Vector3 destination, Action<GameObject> onReached)
@@ -126,8 +145,11 @@ class NPCIdeling : MonoBehaviour
         if (gObject == null || transform.position != gObject.transform.position) return;
         
         focusPoint = null;
-        foreach (var civi in idles)
+        for (int i = 0; i < idles.Count; i++)
         {
+            var civi = idles.ElementAt(i).Key;
+            // TODO WANDER? (or periodic checks??)
+            idles[civi] = IdleState.NaN;
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
     }
@@ -136,9 +158,9 @@ class NPCIdeling : MonoBehaviour
         if (civi != null) civi.SetActive(false);
     }
     
-    private void SurroundFocusPoint(GameObject focusObject,  Action<GameObject> onReached, float distance)
+    private void SurroundFocusPoint(GameObject focusObject,  Action<GameObject> onReached, float distance, IdleState state)
     {
-        this.focusPoint = focusObject.transform;
+        focusPoint = focusObject.transform;
         var focusPos = focusObject.transform.position;
         
         List<Vector3> audience = new();
@@ -162,14 +184,14 @@ class NPCIdeling : MonoBehaviour
         
         end:
         StopAllCoroutines();
-        StartCoroutine(SpawnAndGo(audience, onReached));
+        StartCoroutine(SpawnAndGo(audience, onReached, state));
     }
     
     
     private void OnPreach(GameObject saviour)
     {
         if (transform.position != saviour.transform.position) return;
-        SurroundFocusPoint(saviour, Listen, 2);
+        SurroundFocusPoint(saviour, Listen, 2, IdleState.Praying);
     }
     private void Listen(GameObject go)
     {
@@ -185,7 +207,7 @@ class NPCIdeling : MonoBehaviour
     private void OnCreateBuilding(GameObject civObject, GameObject building)
     {
         if (civObject != gameObject) return;
-        SurroundFocusPoint(building, StartBuild, 5);
+        SurroundFocusPoint(building, StartBuild, 5, IdleState.Building);
     }
     private void StartBuild(GameObject civi)
     {
