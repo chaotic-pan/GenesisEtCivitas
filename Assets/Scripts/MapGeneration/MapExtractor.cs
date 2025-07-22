@@ -18,7 +18,7 @@ public class MapExtractor : MonoBehaviour
 
     public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
-    [SerializeField, Range(0, 3)] private int PointsMapType;
+    [SerializeField, Range(0, 4)] private int PointsMapType;
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
@@ -75,6 +75,9 @@ public class MapExtractor : MonoBehaviour
                 chunkCountRoot = 12;
                 break;
             case 3: points = 2870;
+                chunkCountRoot = 12;
+                break;
+            case 4: points = 2870;
                 chunkCountRoot = 12;
                 break;
             default:
@@ -140,11 +143,7 @@ public class MapExtractor : MonoBehaviour
         int i = 0;
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
-            SoilType currentSoil = GetSoilTypeForInt((int)fertilityFirmnessMap[i]);
             heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
-            fertility[coord.x, coord.y] = GetFertility(currentSoil);
-            firmness[coord.x, coord.y] = GetFirmness(currentSoil);
-            soil[coord.x, coord.y] = currentSoil;
             ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
             vegetation[coord.x, coord.y] = (int)(oreVegetationMap[i] >> 4) & 0xF;
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
@@ -152,6 +151,19 @@ public class MapExtractor : MonoBehaviour
             climate[coord.x, coord.y] = (int)climateMap[i];
             if (PointsMapType>=2) walkable[coord.x, coord.y] = (int)walkableMap[i];
             if (PointsMapType>=3) water[coord.x, coord.y] = (int)waterMap[i];
+
+            if (PointsMapType >= 4)
+            {
+                SoilType currentSoil = GetSoilTypeForInt((int)fertilityFirmnessMap[i]);
+                fertility[coord.x, coord.y] = GetFertility(currentSoil);
+                firmness[coord.x, coord.y] = GetFirmness(currentSoil);
+                soil[coord.x, coord.y] = currentSoil;
+            }
+            else
+            {
+                fertility[coord.x, coord.y] = (int)fertilityFirmnessMap[i] & 0xF;
+                firmness[coord.x, coord.y] = (int)(fertilityFirmnessMap[i] >> 4) & 0xF;
+            }
 
             i++;
         }
