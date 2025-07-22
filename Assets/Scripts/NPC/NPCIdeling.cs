@@ -229,7 +229,7 @@ class NPCIdeling : MonoBehaviour
 
     private Vector3 GetWanderPos(GameObject civi)
     {
-        if (transform == null) return Vector3.zero;
+        if (this == null) return Vector3.zero;
         var cityPos = transform.position;
 
         var x = cityPos.x + Random.Range(-100, 100);
@@ -246,5 +246,10 @@ class NPCIdeling : MonoBehaviour
         }
         var wanderPos = GetWanderPos(civi);
         StartCoroutine(Walk(civi, wanderPos, Wandering));
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 }
