@@ -103,7 +103,7 @@ public class MapExtractor : MonoBehaviour
         
         byte[] byteArray = File.ReadAllBytes(path);
         
-        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
+        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate und water 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
         float[] floatArrayHeightMap = new float[totalPoints];
         byte[] fertilityFirmnessMap = new byte[totalPoints];

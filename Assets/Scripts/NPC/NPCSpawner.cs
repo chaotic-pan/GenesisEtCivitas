@@ -29,7 +29,6 @@ public class NPCSpawner : MonoBehaviour
     private void Start()
     {
         
-        print("A");
         StartCoroutine(Spawning());
     }
 
@@ -49,7 +48,6 @@ public class NPCSpawner : MonoBehaviour
             
             SpawnCiv(spawnLocation, population, 20, 0);
         }
-        print("Z");
         yield break;
     }
 
