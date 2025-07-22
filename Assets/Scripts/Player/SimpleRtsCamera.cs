@@ -78,6 +78,12 @@ namespace Player
 			_playerInput.actions["MiddleMouse"].canceled += MiddleMouseHandler;
 		}
 
+		private void Update()
+		{
+			ZoomCamera();
+			LimitCamera();
+		}
+
 		private void FixedUpdate()
 		{
 			UpdateRelativeCameraVectors();
@@ -85,10 +91,7 @@ namespace Player
 			MoveCamera();
 			MoveCameraWithCursor();
 			MoveCameraWithRightMouse();
-			ZoomCamera();
 			RotateCamera();
-			LimitCamera();
-			
 		}
 
 		private void LimitCamera()
