@@ -5248,6 +5248,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4906144299626384558}
     m_Modifications:
+    - target: {fileID: 66086759382698005, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 66086759382698005, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.26415092
+      objectReference: {fileID: 0}
+    - target: {fileID: 66086759382698005, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.26415092
+      objectReference: {fileID: 0}
+    - target: {fileID: 66086759382698005, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.26415092
+      objectReference: {fileID: 0}
+    - target: {fileID: 66086759382698005, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4282598211
+      objectReference: {fileID: 0}
     - target: {fileID: 2354962883336456065, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5327,6 +5347,10 @@ PrefabInstance:
     - target: {fileID: 2354962883336456065, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3655338188396648707, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 8031297297090566086, guid: 72b9b21acc9550d48a2024b305387471, type: 3}
       propertyPath: m_Name

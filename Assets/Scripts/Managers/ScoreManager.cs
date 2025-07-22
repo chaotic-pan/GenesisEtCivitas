@@ -14,6 +14,7 @@ namespace Managers
 
         private void Awake()
         {
+            GameEvents.Lifecycle.OnGameEnd += CalculateFinalScore;
             GameEvents.InfluencePoints.GainInfluencePoints += OnGainInfluencePoints;
         }
 
@@ -45,6 +46,28 @@ namespace Managers
                     
                 }
             }
+        }
+
+        private void CalculateFinalScore()
+        {
+            var finalScore = 0f;
+
+            // Sum belief from all active civilizations
+            foreach (GameObject civObj in _npcSpawner.civilisations)
+            {
+                if (civObj == null) continue;
+        
+                Civilization civ = civObj.GetComponent<Civilization>();
+                if (civ != null)
+                {
+                    finalScore += civ.Belief;
+                }
+            }
+
+            Debug.Log("Calculated Final Score: " + finalScore);
+    
+            // Optional: Trigger UI event to display final score
+            // UIEvents.UIUpdate.OnShowFinalScore?.Invoke(finalScore);
         }
         
         private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints += points;
