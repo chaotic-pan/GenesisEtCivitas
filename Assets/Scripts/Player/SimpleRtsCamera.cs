@@ -95,9 +95,9 @@ namespace Player
 		{
 			var pos = transform.position;
 			transform.position = new Vector3(
-				Math.Max(-30, Math.Min(pos.x, 1730)),
+				Math.Max(-30, Math.Min(pos.x, 2660)),
 				Math.Max(50, Math.Min(pos.y, 1250)),
-				Math.Max(-1730, Math.Min(pos.z, 30))
+				Math.Max(-2660, Math.Min(pos.z, 30))
 				);
 
 			cinemachineFollow.FollowOffset = new Vector3(100, Math.Max(50, Math.Min(cinemachineFollow.FollowOffset.y, 1250)), -10);

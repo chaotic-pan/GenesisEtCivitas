@@ -28,8 +28,14 @@ public class NPCSpawner : MonoBehaviour
 
     private void Start()
     {
-        TM = TileManager.Instance;
+        
+        print("A");
+        StartCoroutine(Spawning());
+    }
 
+    IEnumerator Spawning()
+    {
+        TM = TileManager.Instance;
         for(int i=0; i< civilisationCount; i++)
         {
             int random = Random.Range(0, TM.spawnLocations.Count);
@@ -43,6 +49,8 @@ public class NPCSpawner : MonoBehaviour
             
             SpawnCiv(spawnLocation, population, 20, 0);
         }
+        print("Z");
+        yield break;
     }
 
     private GameObject SpawnCiv(Vector3 location, int population, int settleRangeIncl, int settleRangeExcl)
