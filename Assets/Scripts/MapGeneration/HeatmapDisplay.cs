@@ -24,7 +24,7 @@ namespace MapGeneration
         public MapDisplay.MapOverlay _currentMapOverlay;
         private TileManager _tileManager;
         private Dictionary<MapDisplay.MapOverlay, Func<TileData, float>> _overlayValueByTile;
-        private Dictionary<MapDisplay.MapOverlay, Heatmap> _heatmapDict;
+        public Dictionary<MapDisplay.MapOverlay, Heatmap> _heatmapDict;
         private int _chunkSize;
         private Dictionary<Vector2, Dictionary<Vector2Int, Vector3Int>> _tileDict = new();
         private const int ChunkCount = 12;
