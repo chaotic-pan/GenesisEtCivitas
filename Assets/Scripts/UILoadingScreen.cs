@@ -58,22 +58,39 @@ public class UILoadingScreen : MonoBehaviour
           // fade in loading screen
           yield return StartCoroutine(FadeIn());
           
+          // fake start loading 
+          var fadeTimer = 1f;
+          while (fadeTimer > 0)
+          {
+               fadeTimer -= Time.deltaTime;
+               loadingSlider.value = .25f + fadeTimer*-.25f;
+               yield return null;
+          }
+          
           // load level additively
           var asyncLoad = SceneManager.LoadSceneAsync(level, LoadSceneMode.Additive);
           
-          while (asyncLoad.progress < 0.9f)
+          while (!asyncLoad.isDone)
           {
-               loadingSlider.value = asyncLoad.progress / 0.9f;
+               loadingSlider.value = .25f + asyncLoad.progress * .5f;
                yield return null;
           }
 
-          loadingSlider.value = 1f;
-          
-          yield return new WaitUntil(() => asyncLoad.isDone);
-          
+          loadingSlider.value = .5f;
+
           // destroy main menu and camera
           Destroy(mainMenu);
           Destroy(mainMenuCamera);
+
+          // fake end timer + gives Civs a sec to initialize fully
+          fadeTimer = 2f;
+          while (fadeTimer > 0)
+          {
+               fadeTimer -= Time.deltaTime;
+               loadingSlider.value = .75f + fadeTimer*-(.25f/2)+.25f;
+               yield return null;
+          }
+          
           
           // fade out loading screen
           yield return StartCoroutine(FadeOut());
