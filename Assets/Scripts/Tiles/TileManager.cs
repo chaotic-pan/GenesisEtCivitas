@@ -129,7 +129,7 @@ public class TileManager : MonoBehaviour
                     {
                         spawnLocations.Add(gridPos);
                     }
-                    else  if (WATERDEBUG) 
+                    else if (WATERDEBUG) 
                     {
                         var s = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         var a = map.CellToWorld(gridPos);
@@ -217,7 +217,8 @@ public class TileManager : MonoBehaviour
 
     public Vector3Int WorldToCell(Vector3 worldPos)
     {
-        return map.WorldToCell(new Vector3(worldPos.x, -1, worldPos.z));
+        var y = map.transform.position.y;
+        return map.WorldToCell(new Vector3(worldPos.x, y, worldPos.z));
     }
     
     public TileData getTileDataByWorldCoords(float x, float y, float z)
@@ -411,10 +412,9 @@ public class TileManager : MonoBehaviour
         return (Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y) + Math.Abs(a.z - b.z)) / 2;
     }
     
-    public Vector3 TileToWorld(Vector3Int gridPos)
+    public Vector3 CellToWorld(Vector3Int gridPos)
     {
         return map!=null? map.CellToWorld(gridPos) : Vector3.zero;
-        
     }
     
     public Dictionary<Vector3Int, TileData> GetAllTileDataDict()

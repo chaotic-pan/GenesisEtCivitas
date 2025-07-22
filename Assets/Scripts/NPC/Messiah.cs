@@ -29,7 +29,7 @@ public class Messiah : MonoBehaviour
         civ = civi;
         var civPos = civ.transform.position;
         civPos.y = 0;
-        Vector3Int tilePos = npcMove.map.WorldToCell(civPos);
+        Vector3Int tilePos = TileManager.Instance.WorldToCell(civPos);
         npcMove.MovetoTileInRangeAndExecute(tilePos, TileManager.Instance.GetFullRange(), OnCityReached);
     }
 

@@ -11,7 +11,6 @@ public class SaviourMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private int rangeRadius = 5;
 
-    public Tilemap map;
     private TileManager TM = TileManager.Instance;
     private MapExtractor ME = MapExtractor.Instance;
 
@@ -20,7 +19,6 @@ public class SaviourMovement : MonoBehaviour
 
     private void Start()
     {
-        map = TM?.map;
         transform.position = ME.AdjustCoordsForHeight(transform.position);
     }
     
@@ -70,7 +68,7 @@ public class SaviourMovement : MonoBehaviour
         var npcGridPos = TM.WorldToCell(transform.position);
         var path = Dijkstra(npcGridPos, gridPos, range ?? this.range);
 
-        var destination = ME.AdjustCoordsForHeight(map.CellToWorld(gridPos));
+        var destination = ME.AdjustCoordsForHeight(TM.CellToWorld(gridPos));
         DEBUG_spawnBreadcrumbs(destination,5);
         
         StartCoroutine(FollowPath(path, destination, doOnReached));
@@ -86,7 +84,7 @@ public class SaviourMovement : MonoBehaviour
         while (path.Count > 0)
         {
             yield return StartCoroutine("MovetoTarget", 
-                ME.AdjustCoordsForHeight(map.CellToWorld(path.Pop())));
+                ME.AdjustCoordsForHeight(TM.CellToWorld(path.Pop())));
         }
 
         var position = transform.position;

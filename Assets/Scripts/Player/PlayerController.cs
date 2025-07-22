@@ -61,7 +61,7 @@ namespace Player
             if (plane.Raycast(ray, out var distance))
             {
                 var point = ray.GetPoint(distance);
-                var tileGridPos = TileManager.Instance.map.WorldToCell(point);
+                var tileGridPos = TileManager.Instance.WorldToCell(point);
                 var tileData = TileManager.Instance.getTileDataByGridCoords(tileGridPos);
                 if (tileData == null)
                 {
@@ -84,7 +84,7 @@ namespace Player
             if (plane.Raycast(ray, out var distance))
             {
                 var point = ray.GetPoint(distance);
-                var tileGridPos = TileManager.Instance.map.WorldToCell(point);
+                var tileGridPos = TileManager.Instance.WorldToCell(point);
         
                 int diameter = _activeAbility.EffectDiameter;
                 int radius = (diameter - 1) / 2; // For hex grids.
@@ -154,27 +154,5 @@ namespace Player
         {
             return _playerSkillSet;
         }
-
-        // // Water Skills
-        // public bool CanUseWaterOne()
-        // {
-        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterOne);
-        // }
-        //
-        // public bool CanUseWaterTwo()
-        // {
-        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.WaterTwo);
-        // }
-        //
-        // // Death Skill set
-        // public bool CanUseDeathOne()
-        // {
-        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
-        // }
-        //
-        // public bool CanUseDeathTwo()
-        // {
-        //     return _playerSkillSet.IsSkillUnlocked(PlayerSkillSet.Skill.DeathTwo);
-        // }
     }
 }
