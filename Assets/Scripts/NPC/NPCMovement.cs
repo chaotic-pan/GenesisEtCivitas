@@ -172,14 +172,13 @@ public class NPCMovement : MonoBehaviour
             {
                 var civi = transform.GetChild(i - 1);
                 var p = civi.position;
-                var height = ME.GetHeightByWorldCoord(p);
-                civi.position = new Vector3(p.x,height , p.z);
+                civi.position = new Vector3(p.x,ME.GetHeightByWorldCoord(p) , p.z);
                 
                 // trigger swimming only in civis, not in saviour 
                 if (TryGetComponent<Civilization>(out var NaN))
                 {
                     GameEvents.Civilization.OnSwim.Invoke(civi.gameObject, 
-                        !TM.boatsUnlocked && height < ME.waterheight*ME.mapHeightMultiplier);
+                        !TM.boatsUnlocked && TM.IsOcean(TM.WorldToCell(p)));
                 }
             }
            

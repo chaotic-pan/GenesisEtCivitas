@@ -20,7 +20,6 @@ public class TileManager : MonoBehaviour
     
     [SerializeField] private MapFileLocation SO_fileLoc;
     public bool boatsUnlocked = false;
-    private float waterHeight = 0.1f;
     private float waterTravelCost = 50;
     private void Awake()
     {
@@ -93,10 +92,13 @@ public class TileManager : MonoBehaviour
     public void InitializeTileData(MapExtractor ME)
     {
         GameObject waterMarkers = null;
-        if (WATERDEBUG) waterMarkers = new GameObject("Water Markers");
-        
-        waterHeight = ME.meshHeightCurve.Evaluate(ME.waterheight) * ME.mapHeightMultiplier;
-        
+        var oldMarker = GameObject.Find("Water Markers");
+        if (oldMarker != null) DestroyImmediate(oldMarker);
+        if (WATERDEBUG)
+        {
+            waterMarkers = new GameObject("Water Markers");
+        }
+
         for (int x = map.cellBounds.min.x; x < map.cellBounds.max.x; x++)
         {
             for (int y = map.cellBounds.min.y; y < map.cellBounds.max.y; y++)
@@ -109,7 +111,7 @@ public class TileManager : MonoBehaviour
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
                     var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
-                        height < waterHeight ? waterTravelCost : ME.travelcost[p.x,p.y],
+                        ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
                         ME.firmness[p.x,p.y],
                         ME.ore[p.x,p.y],
@@ -117,9 +119,9 @@ public class TileManager : MonoBehaviour
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
                         ME.climate[p.x,p.y],
-                        height < waterHeight ? 30 : 1,
+                        ME.walkable[p.x,p.y] == 0 ? 30 : 1,
                         height
-                        , height < waterHeight
+                        , ME.walkable[p.x,p.y] == 0
                         ); 
                     dataFromTiles.TryAdd(gridPos, tileData);
                     worldToGrid.TryAdd(worldPos, gridPos);
@@ -198,10 +200,10 @@ public class TileManager : MonoBehaviour
 
     private void updateWaterTravel()
     {
-        waterTravelCost = 1;
+        waterTravelCost = 5;
         boatsUnlocked = true;
 
-        foreach (var tile in dataFromTiles.Values.Where(tile => tile.height < waterHeight))
+        foreach (var tile in dataFromTiles.Values.Where(tile => tile.isWater))
         {
             tile.travelCost = waterTravelCost;
         }

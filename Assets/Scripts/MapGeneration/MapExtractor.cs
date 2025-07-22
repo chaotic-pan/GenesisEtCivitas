@@ -20,7 +20,6 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
-    public float waterheight = 0.21f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
     private int points = 1914;
@@ -92,6 +91,7 @@ public class MapExtractor : MonoBehaviour
         byte[] animalPopulationHostilityMap = new byte[totalPoints];
         byte[] climateMap = new byte[totalPoints];
         byte[] walkableMap = new byte[totalPoints];
+        // rain 0-255
 
         // Bytedaten aus dem Bytearray werden in einzelne Bytearrays separiert
         // Startarray, Startnummer im Array, Zielarray, Startnummer im Zielarray, Größe
@@ -229,7 +229,7 @@ public class MapExtractor : MonoBehaviour
     {
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
-            travelcost[coord.x, coord.y] =  heightMap[coord.x, coord.y] <= 0.1f ? 20 :
+            travelcost[coord.x, coord.y] = walkable[coord.x,coord.y] == 0 ? 20 :
                 heightMap[coord.x, coord.y]*mapHeightMultiplier;
         }
     }
