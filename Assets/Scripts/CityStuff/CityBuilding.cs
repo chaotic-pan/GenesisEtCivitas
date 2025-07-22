@@ -36,7 +36,7 @@ public abstract class CityBuilding : MonoBehaviour
         return 1;
     }
     
-    private void OnDisable()
+    public void Abandon()
     {
         StopAllCoroutines();
         var instance = Instantiate(abandonedPrefab, transform.position, transform.rotation, null);

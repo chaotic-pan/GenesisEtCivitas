@@ -224,7 +224,7 @@ public class NPCMovement : MonoBehaviour
             {
                 var u = GetMinDist(Q);
                 if (u == null)
-                {
+                { 
                     break;
                 }
 

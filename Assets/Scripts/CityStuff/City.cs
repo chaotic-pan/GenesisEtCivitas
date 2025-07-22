@@ -153,7 +153,10 @@ namespace CityStuff
         {
             if (civ == null || civObject == null) return;
             if (civ.gameObject != civObject) return;
-            
+
+            if (_house != null) _house.Abandon();
+            if (_church != null) _church.Abandon();
+            if (_well != null) _well.Abandon();
             Destroy(gameObject);
         }
         

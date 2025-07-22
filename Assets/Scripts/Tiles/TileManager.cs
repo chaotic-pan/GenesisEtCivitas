@@ -160,7 +160,7 @@ public class TileManager : MonoBehaviour
     public float GetWater(Vector3Int coords)
     {
         return dataFromTiles.ContainsKey(coords) ? 
-            (dataFromTiles[coords].waterValue/3) 
+            (dataFromTiles[coords].waterValue*0.06f) 
             : -1;
     }
     public float GetSafety(Vector3Int coords)
