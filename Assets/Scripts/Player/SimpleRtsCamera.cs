@@ -78,7 +78,7 @@ namespace Player
 			_playerInput.actions["MiddleMouse"].canceled += MiddleMouseHandler;
 		}
 
-		private void LateUpdate()
+		private void FixedUpdate()
 		{
 			UpdateRelativeCameraVectors();
 			heightMultiplier = transform.position.y;
