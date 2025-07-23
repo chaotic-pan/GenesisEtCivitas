@@ -21,6 +21,7 @@ public class NPC : MonoBehaviour, IPointerClickHandler
     public void Awake()
     {
         GameEvents.Civilization.OnCivilizationMerge += MergeCivilisation;
+        GameEvents.Civilization.OnCityFounded += StartStatsDecay;
         CheckMessiah.AddListener(CheckForMessiah);
         civ = transform.GetComponent<Civilization>();
         mes = transform.GetComponent<Messiah>();
@@ -31,13 +32,13 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             _npcModel.NPC = gameObject;
             GameEvents.Civilization.OnCivilizationSpawn?.Invoke(gameObject);
             
-            StartCoroutine(StatsDecay(10));
             influenceArea.Initialize(this);
         }
     }
     private void OnDisable()
     {
         GameEvents.Civilization.OnCivilizationMerge -= MergeCivilisation;
+        GameEvents.Civilization.OnCityFounded -= StartStatsDecay;
     }
     
     private void CheckForMessiah()
@@ -51,7 +52,14 @@ public class NPC : MonoBehaviour, IPointerClickHandler
             Destroy(gameObject);
         }
     }
-  
+
+    private void StartStatsDecay(GameObject civObject)
+    {
+        if (civObject == gameObject)
+        {
+            StartCoroutine(StatsDecay(10));
+        }
+    }
     IEnumerator StatsDecay(float timer)
     {
         if (civ == null) yield return 0;

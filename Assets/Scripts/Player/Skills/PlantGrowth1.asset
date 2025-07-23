@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
   m_Name: PlantGrowth1
   m_EditorClassIdentifier: 
-  requirement: {fileID: 0}
+  requirement: {fileID: 11400000, guid: dc2e581d375189948907c1b103692645, type: 2}
   cost: 500
-  uiColor: {r: 0.074186325, g: 1, b: 0, a: 1}
+  icon: {fileID: 21300000, guid: c637315c7bae3e042bb92b75e90c2538, type: 3}
+  uiColor: {r: 0.46444312, g: 0.8773585, b: 0.34349412, a: 1}
   title: Plant Growth Miracle
   description: Allows you to perform a Plant Growth Miracle to raise the fertility
     values within a certain area.
