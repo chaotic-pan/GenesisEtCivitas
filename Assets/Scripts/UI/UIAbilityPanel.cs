@@ -39,17 +39,17 @@ namespace UI
 
         private void unlockRain()
         {
-            SpawnAbilityButton("RAIN", AbilityType.Rain);
+            SpawnAbilityButton("RAIN (100 IP)", AbilityType.Rain);
         }
         
         private void unlockEarthquake()
         {
-            SpawnAbilityButton("EARTHQUAKE", AbilityType.Earthquake);
+            SpawnAbilityButton("EARTHQUAKE (200 IP)", AbilityType.Earthquake);
         }
         
         private void unlockPlantGrowth()
         {
-            SpawnAbilityButton("PLANT GROWTH", AbilityType.PlantGrowth);
+            SpawnAbilityButton("PLANT GROWTH (200 IP)", AbilityType.PlantGrowth);
         }
     }
 }

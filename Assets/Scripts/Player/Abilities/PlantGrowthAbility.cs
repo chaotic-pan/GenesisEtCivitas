@@ -7,7 +7,7 @@ namespace Player.Abilities
 {
     public class PlantGrowthAbility: PlayerAbility
     {
-        public override int Cost => 80;
+        public override int Cost => 200;
         public override AbilityType Type => AbilityType.PlantGrowth;
         public override int EffectDiameter => 5;
 

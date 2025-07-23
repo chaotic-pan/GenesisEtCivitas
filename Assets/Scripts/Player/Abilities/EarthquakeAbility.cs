@@ -7,7 +7,7 @@ namespace Player.Abilities
 {
     public class EarthquakeAbility : PlayerAbility
     {
-        public override int Cost => 50;
+        public override int Cost => 200;
         public override AbilityType Type => AbilityType.Earthquake;
         public override int EffectDiameter => 7;
 

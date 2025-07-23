@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlantGrowth1
   m_EditorClassIdentifier: 
   requirement: {fileID: 0}
-  cost: 200
+  cost: 500
   uiColor: {r: 0.074186325, g: 1, b: 0, a: 1}
   title: Plant Growth Miracle
   description: Allows you to perform a Plant Growth Miracle to raise the fertility

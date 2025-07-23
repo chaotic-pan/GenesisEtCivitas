@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Death2
   m_EditorClassIdentifier: 
   requirement: {fileID: 11400000, guid: ae37a0204b4746449939f3c1dcfe96d1, type: 2}
-  cost: 200
+  cost: 1000
   uiColor: {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
   title: Church Building
   description: Your followers can build churches in their city, to generate more

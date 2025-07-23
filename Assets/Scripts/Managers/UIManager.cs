@@ -1,4 +1,5 @@
 using System;
+using Events;
 using Models;
 using UnityEngine;
 using TMPro;
@@ -13,9 +14,7 @@ namespace Managers
     {
         private PlayerModel _playerModel;
         [SerializeField] private TMP_Text _IpText;
-        [SerializeField] private GameObject _SkillTreeMenu;
         
-        [SerializeField] private UICityMenu uiCityMenu;
         [SerializeField] private UINpcMenu uiNpcMenu;
         [SerializeField] private UIMessiahMenu uiMessiahMenu;
 
@@ -37,7 +36,7 @@ namespace Managers
             _IpText.text = _playerModel.InfluencePoints.ToString();
             
             if (Input.GetKeyDown(KeyCode.Escape))
-                SceneManager.LoadScene("MainMenu");
+                GameEvents.Lifecycle.OnGamePause.Invoke();
         }
     }
 }

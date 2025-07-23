@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Saviour
   m_EditorClassIdentifier: 
   requirement: {fileID: 0}
-  cost: 0
+  cost: 700
   uiColor: {r: 1, g: 1, b: 1, a: 1}
   title: Saviour Promotion
   description: You can choose one of  your settlement and appoint them as your personal

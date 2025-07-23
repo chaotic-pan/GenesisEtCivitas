@@ -7,7 +7,7 @@ namespace Player.Abilities
 {
     public class RainAbility : PlayerAbility
     {
-        public override int Cost => 30;
+        public override int Cost => 100;
         public override AbilityType Type => AbilityType.Rain;
         public override int EffectDiameter => 5;
 
@@ -27,7 +27,7 @@ namespace Player.Abilities
             foreach (var tilePos in affectedTiles)
             {
                 var tileData = TileManager.Instance.getTileDataByGridCoords(tilePos);
-                if (tileData != null) tileData.waterValue += 20;
+                if (tileData != null) tileData.waterValue += 100;
             }
             
             // Update heatmaps.

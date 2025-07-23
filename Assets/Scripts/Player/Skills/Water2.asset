@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Water2
   m_EditorClassIdentifier: 
   requirement: {fileID: 11400000, guid: 00e72bc87fda1bc488fbb0813bcd8fec, type: 2}
-  cost: 200
+  cost: 500
   uiColor: {r: 0, g: 0.72156864, b: 1, a: 1}
   title: Well Building
   description: Your followers discover the knowledge of building wells in their city,
