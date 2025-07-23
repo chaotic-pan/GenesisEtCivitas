@@ -1,0 +1,76 @@
+﻿using UnityEngine;
+
+public class TreeGenerator : MonoBehaviour
+{
+    [Header("Tree Prefabs")]
+    [SerializeField] private GameObject[] hotTreePrefabs;
+    [SerializeField] private GameObject[] warmTreePrefabs;
+    [SerializeField] private GameObject[] normalTreePrefabs;
+    [SerializeField] private GameObject[] freshTreePrefabs;
+    [SerializeField] private GameObject[] coldTreePrefabs;
+    [Space]
+    [Tooltip("Needs to be uneven")]
+    [SerializeField] private int treeSpawnDistance = 5;
+    [SerializeField] private float minTreeSizeFactor;
+    [SerializeField] private float maxTreeSizeFactor;
+
+    // from 135 (0 degree) to 255 in steps of 24
+    private const int ColdTreeMaxTemp = 159;
+    private const int FreshTreeMaxTemp = 183;
+    private const int NormalTreeMaxTemp = 207;
+    private const int WarmTreeMaxTemp = 231;
+
+    public void GenerateTrees()
+    {
+        var halfTreeSpawnDistance = treeSpawnDistance / 2;
+        var treeSpawnDistanceSquared = treeSpawnDistance * treeSpawnDistance;
+        var mapSize = MapExtractor.Instance.points;
+        
+        var vegetationMap = MapExtractor.Instance.vegetation;
+        var temperatureMap = MapExtractor.Instance.climate;
+        var heightMap = MapExtractor.Instance.heightMap;
+        for (var x = halfTreeSpawnDistance; x < mapSize; x += treeSpawnDistance)
+        {
+            for (var y = halfTreeSpawnDistance; y < mapSize; y += treeSpawnDistance)
+            {
+                var surroundingVegetationSum = 0;
+
+                for (var checkX = x - halfTreeSpawnDistance; checkX < x + halfTreeSpawnDistance; checkX++)
+                {
+                    for (var checkY = y - halfTreeSpawnDistance; checkY < y + halfTreeSpawnDistance; checkY++)
+                    {
+                        surroundingVegetationSum += vegetationMap[checkX, checkY];    
+                    }
+                }
+                var vegetationAverage = surroundingVegetationSum / treeSpawnDistanceSquared;
+                var vegetationValue = Mathf.InverseLerp(0, 15, vegetationAverage);
+                if (Random.Range(0.3f, 1f) > vegetationValue)
+                    continue;
+
+                var treeWorldX = x + Random.Range(-1, 1);
+                var treeWorldZ = -y + Random.Range(-1, 1);
+                if (vegetationMap[treeWorldX, - treeWorldZ] <= 1)
+                    continue;
+                
+                var treeWorldPosition = new Vector3(treeWorldX, heightMap[x, y] * MapExtractor.Instance.mapHeightMultiplier, treeWorldZ) - new Vector3(0.5f, 0, -0.5f) * MapExtractor.Instance.chunkSize;
+                var temperature = temperatureMap[treeWorldX, -treeWorldZ];
+                var treePrefab = temperature switch
+                {
+                    <= ColdTreeMaxTemp => coldTreePrefabs[Random.Range(0, coldTreePrefabs.Length)],
+                    <= FreshTreeMaxTemp => freshTreePrefabs[Random.Range(0, freshTreePrefabs.Length)],
+                    <= NormalTreeMaxTemp => normalTreePrefabs[Random.Range(0, normalTreePrefabs.Length)],
+                    <= WarmTreeMaxTemp => warmTreePrefabs[Random.Range(0, warmTreePrefabs.Length)],
+                    _ => hotTreePrefabs[Random.Range(0, hotTreePrefabs.Length)]
+                };
+                var newTree = Instantiate(treePrefab, treeWorldPosition, Quaternion.Euler(0, Random.Range(0, 360), 0));
+                newTree.transform.localScale *= Random.Range(minTreeSizeFactor, maxTreeSizeFactor);
+            }
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (treeSpawnDistance % 2 == 0)
+            treeSpawnDistance = 5;
+    }
+}

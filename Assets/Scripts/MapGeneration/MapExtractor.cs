@@ -23,9 +23,9 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
+    public int chunkSize = 240;
     public int points = 2870;
     private int totalPoints;
-    private int chunkSize = 240;
     private int chunkCountRoot = 12;
     [SerializeField] private MapFileLocation SO_fileLoc;
     
