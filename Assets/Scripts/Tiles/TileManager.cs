@@ -249,14 +249,14 @@ public class TileManager : MonoBehaviour
 
     public List<Vector2> getWorldPositionOfTile(Vector3Int gridPos)
     {
-        var cellIndexX = 14;
-        var cellIndexY = 16;
+        var cellIndexX = 11;        // 14
+        var cellIndexY = 12;        // 16
 
-        var chunkOffsetX = 4;
-        var chunkOffsetY = -3;
+        var chunkOffsetX = 6;       // 4
+        var chunkOffsetY = -5;   // -3
         
-        var offsetX = 3;
-        var offsetY = -2;
+        var offsetX = 4;            // 3
+        var offsetY = -3;        // -2
         
         var cellPosWithOffset = new Vector2(gridPos.x + offsetX, gridPos.y + offsetY);
         var flooredCellPos = new Vector2((int)Math.Floor(cellPosWithOffset.x / cellIndexX), (int)Math.Floor(cellPosWithOffset.y / cellIndexY));
@@ -264,7 +264,7 @@ public class TileManager : MonoBehaviour
         var hitChunk = new List<Vector2>();
         
         hitChunk.Add(new Vector2(flooredCellPos.x + chunkOffsetX, Math.Abs(flooredCellPos.y + chunkOffsetY)));
-
+        
         if (cellPosWithOffset.x % cellIndexX == 0)
             hitChunk.Add(new Vector2(flooredCellPos.x - 1 + chunkOffsetX,Math.Abs(flooredCellPos.y + chunkOffsetY)));
         

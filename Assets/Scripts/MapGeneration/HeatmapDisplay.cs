@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Events;
 using Terrain;
 using UI;
-using Unity.Jobs;
 using UnityEngine;
 using Utilities;
 
@@ -148,7 +147,9 @@ namespace MapGeneration
             foreach (var pos in chunkPos)
             {
                 var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
-                _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+                
+                if (colorMap != null)
+                    _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
             }
             
             if (_currentMapOverlay == overlay)
@@ -176,11 +177,17 @@ namespace MapGeneration
         private async Task ProcessSingleChunk(Vector2 pos, MapDisplay.MapOverlay overlay)
         {
             var colorMap = await OnSingleHeatmapOnChunk(pos, overlay);
-            _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
+
+            if (colorMap != null)
+                _maps[overlay][pos] = TextureGenerator.TextureFromColorMap(colorMap, _chunkSize);
         }
         
-        private async Task<Color[]> OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
+
+        private async Task<Color[]?> OnSingleHeatmapOnChunk(Vector2 chunk, MapDisplay.MapOverlay overlay)
         {
+            if (!_tileDict.ContainsKey(chunk))
+                return null;
+            
             var colorMap = new Color[_chunkSize * _chunkSize];
             var tileChunk = _tileDict[chunk];
 
