@@ -19,7 +19,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] private bool WATERDEBUG;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    public bool boatsUnlocked = false;
+    [NonSerialized] public bool boatsUnlocked = false;
     private float waterTravelCost = 50;
     private void Awake()
     {

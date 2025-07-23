@@ -80,7 +80,7 @@ public class NPCMovement : MonoBehaviour
             {
                 transform.GetChild(i).gameObject.SetActive(true);
             }
-            GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
+            GameEvents.Civilization.OnStartWalking?.Invoke(gameObject);
         }
     }
     #endregion
@@ -117,7 +117,7 @@ public class NPCMovement : MonoBehaviour
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
         
-        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
+        GameEvents.Civilization.OnStartWalking?.Invoke(gameObject);
 
         while (path.Count > 0)
         {
@@ -138,7 +138,7 @@ public class NPCMovement : MonoBehaviour
             yield return null;
         }
         
-        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
+        GameEvents.Civilization.OnStopWalking?.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
         transform.position = destination;
         
@@ -163,7 +163,7 @@ public class NPCMovement : MonoBehaviour
             
             var cost = TM.GetTravelCost(gridPos);
             movementSpeed = Math.Max(1, maxSpeed - cost/10);
-
+            
             transform.rotation = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
             transform.position = ME.AdjustCoordsForHeight(position);
@@ -178,7 +178,7 @@ public class NPCMovement : MonoBehaviour
                 // trigger swimming only in civis, not in saviour 
                 if (TryGetComponent<Civilization>(out var NaN))
                 {
-                    GameEvents.Civilization.OnSwim.Invoke(civi.gameObject, 
+                    GameEvents.Civilization.OnSwim?.Invoke(civi.gameObject, 
                         !TM.boatsUnlocked && TM.IsOcean(TM.WorldToCell(p)));
                 }
             }

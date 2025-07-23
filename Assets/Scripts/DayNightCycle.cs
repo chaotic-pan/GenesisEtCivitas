@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DayNightCycle : MonoBehaviour
 {
-    [SerializeField] private GameObject light;
+    [SerializeField] private GameObject sun;
     [SerializeField] private float dayLengthInSeconds = 600f; // 10 irl minutes per day
     [SerializeField] private float speed = 1;
     [SerializeField] private bool debugMode;
@@ -72,6 +72,6 @@ public class DayNightCycle : MonoBehaviour
         
         if (_currentSunAngle >= 360f) _currentSunAngle -= 360f;
 
-        light.transform.rotation = Quaternion.AngleAxis(_currentSunAngle, Vector3.right);
+        sun.transform.rotation = Quaternion.AngleAxis(_currentSunAngle, Vector3.right);
     }
 }
