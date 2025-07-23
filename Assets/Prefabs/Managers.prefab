@@ -93,8 +93,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2f2b1add88527847b8229320fc613ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  light: {fileID: 0}
-  dayLengthInSeconds: 600
+  sun: {fileID: 0}
+  dayLengthInSeconds: 30
   speed: 1
   debugMode: 0
   GameOverScreen: {fileID: 0}
