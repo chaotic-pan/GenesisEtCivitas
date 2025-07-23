@@ -246,7 +246,7 @@ namespace Player
 				var zoomDelta = _scrollMouseInput * heightMultiplier * zoomSpeed * Time.deltaTime;
 				
 				var zoomPos = zoomDirection * zoomDelta;
-				_cinemachineFollowTarget.y = Mathf.Clamp(_cinemachineFollowTarget.y + zoomDelta, minZoom, maxZoom);
+				_cinemachineFollowTarget.y = Mathf.Clamp(_cinemachineFollowTarget.y - zoomDelta, minZoom, maxZoom);
 				transform.position += zoomPos;
 			}
 

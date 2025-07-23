@@ -3,6 +3,7 @@ using Events;
 using Models;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -19,12 +20,14 @@ namespace UI
         {
             GameEvents.Civilization.OnCivilizationSpawn += OnCivilizationSpawn;
             GameEvents.Civilization.OnMessiahSpawn += RemoveCivilization;
+            GameEvents.Civilization.OnCityFounded += OnCivilizationSettled;
         }
         
         private void OnDestroy()
         {
             GameEvents.Civilization.OnCivilizationSpawn -= OnCivilizationSpawn;
             GameEvents.Civilization.OnMessiahSpawn -= RemoveCivilization;
+            GameEvents.Civilization.OnCityFounded -= OnCivilizationSettled;
         }
 
         private void RemoveCivilization(GameObject messiah, GameObject npcModelObject)
@@ -43,6 +46,13 @@ namespace UI
             
             civModel.GetComponent<CivMenuRow>().Initialize(npcModel);
             _civRows.Add(npcModel,  civModel.GetComponent<CivMenuRow>());
+        }
+        
+        private void OnCivilizationSettled(GameObject npcModelObject)
+        {
+            var npcModel = npcModelObject.GetComponent<NPC>()._npcModel;
+            var civRow = _civRows[npcModel].gameObject;
+            civRow.transform.GetChild(0).GetComponent<Image>().enabled = true;
         }
 
         public void OnToggleMenu()

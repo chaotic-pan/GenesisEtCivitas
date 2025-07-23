@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Events;
 using Models;
 using Player.Abilities;
 using Player.Skills;
@@ -46,6 +47,9 @@ namespace Player
                     CancelAbility();
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.I))
+                GameEvents.InfluencePoints.GainInfluencePoints(100);
         }
 
         private void HandleTileClick()

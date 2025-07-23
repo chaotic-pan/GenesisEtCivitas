@@ -207,6 +207,8 @@ public class TileManager : MonoBehaviour
         {
             tile.travelCost = waterTravelCost;
         }
+
+        UIEvents.UIMap.OnUpdateAllHeatmapsOfType(MapDisplay.MapOverlay.Travelcost);
         
         // TODO update all chunks
         // UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(

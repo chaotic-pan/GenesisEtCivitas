@@ -33,6 +33,8 @@ namespace UI
             outline.enabled = false;
             img.sprite = availableImg;
             img.color = skill.uiColor;
+            var icon = transform.GetChild(0).GetComponent<Image>();
+            icon.sprite = skill.icon;
         }
 
         private void UpdateSkillItem(PlayerSkillSet skillSet)
