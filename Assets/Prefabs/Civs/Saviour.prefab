@@ -140,7 +140,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 50
   rangeRadius: 20
-  map: {fileID: 0}
   DEBUG_PathBreadcrumbs: 0
 --- !u!114 &6309690029069101142
 MonoBehaviour:
@@ -298,7 +297,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a5cb27a8eb0be7442b98734105c0c822, type: 2}
+  - {fileID: 2100000, guid: b19ec5c63154b3a4a82f6997e62e5cf0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

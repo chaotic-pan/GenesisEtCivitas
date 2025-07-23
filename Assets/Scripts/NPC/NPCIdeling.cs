@@ -117,7 +117,6 @@ class NPCIdeling : MonoBehaviour
         
         GameEvents.Civilization.OnStartWalking?.Invoke(civi);
         var position = civi.transform.position;
-        var swim = false;
         
         while (Vector3.Distance(position, destination) > 0.1f)
         {
