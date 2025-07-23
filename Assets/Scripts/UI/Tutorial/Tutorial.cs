@@ -12,13 +12,15 @@ namespace UI.Tutorial
     
         private bool _requiresNpcClick;
         private bool _requiresSkillBuy;
+        private bool _requiresBaseSkillBuy;
         private bool _requiresSkillOpen;
         private bool _requiresSkillUse;
 
         public void Initialize()
         {
-            if (TutorialManager.HasTutorial)
-                gameObject.SetActive(true);
+            if (!TutorialManager.HasTutorial) return;
+            
+            gameObject.SetActive(true);
         }
     
         private void Awake()
@@ -41,15 +43,20 @@ namespace UI.Tutorial
         
             UIEvents.UIOpen.OnBuySkill += () =>
             {
-                if (_currentScreen != 10) return;
-            
-                _requiresSkillBuy = false;
-                Advance();
+                if (_currentScreen == 10)
+                {
+                    _requiresBaseSkillBuy = false;
+                    Advance();
+                } else if (_currentScreen == 11)
+                {
+                    _requiresSkillBuy = false;
+                    Advance();
+                }
             };
         
             UIEvents.UIOpen.OnUseSkill += () =>
             {
-                if (_currentScreen != 11) return;
+                if (_currentScreen != 12) return;
             
                 _requiresSkillUse = false;
                 Advance();
@@ -76,15 +83,20 @@ namespace UI.Tutorial
         
             UIEvents.UIOpen.OnBuySkill -= () =>
             {
-                if (_currentScreen != 10) return;
-            
-                _requiresSkillBuy = false;
-                Advance();
+                if (_currentScreen == 10)
+                {
+                    _requiresBaseSkillBuy = false;
+                    Advance();
+                } else if (_currentScreen == 11)
+                {
+                    _requiresSkillBuy = false;
+                    Advance();
+                }
             };
         
-            UIEvents.UIOpen.OnUseSkill += () =>
+            UIEvents.UIOpen.OnUseSkill -= () =>
             {
-                if (_currentScreen != 11) return;
+                if (_currentScreen != 12) return;
             
                 _requiresSkillUse = false;
                 Advance();
@@ -98,7 +110,7 @@ namespace UI.Tutorial
 
         private void Advance()
         {
-            if (_requiresNpcClick || _requiresSkillOpen || _requiresSkillBuy || _requiresSkillUse) return;
+            if (_requiresNpcClick || _requiresSkillOpen || _requiresSkillBuy || _requiresSkillUse || _requiresBaseSkillBuy) return;
             if (_currentScreen > tutorialScreens.Length - 2)
             {
                 gameObject.SetActive(false);
@@ -117,9 +129,12 @@ namespace UI.Tutorial
                 HandleSkillOpenTutorial();
         
             if (_currentScreen == 10)
+                HandleBaseSkillBuyTutorial();
+            
+            if (_currentScreen == 11)
                 HandleSkillBuyTutorial();
         
-            if (_currentScreen == 11)
+            if (_currentScreen == 12)
                 HandleSkillUseTutorial();
         }
 
@@ -128,6 +143,12 @@ namespace UI.Tutorial
             _requiresSkillUse = true;
         }
 
+        private void HandleBaseSkillBuyTutorial()
+        {
+            GameEvents.InfluencePoints.GainInfluencePoints.Invoke(1000);
+            _requiresBaseSkillBuy = true;
+        }
+        
         private void HandleSkillBuyTutorial()
         {
             _requiresSkillBuy = true;
