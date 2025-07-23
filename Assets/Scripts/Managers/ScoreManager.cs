@@ -65,8 +65,7 @@ namespace Managers
                     finalScore += civ.Belief;
                 }
             }
-
-            _finalScoreText.SetText("Faith Score: " + finalScore);
+            _finalScoreText.SetText("Faith Score: " + finalScore.ToString("0"));
         }
         
         private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints += points;
