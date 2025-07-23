@@ -51,8 +51,7 @@ namespace UI
             UIEvents.UIOpen.OnOpenNpcMenu += OnOpenNpcMenu;
             UIEvents.UIOpen.OnOpenMessiahMenu += _ => OnClose();
             UIEvents.UIOpen.OnOpenSkillTree += _ => OnClose();
-            UIEvents.UIUpdate.OnUpdatePlayerData += CheckChurchCost;
-            UIEvents.UIUpdate.OnUpdatePlayerData += CheckWellCost;
+            UIEvents.UIUpdate.OnUpdatePlayerData += CheckBuildingCost;
             UnityEngine.SceneManagement.SceneManager.sceneUnloaded += CleanupOnSceneChange; // Cleanup because OnDestroy is not called if not enabled
 
             onUnlockWell.onUnlocked += UnlockWell;
@@ -73,8 +72,7 @@ namespace UI
                 onUnlockChurch.onUnlocked -= UnlockChurch;
                 UIEvents.UIOpen.OnOpenMessiahMenu -= _ => OnClose();
                 UIEvents.UIOpen.OnOpenSkillTree -= _ => OnClose();
-                UIEvents.UIUpdate.OnUpdatePlayerData -= CheckChurchCost;
-                UIEvents.UIUpdate.OnUpdatePlayerData -= CheckWellCost;
+                UIEvents.UIUpdate.OnUpdatePlayerData -= CheckBuildingCost;
             }
         }
 
@@ -113,35 +111,13 @@ namespace UI
             model.IsMessiah = true;
             NPC.CheckMessiah.Invoke();
         }
-        public void CheckWellCost(PlayerModel pm)
-        {
-            if (!BuildWellbutton.activeSelf) return;
-            else if (unlockingIPCost > pm.InfluencePoints)
-            {
-                // too expensive
-                BuildWellbutton.GetComponent<Button>().interactable = false;
-                BuildChurchButton.GetComponent<Button>().interactable = false;
-            }
-            else
-            {
-                BuildWellbutton.GetComponent<Button>().interactable = true;
-                BuildChurchButton.GetComponent<Button>().interactable = true;
-            }
-        }
-        public void CheckChurchCost(PlayerModel pm)
+        
+        public void CheckBuildingCost(PlayerModel pm)
         {
             if (!BuildChurchButton.activeSelf) return;
-            if (unlockingIPCost > pm.InfluencePoints)
-            {
-                // too expensive
-                BuildWellbutton.GetComponent<Button>().interactable = false;
-                BuildChurchButton.GetComponent<Button>().interactable = false;
-            }
-            else
-            {
-                BuildWellbutton.GetComponent<Button>().interactable = true;
-                BuildChurchButton.GetComponent<Button>().interactable = true;
-            }
+                BuildChurchButton.GetComponent<Button>().interactable = unlockingIPCost <= pm.InfluencePoints;
+            if (!BuildWellbutton.activeSelf) return;    
+                BuildWellbutton.GetComponent<Button>().interactable = unlockingIPCost <= pm.InfluencePoints;
         }
         public void OnBuildChurch()
         {
@@ -150,7 +126,7 @@ namespace UI
             
             BuildChurchButton.SetActive(false);
             pm.InfluencePoints -= unlockingIPCost;
-            CheckWellCost(pm);
+            CheckBuildingCost(pm);
         }
         
         public void OnBuildWell()
@@ -160,7 +136,7 @@ namespace UI
             
             BuildWellbutton.SetActive(false);
             pm.InfluencePoints -= unlockingIPCost;
-            CheckChurchCost(pm);
+            CheckBuildingCost(pm);
         }
 
         public void OnJumpToCiv()
@@ -209,6 +185,7 @@ namespace UI
             
             civTab.GetComponent<Image>().sprite = tabInactive;
             cityTab.GetComponent<Image>().sprite = tabActive;
+            CheckBuildingCost(pm);
         }
         
         public void UnlockWell()
@@ -216,7 +193,7 @@ namespace UI
             foreach (var build in lockedBuilding.Where(build => build.ToString().Contains("Well")))
             {
                 cityObjects.Add(build);
-                CheckWellCost(pm);
+                CheckBuildingCost(pm);
                 return;
             }
         }
@@ -225,7 +202,7 @@ namespace UI
             foreach (var build in lockedBuilding.Where(build => build.ToString().Contains("Church")))
             {
                 cityObjects.Add(build);
-                CheckChurchCost(pm);
+                CheckBuildingCost(pm);
                 return;
             }
         }
