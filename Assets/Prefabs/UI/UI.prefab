@@ -6140,6 +6140,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4906144299626384558}
     m_Modifications:
+    - target: {fileID: 1433401757891442335, guid: 41d1dd384851f4740ae75f0e4450c14f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3659013684895108677, guid: 41d1dd384851f4740ae75f0e4450c14f, type: 3}
       propertyPath: m_Name
       value: UI_SkillTree
