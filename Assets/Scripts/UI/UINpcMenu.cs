@@ -37,7 +37,7 @@ namespace UI
         [SerializeField] private List<GameObject> lockedBuilding;
         [SerializeField] private Skill onUnlockWell;
         [SerializeField] private Skill onUnlockChurch;
-        [SerializeField] private int unlockingIPCost = 50;
+        [SerializeField] private int unlockingIPCost = 400;
         
         [Header("Buttons")]
         [SerializeField] private GameObject BuildWellbutton;

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abandonedPrefab: {fileID: 8697916058072947503, guid: 2b32cf9f1fb8e5b4c865f5f88e7e03ae, type: 3}
   influencePoints: 5
-  intervalInInGameMinutes: 10
+  intervalInInGameMinutes: 100
 --- !u!1001 &7096021493571361487
 PrefabInstance:
   m_ObjectHideFlags: 0
