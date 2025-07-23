@@ -46,6 +46,7 @@ namespace Events
         public class LifecycleEvents
         {
             public UnityAction OnGameEnd;
+            public UnityAction OnGamePause;
             public UnityAction OnTileManagerFinishedInitializing;
         }
         
