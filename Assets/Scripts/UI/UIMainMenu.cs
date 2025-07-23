@@ -30,6 +30,7 @@ public class UIMainMenu : MonoBehaviour
 
     public void PlayTutorial()
     {
+        // TODO fix
         var tutLoc = mapInput.text.Split("\\").ToList();
         tutLoc.RemoveAt(tutLoc.Count - 1);
         tutLoc.Add("file_new_5.txt");
@@ -39,7 +40,7 @@ public class UIMainMenu : MonoBehaviour
 
     public void onOpenFile()
     {
-        var filePath = EditorUtility.OpenFilePanel("a", "Desktop", "txt");
+        var filePath = EditorUtility.OpenFilePanel("Select World", "Desktop", "world");
         path = filePath;
         var filename = filePath.Split("/");
         mapInput.text = filename[^1];

@@ -109,7 +109,7 @@ public class TileManager : MonoBehaviour
                 if (tile != null)
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
-                    var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
+                    var height = ME.heightMap[p.x, p.y] * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
                         ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
@@ -167,7 +167,7 @@ public class TileManager : MonoBehaviour
     {
         if (dataFromTiles.ContainsKey(coords))
         {
-            float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
+            float height = dataFromTiles[coords].height * MapExtractor.Instance.mapHeightMultiplier;
             height = 0.1f <= height && height <= 0.7f ? 15f : 0;
             return (height/3 + dataFromTiles[coords].animalHostility) / 2;
         }
