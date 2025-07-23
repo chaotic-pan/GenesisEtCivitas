@@ -62,7 +62,7 @@ public class TreeGenerator : MonoBehaviour
                     <= WarmTreeMaxTemp => warmTreePrefabs[Random.Range(0, warmTreePrefabs.Length)],
                     _ => hotTreePrefabs[Random.Range(0, hotTreePrefabs.Length)]
                 };
-                var newTree = Instantiate(treePrefab, treeWorldPosition, Quaternion.Euler(0, Random.Range(0, 360), 0));
+                var newTree = Instantiate(treePrefab, treeWorldPosition, Quaternion.Euler(0, Random.Range(0, 360), 0), transform);
                 newTree.transform.localScale *= Random.Range(minTreeSizeFactor, maxTreeSizeFactor);
             }
         }

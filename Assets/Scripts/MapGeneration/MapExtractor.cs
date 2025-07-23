@@ -137,9 +137,9 @@ public class MapExtractor : MonoBehaviour
     public void GenerateMap()
     {
         // Delete previous map
-        foreach(var chunk in GameObject.FindGameObjectsWithTag("MapChunk"))
+        for (int i = transform.childCount - 1; i >= 0 ; i--)
         {
-            DestroyImmediate(chunk);
+            DestroyImmediate(transform.GetChild(i).gameObject);            
         }
 
         Initialize();
