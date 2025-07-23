@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -25,7 +26,6 @@ public class UILoadingScreen : MonoBehaviour
      [SerializeField] private CanvasGroup loadingPanel;
      [SerializeField] private GameObject creatureFeature;
      
-     [SerializeField] private MapFileLocation mapFileLocation;
      
      private bool _isLoading;
      
@@ -58,21 +58,21 @@ public class UILoadingScreen : MonoBehaviour
           // fade in loading screen
           yield return StartCoroutine(FadeIn());
           
-          // fake start loading 
+          // fake start loading to .1
           var fadeTimer = 1f;
           while (fadeTimer > 0)
           {
                fadeTimer -= Time.deltaTime;
-               loadingSlider.value = .25f + fadeTimer*-.25f;
+               loadingSlider.value = .1f + fadeTimer*-.1f;
                yield return null;
           }
           
-          // load level additively
+          // load level additively .1 - .5
           var asyncLoad = SceneManager.LoadSceneAsync(level, LoadSceneMode.Additive);
           
           while (!asyncLoad.isDone)
           {
-               loadingSlider.value = .25f + asyncLoad.progress * .5f;
+               loadingSlider.value = .1f + asyncLoad.progress * .4f;
                yield return null;
           }
 
@@ -82,7 +82,7 @@ public class UILoadingScreen : MonoBehaviour
           Destroy(mainMenu);
           Destroy(mainMenuCamera);
 
-          // fake end timer + gives Civs a sec to initialize fully
+          // fake end load .5-1 + gives Civs a sec to initialize fully
           fadeTimer = 2f;
           while (fadeTimer > 0)
           {
