@@ -20,15 +20,18 @@ public class TreeGenerator : MonoBehaviour
     private const int NormalTreeMaxTemp = 207;
     private const int WarmTreeMaxTemp = 231;
 
-    public void GenerateTrees()
+    public void GenerateTrees(int points, int[,] vegetation, int[,] climate, float[,]heightMap, float mapHeightMultiplier, int chunkSize)
     {
+        var trees = GameObject.Find("Trees");
+        if (trees != null) DestroyImmediate(trees);
+        trees = new GameObject("Trees");
+        
         var halfTreeSpawnDistance = treeSpawnDistance / 2;
         var treeSpawnDistanceSquared = treeSpawnDistance * treeSpawnDistance;
-        var mapSize = MapExtractor.Instance.points;
+        var mapSize = points;
         
-        var vegetationMap = MapExtractor.Instance.vegetation;
-        var temperatureMap = MapExtractor.Instance.climate;
-        var heightMap = MapExtractor.Instance.heightMap;
+        var vegetationMap = vegetation;
+        var temperatureMap = climate;
         for (var x = halfTreeSpawnDistance; x < mapSize; x += treeSpawnDistance)
         {
             for (var y = halfTreeSpawnDistance; y < mapSize; y += treeSpawnDistance)
@@ -52,7 +55,7 @@ public class TreeGenerator : MonoBehaviour
                 if (vegetationMap[treeWorldX, - treeWorldZ] <= 1)
                     continue;
                 
-                var treeWorldPosition = new Vector3(treeWorldX, heightMap[x, y] * MapExtractor.Instance.mapHeightMultiplier, treeWorldZ) - new Vector3(0.5f, 0, -0.5f) * MapExtractor.Instance.chunkSize;
+                var treeWorldPosition = new Vector3(treeWorldX, heightMap[x, y] * mapHeightMultiplier, treeWorldZ) - new Vector3(0.5f, 0, -0.5f) * chunkSize;
                 var temperature = temperatureMap[treeWorldX, -treeWorldZ];
                 var treePrefab = temperature switch
                 {
@@ -64,6 +67,7 @@ public class TreeGenerator : MonoBehaviour
                 };
                 var newTree = Instantiate(treePrefab, treeWorldPosition, Quaternion.Euler(0, Random.Range(0, 360), 0), transform);
                 newTree.transform.localScale *= Random.Range(minTreeSizeFactor, maxTreeSizeFactor);
+                newTree.transform.SetParent(trees.transform);
             }
         }
     }

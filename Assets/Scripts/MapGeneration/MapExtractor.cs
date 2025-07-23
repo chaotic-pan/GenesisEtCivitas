@@ -45,6 +45,7 @@ public class MapExtractor : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         if (SO_fileLoc.isBuild)
         {
             GenerateMap();
@@ -57,7 +58,6 @@ public class MapExtractor : MonoBehaviour
 
     private void Initialize()
     {
-        Instance = this;
         if (!fileName.Contains(".world")) fileName += ".world";
 
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
@@ -153,7 +153,7 @@ public class MapExtractor : MonoBehaviour
                 heightMap, mapHeightMultiplier, chunkCountRoot, points),
             textures);
         
-        treeGenerator.GenerateTrees();
+        treeGenerator.GenerateTrees(points, vegetation, climate, heightMap, mapHeightMultiplier, chunkSize);
     }
 
     private void CalculateTravelCost()
