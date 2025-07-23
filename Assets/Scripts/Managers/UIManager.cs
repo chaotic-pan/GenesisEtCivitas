@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using Player;
 using UI;
+using UI.Tutorial;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 
@@ -17,12 +18,14 @@ namespace Managers
         
         [SerializeField] private UINpcMenu uiNpcMenu;
         [SerializeField] private UIMessiahMenu uiMessiahMenu;
+        [SerializeField] private Tutorial uiTutorial;
 
 
         private void Awake()
         {
             uiNpcMenu?.Initialize();
             uiMessiahMenu?.Initialize();
+            uiTutorial?.Initialize();
         }
 
         private void Start()

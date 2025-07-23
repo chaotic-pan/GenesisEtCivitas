@@ -632,6 +632,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7167915837803174225}
+  - component: {fileID: 4978678747926640962}
   m_Layer: 5
   m_Name: Tutorial
   m_TagString: Untagged
@@ -671,6 +672,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4978678747926640962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2575260227211276838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f9a24141efe42b083ec63700e68a60a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialScreens:
+  - {fileID: 8907083158703420355}
+  - {fileID: 6625414221271722569}
+  - {fileID: 3650068195789080518}
+  - {fileID: 4331160748325980054}
+  - {fileID: 4370272161044358259}
+  - {fileID: 4685438021586006073}
+  - {fileID: 527175119803607267}
+  - {fileID: 5037741130595529450}
+  - {fileID: 2999318159772826203}
+  - {fileID: 3304689303785814731}
+  - {fileID: 5279467206028268287}
+  - {fileID: 6693081368766936978}
+  - {fileID: 5130910865284110714}
 --- !u!1 &2750966455111076720
 GameObject:
   m_ObjectHideFlags: 0

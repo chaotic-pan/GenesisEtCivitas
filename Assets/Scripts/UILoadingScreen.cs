@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UI.Tutorial;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -40,11 +41,8 @@ public class UILoadingScreen : MonoBehaviour
 
      public void LoadTutorial()
      {
-          Destroy(eventSystem);
-          
-          animManager.SetIsDancing(true);
-          _isLoading = true;
-          StartCoroutine(LoadLevelAsync(tutorialName));
+          TutorialManager.HasTutorial = true;
+          LoadLevel();
      }
      
      private void Update()
