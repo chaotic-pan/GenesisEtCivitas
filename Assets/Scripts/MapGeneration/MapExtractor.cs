@@ -23,6 +23,8 @@ public class MapExtractor : MonoBehaviour
     [SerializeField] private TreeGenerator treeGenerator;
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
+    [SerializeField] private Color[] colorsByVegetationValue;
+    [SerializeField] private Color[] colorsBySoilType;
     //1913*1913 Punkte für die Gesamtmap
     public int chunkSize = 240;
     public int points = 2870;
@@ -194,19 +196,14 @@ public class MapExtractor : MonoBehaviour
                 var offsetY = coord.y + chunkYOffset;
                 var colorMapCoordinate = coord.y * chunkSize + coord.x;
 
-                var currentHeight = noiseMap[offsetX, offsetY];
-                
-                if(walkable[offsetX, offsetY] == 0)
+                var vegetationValue = vegetation[offsetX, offsetY]; 
+                if (vegetationValue > 7)
                 {
-                    colorMap[colorMapCoordinate] = regions[0].color;
+                    colorMap[colorMapCoordinate] = colorsByVegetationValue[vegetationValue];
                     continue;
                 }
-                if (!regions.Any(region => region.height > currentHeight))
-                    continue;
-                var matchingRegion = regions.First(region => region.height > currentHeight);
-
-                colorMap[colorMapCoordinate] = matchingRegion.color * 1f;
-
+                
+                colorMap[colorMapCoordinate] = colorsBySoilType[(int)soil[offsetX, offsetY]];
             }
 
             colorMaps.Add(new Vector2(chunkCoord.x, chunkCoord.y), colorMap);
