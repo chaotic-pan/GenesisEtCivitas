@@ -27,6 +27,7 @@ public class NPCMovement : MonoBehaviour
     {
         
         transform.position = ME.AdjustCoordsForHeight(transform.position);
+        rot = transform.rotation;
     }
     
     # region DEBUG
@@ -144,7 +145,8 @@ public class NPCMovement : MonoBehaviour
         
         onReached?.Invoke(gameObject);
     }
-    
+
+    private Quaternion rot;
     IEnumerator MovetoTarget(Vector3 target)
     {
         DEBUG_spawnBreadcrumbs(target,2);
@@ -155,7 +157,7 @@ public class NPCMovement : MonoBehaviour
         {
             var direction = (target - position).normalized;
             var lookRotation = Quaternion.LookRotation(direction);
-            var rotation = Quaternion.LerpUnclamped(transform.rotation, lookRotation, 
+            var rotation = Quaternion.LerpUnclamped(rot, lookRotation, 
                 Time.deltaTime);
             
             var gridPos = TM.WorldToCell(position);
@@ -165,8 +167,11 @@ public class NPCMovement : MonoBehaviour
             movementSpeed = Math.Max(1, maxSpeed - cost/10);
             
             transform.rotation = rotation;
+            rot = rotation;
             position += transform.forward * (movementSpeed * Time.deltaTime);
             transform.position = ME.AdjustCoordsForHeight(position);
+            transform.rotation = Quaternion.identity;
+            
             
             // set Civi to world height + trigger swimming
             for (int i = transform.childCount; i > 1; i--)
@@ -174,6 +179,7 @@ public class NPCMovement : MonoBehaviour
                 var civi = transform.GetChild(i - 1);
                 var p = civi.position;
                 civi.position = new Vector3(p.x,ME.GetHeightByWorldCoord(p) , p.z);
+                civi.rotation = rotation;
                 
                 // trigger swimming only in civis, not in saviour 
                 if (TryGetComponent<Civilization>(out var NaN))

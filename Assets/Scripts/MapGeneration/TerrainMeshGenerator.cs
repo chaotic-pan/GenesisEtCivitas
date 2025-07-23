@@ -15,7 +15,7 @@ namespace Terrain
         const float topLeftX = (width - 1) / -2f;
         const float topLeftZ = (height - 1) / 2f;
         
-        public static Dictionary<Vector2, MeshData> GenerateMesh(float[,] heightMap, float heightMultiplier, AnimationCurve meshHeightCurve, int nChunks, int points)
+        public static Dictionary<Vector2, MeshData> GenerateMesh(float[,] heightMap, float heightMultiplier, int nChunks, int points)
         {
            
             
