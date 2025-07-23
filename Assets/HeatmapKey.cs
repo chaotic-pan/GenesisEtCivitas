@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using MapGeneration;
 using Terrain;
 using TMPro;
@@ -33,7 +34,11 @@ public class HeatmapKey : MonoBehaviour
     private void OnChangeMap(MapDisplay.MapOverlay overlay)
     {
         if (overlay == MapDisplay.MapOverlay.Terrain)
+        {
             gameObject.SetActive(false);
+            return;
+        }
+           
         
         var heatmap = HeatmapDisplay.Instance._heatmapDict[overlay];
 
