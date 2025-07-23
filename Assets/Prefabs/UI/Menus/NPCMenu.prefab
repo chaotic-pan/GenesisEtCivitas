@@ -898,7 +898,7 @@ MonoBehaviour:
   - {fileID: 1841846149354058870}
   onUnlockWell: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
   onUnlockChurch: {fileID: 11400000, guid: d0b26378431080345bbd2ca530f9be1a, type: 2}
-  unlockingIPCost: 50
+  unlockingIPCost: 400
   BuildWellbutton: {fileID: 0}
   BuildChurchButton: {fileID: 0}
 --- !u!1 &1229143434515906169
@@ -2790,7 +2790,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Build Church - 50 IP
+  m_text: Build Church - 400 IP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3328,7 +3328,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build Well - 50 IP
+  m_text: 'Build Well - 400 IP
 
 '
   m_isRightToLeft: 0
