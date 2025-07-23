@@ -13,7 +13,7 @@ public class UILoadingScreen : MonoBehaviour
      [SerializeField] private string levelName;
      [SerializeField] private string tutorialName;
      
-     [Header("Creature feature")]
+     [Header("Creature Feature")]
      [SerializeField] private AnimManager animManager;
      [SerializeField] private GameObject cameraContainer;
      

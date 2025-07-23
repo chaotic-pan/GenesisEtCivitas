@@ -2181,16 +2181,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5228846297418329146}
-  m_LocalRotation: {x: -0, y: -0, z: -0.9344323, w: -0.35614088}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7796043, w: 0.6262724}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9110066969739376852}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 138.273}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 102.449}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -724, y: -424}
+  m_AnchoredPosition: {x: -733, y: -485}
   m_SizeDelta: {x: -1858.0453, y: -1008.0375}
   m_Pivot: {x: 0.5000002, y: 0.49999952}
 --- !u!222 &862828107306439022
@@ -2602,7 +2602,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 138.273}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -65, y: 176}
+  m_AnchoredPosition: {x: -72, y: 156}
   m_SizeDelta: {x: -1858.0453, y: -1008.0375}
   m_Pivot: {x: 0.5000002, y: 0.49999952}
 --- !u!222 &8907876083402280927
@@ -3527,7 +3527,7 @@ MonoBehaviour:
     are content and not dead!
 
 
-    Press Escape to go back to the main menu.'
+    No pressure though, have fun!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3632,7 +3632,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 252.07}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 610, y: 63}
+  m_AnchoredPosition: {x: 635, y: -132}
   m_SizeDelta: {x: -1858.0453, y: -1008.0375}
   m_Pivot: {x: 0.5000002, y: 0.49999952}
 --- !u!222 &7820075154569400810
