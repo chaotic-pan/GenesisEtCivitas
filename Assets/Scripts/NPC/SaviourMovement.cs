@@ -80,7 +80,7 @@ public class SaviourMovement : MonoBehaviour
         // one pop to remove first path point which is the current pos
         if (!path.TryPop(out var pather)) yield break;
         
-        GameEvents.Civilization.OnStartWalking.Invoke(gameObject);
+        GameEvents.Civilization.OnStartWalking?.Invoke(gameObject);
 
         while (path.Count > 0)
         {
@@ -107,7 +107,7 @@ public class SaviourMovement : MonoBehaviour
             yield return null;
         }
         
-        GameEvents.Civilization.OnStopWalking.Invoke(gameObject);
+        GameEvents.Civilization.OnStopWalking?.Invoke(gameObject);
         DEBUG_clearBreadcrumbs();
         transform.position = destination;
 

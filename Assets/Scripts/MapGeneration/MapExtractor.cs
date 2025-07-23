@@ -293,7 +293,7 @@ public class MapExtractor : MonoBehaviour
             9 => SoilType.Riverbed,
             10 => SoilType.Rock,
             11 => SoilType.TerraRossa,
-            12 => SoilType.Wetland
+            _ => SoilType.Wetland
         };
     } 
     

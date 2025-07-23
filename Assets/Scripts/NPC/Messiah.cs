@@ -37,7 +37,7 @@ public class Messiah : MonoBehaviour
     {
         if (npc == npcMove.gameObject && civ != null)
         { 
-            GameEvents.Civilization.OnPreach.Invoke(gameObject);
+            GameEvents.Civilization.OnPreach?.Invoke(gameObject);
             ChangeCiviScores();
         }
     }
