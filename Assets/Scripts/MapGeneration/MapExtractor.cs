@@ -9,17 +9,18 @@ using MapGeneration.Maps;
 using Terrain;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Utilities;
 
 [ExecuteInEditMode]
 public class MapExtractor : MonoBehaviour
 {
-
     public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
+    [SerializeField] private TreeGenerator treeGenerator;
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
@@ -44,8 +45,6 @@ public class MapExtractor : MonoBehaviour
 
     private void Awake()
     {
-        
-        Instance = this;
         if (SO_fileLoc.isBuild)
         {
             GenerateMap();
@@ -53,11 +52,12 @@ public class MapExtractor : MonoBehaviour
         }
         
         Initialize();
-        
+        treeGenerator = GetComponent<TreeGenerator>();
     }
 
     private void Initialize()
     {
+        Instance = this;
         if (!fileName.Contains(".world")) fileName += ".world";
 
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
@@ -152,6 +152,8 @@ public class MapExtractor : MonoBehaviour
             TerrainMeshGenerator.GenerateMesh(
                 heightMap, mapHeightMultiplier, chunkCountRoot, points),
             textures);
+        
+        treeGenerator.GenerateTrees();
     }
 
     private void CalculateTravelCost()

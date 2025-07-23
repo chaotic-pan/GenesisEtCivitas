@@ -17,6 +17,7 @@ namespace EditorScripts
             {
                 var mapGen = target as MapExtractor;
                 var heatmapGen = mapGen.GetComponent<HeatmapGenerator>();
+                var treeGen = mapGen.GetComponent<TreeGenerator>();
                 var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
                 
                 mapGen.GenerateMap();
