@@ -44,4 +44,4 @@ MonoBehaviour:
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   min: 0
-  max: 50
+  max: 15
