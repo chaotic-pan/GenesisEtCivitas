@@ -115,7 +115,6 @@ public class MapExtractor : MonoBehaviour
         {
             heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
             ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
-            vegetation[coord.x, coord.y] = (int)(oreVegetationMap[i] >> 4) & 0xF;
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
@@ -126,6 +125,7 @@ public class MapExtractor : MonoBehaviour
             soil[coord.x, coord.y] = currentSoil;
             walkable[coord.x, coord.y] = currentSoil is SoilType.Seafloor or SoilType.Riverbed ? 0 : 1;
             
+            vegetation[coord.x, coord.y] = walkable[coord.x, coord.y]==1? (int)(oreVegetationMap[i] >> 4) & 0xF : 0;
             water[coord.x, coord.y] = walkable[coord.x, coord.y]==1? (int)waterMap[i] : 0;
             
             i++;
