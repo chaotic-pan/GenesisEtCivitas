@@ -40,6 +40,7 @@ namespace MapGeneration
             UIEvents.UIMap.OnOpenHeatmap += OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
             UIEvents.UIMap.OnUpdateMultipleHeatmapChunks += UpdateMultipleHeatMapChunks;
+            UIEvents.UIMap.OnUpdateAllHeatmapsOfType += UpdateAllHeatmapsOfType;
             GameEvents.Lifecycle.OnTileManagerFinishedInitializing += LoadTextures;
         }
 
@@ -48,6 +49,7 @@ namespace MapGeneration
             UIEvents.UIMap.OnOpenHeatmap -= OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks -= UpdateHeatMapChunks;
             UIEvents.UIMap.OnUpdateMultipleHeatmapChunks -= UpdateMultipleHeatMapChunks;
+            UIEvents.UIMap.OnUpdateAllHeatmapsOfType -= UpdateAllHeatmapsOfType;
             GameEvents.Lifecycle.OnTileManagerFinishedInitializing -= LoadTextures;
         }
 
@@ -171,6 +173,24 @@ namespace MapGeneration
             await Task.WhenAll(tasks);
             
             if (overlays.Contains(_currentMapOverlay))
+                mapDisplay.ReplaceTexture(_maps[_currentMapOverlay]);
+        }
+        
+        private async void UpdateAllHeatmapsOfType(MapDisplay.MapOverlay overlay)
+        {
+            var tasks = new List<Task>();
+            
+            for (var y = 2; y < ChunkCount - 2; y++)
+            {
+                for (var x = 2; x < ChunkCount - 2; x++)
+                {
+                    tasks.Add(ProcessSingleChunk(new Vector2(x, y), overlay));
+                }
+            }
+            
+            await Task.WhenAll(tasks);
+            
+            if (overlay == _currentMapOverlay)
                 mapDisplay.ReplaceTexture(_maps[_currentMapOverlay]);
         }
 
