@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Events;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 class NPCIdeling : MonoBehaviour
 {
-    public GameObject civiPrefab;
-
+    private enum IdleState
+    {
+        NaN, Wandering, Building, Praying
+    }
+    
     private Civilization civ;
     private Vector3 housePos;
-    private List<GameObject> idles = new();
+    private Dictionary<GameObject, IdleState> idles = new();
     private Transform focusPoint;
     private MapExtractor ME = MapExtractor.Instance;
     
@@ -23,7 +29,9 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnCivilizationMerge += OnCityMerge;
         GameEvents.Civilization.OnCivilizationSplit += OnCivSplit;
         GameEvents.Civilization.CreateBuilding += OnCreateBuilding;
+        GameEvents.Civilization.OnCivilizationDeath += OnTriggerDeath;
     }
+
     private void OnDisable()
     { 
         GameEvents.Civilization.OnCityFounded -= OnCityFounded;
@@ -32,6 +40,7 @@ class NPCIdeling : MonoBehaviour
         GameEvents.Civilization.OnCivilizationMerge -= OnCityMerge;
         GameEvents.Civilization.OnCivilizationSplit -= OnCivSplit;
         GameEvents.Civilization.CreateBuilding -= OnCreateBuilding;
+        GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
     }
 
     public void OnCityFounded(GameObject civObject)
@@ -44,9 +53,9 @@ class NPCIdeling : MonoBehaviour
         for (int i = transform.childCount; i > 1; i--)
         {
             var civi = transform.GetChild(i - 1);
-            idles.Add(civi.gameObject);
+            idles.Add(civi.gameObject, IdleState.NaN);
         }
-        SurroundFocusPoint(city._house.gameObject, StartBuild, 5);   
+        SurroundFocusPoint(city._house.gameObject, StartBuild, 5, IdleState.Building);   
     }
     public void OnCityMerge(GameObject newCivObject, GameObject oldCivObject)
     {
@@ -57,8 +66,8 @@ class NPCIdeling : MonoBehaviour
         { 
             var civi = newCivObject.transform.GetChild(i - 1);
             civi.SetParent(transform);
-            idles.Add(civi.gameObject);
-            StartCoroutine(Walk(civi.gameObject, housePos, Despawn));
+            idles.Add(civi.gameObject, IdleState.NaN);
+            EndIdleAction(civi.gameObject);
         }
         
         Destroy(newCivObject);
@@ -75,17 +84,31 @@ class NPCIdeling : MonoBehaviour
         }
     }
     
-    IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached)
+    IEnumerator SpawnAndGo(List<Vector3> destinations, Action<GameObject> onReached, IdleState state)
     {
         for (int i = 0; i < idles.Count; i++)
         {
             if (i >= destinations.Count) yield break;
-            var civi = idles[i];
+            var civi = idles.ElementAt(i).Key;
             if (civi == null) continue;
             civi.SetActive(true);
-            StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
+            
+            var switchChance =  idles[civi] switch
+            {
+                IdleState.Building => 50,
+                IdleState.Praying => 20,
+                _ => 100
+            };
+            var random = Random.Range(0, 100);
+            
+            if (switchChance >= random)
+            {
+                idles[civi] = state;
+                StartCoroutine(Walk(civi, ME.AdjustCoordsForHeight(destinations[i]), onReached));
+            }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f);         
+             
         }
     }
     IEnumerator Walk(GameObject civi, Vector3 destination, Action<GameObject> onReached)
@@ -94,20 +117,20 @@ class NPCIdeling : MonoBehaviour
         
         GameEvents.Civilization.OnStartWalking?.Invoke(civi);
         var position = civi.transform.position;
+        var swim = false;
         
         while (Vector3.Distance(position, destination) > 0.1f)
         {
-            if (civi == null)
-            {
-                onReached?.Invoke(civi);
-                yield break;
-            }
+            if (civi == null) yield break;
+            
             Vector3 direction = (destination - position).normalized;
             var newPos = position + direction * (10f * Time.deltaTime);
             civi.transform.position = ME.AdjustCoordsForHeight(newPos);
             civi.transform.rotation = Quaternion.LookRotation((newPos - position).normalized);
             position = newPos;
-           
+            GameEvents.Civilization.OnSwim?.Invoke(civi, !ME.IsWalkable(position));
+            
+
             yield return null;
         }
         
@@ -116,29 +139,40 @@ class NPCIdeling : MonoBehaviour
         onReached?.Invoke(civi);
     }
     
-    IEnumerator WaitAndEnd(GameObject gObject, float wait)
+    IEnumerator WaitAndEnd(GameObject civiObject, float wait)
     {
         yield return new WaitForSeconds(wait);
-        EndAllIdleAction(gameObject);
+        EndIdleAction(civiObject);
     }
-    private void EndAllIdleAction(GameObject gObject)
+    private void EndIdleAction(GameObject civi)
     {
-        if (gObject == null || transform.position != gObject.transform.position) return;
+        if (civi == null) return;
         
         focusPoint = null;
-        foreach (var civi in idles)
+
+        var i = idles.Keys.ToList().IndexOf(civi);
+        var chance = Random.Range(0, 100);
+        if (i == 0 || 50 >= chance)
         {
+            idles[civi] = IdleState.Wandering;
+            var wanderPos = GetWanderPos(civi);
+            StartCoroutine(Walk(civi, wanderPos, StartWander));
+        }
+        else
+        {
+            idles[civi] = IdleState.NaN;
             StartCoroutine(Walk(civi, housePos, Despawn));
         }
+            
     }
     private void Despawn(GameObject civi)
     {
         if (civi != null) civi.SetActive(false);
     }
     
-    private void SurroundFocusPoint(GameObject focusObject,  Action<GameObject> onReached, float distance)
+    private void SurroundFocusPoint(GameObject focusObject,  Action<GameObject> onReached, float distance, IdleState state)
     {
-        this.focusPoint = focusObject.transform;
+        focusPoint = focusObject.transform;
         var focusPos = focusObject.transform.position;
         
         List<Vector3> audience = new();
@@ -162,34 +196,73 @@ class NPCIdeling : MonoBehaviour
         
         end:
         StopAllCoroutines();
-        StartCoroutine(SpawnAndGo(audience, onReached));
+        StartCoroutine(SpawnAndGo(audience, onReached, state));
     }
     
     
     private void OnPreach(GameObject saviour)
     {
         if (transform.position != saviour.transform.position) return;
-        SurroundFocusPoint(saviour, Listen, 2);
+        SurroundFocusPoint(saviour, Listen, 2, IdleState.Praying);
     }
     private void Listen(GameObject go)
     {
-        GameEvents.Civilization.OnListen.Invoke(go);
+        GameEvents.Civilization.OnListen?.Invoke(go);
     }
     
     private void OnPreachEnd(GameObject gObject) 
     {
-        GameEvents.Civilization.OnPray.Invoke(gameObject);
+        GameEvents.Civilization.OnPray?.Invoke(gameObject);
         StartCoroutine(WaitAndEnd(gObject, 5));
     }
 
     private void OnCreateBuilding(GameObject civObject, GameObject building)
     {
         if (civObject != gameObject) return;
-        SurroundFocusPoint(building, StartBuild, 5);
+        SurroundFocusPoint(building, StartBuild, 5, IdleState.Building);
     }
     private void StartBuild(GameObject civi)
     {
-        GameEvents.Civilization.OnBuild.Invoke(civi);
+        GameEvents.Civilization.OnBuild?.Invoke(civi);
         StartCoroutine(WaitAndEnd(civi,15));
+    }
+
+    private Vector3 GetWanderPos(GameObject civi)
+    {
+        if (this == null) return Vector3.zero;
+        var cityPos = transform.position;
+
+        var x = cityPos.x + Random.Range(-100, 100);
+        var z = cityPos.z + Random.Range(-100, 100);
+
+        return ME.AdjustCoordsForHeight(new Vector3(x, 0, z));
+    }
+
+    private void StartWander(GameObject civi)
+    {
+        if (idles[civi] == IdleState.Wandering)
+        {
+            StartCoroutine(Wandering(civi));
+        }
+    }
+    
+    IEnumerator Wandering(GameObject civi)
+    {
+        if (ME.IsWalkable(civi.transform.position))
+        {
+            var wait = Random.Range(1, 10);
+            yield return new WaitForSeconds(wait);
+        }
+        var wanderPos = GetWanderPos(civi);
+        StartCoroutine(Walk(civi, wanderPos, StartWander));
+    }
+
+    
+    private void OnTriggerDeath(GameObject civObject)
+    {
+        if (civ != null && civObject == civ.gameObject)
+        {
+            StopAllCoroutines();
+        }
     }
 }

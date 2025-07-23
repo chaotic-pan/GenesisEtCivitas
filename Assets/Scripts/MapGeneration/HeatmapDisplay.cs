@@ -17,6 +17,7 @@ namespace MapGeneration
         [SerializeField] private MapDisplay mapDisplay;
         [SerializeField] private HeatmapGenerator heatmapGenerator;
         [SerializeField] private MapFileLocation SO_fileLoc;
+        [SerializeField] private GameObject tilemap;
 
         public readonly Dictionary<MapDisplay.MapOverlay, Dictionary<Vector2, Texture2D>> _maps = new();
         
@@ -26,9 +27,12 @@ namespace MapGeneration
         private Dictionary<MapDisplay.MapOverlay, Heatmap> _heatmapDict;
         private int _chunkSize;
         private Dictionary<Vector2, Dictionary<Vector2Int, Vector3Int>> _tileDict = new();
+        private const int ChunkCount = 12;
         
         public static HeatmapDisplay Instance;
 
+        private float tilemapY;
+        
         private float _halfChunkSize;
         
         private void Awake()
@@ -37,9 +41,7 @@ namespace MapGeneration
             UIEvents.UIMap.OnOpenHeatmap += OnChangeMap;
             UIEvents.UIMap.OnUpdateHeatmapChunks += UpdateHeatMapChunks;
             UIEvents.UIMap.OnUpdateMultipleHeatmapChunks += UpdateMultipleHeatMapChunks;
-
-            if (SO_fileLoc.isBuild)
-                GameEvents.Lifecycle.OnTileManagerFinishedInitializing += LoadTextures;
+            GameEvents.Lifecycle.OnTileManagerFinishedInitializing += LoadTextures;
         }
 
         private void OnDestroy()
@@ -53,15 +55,15 @@ namespace MapGeneration
         private void Start()
         {
             heatmapGenerator.Initialize();
-            
+            tilemapY = tilemap.transform.position.y;
             _overlayValueByTile = heatmapGenerator.OverlayValueByTile;
             _chunkSize = HeatmapGenerator.ChunkSize;
             _heatmapDict = heatmapGenerator._heatmapDict;
             
             InitializeMaps();
 
-            if (!SO_fileLoc.isBuild)
-                LoadTexturesFromDrive();
+            /*if (!SO_fileLoc.isBuild)
+                LoadTexturesFromDrive();*/
         }
         
         
@@ -71,15 +73,15 @@ namespace MapGeneration
             _halfChunkSize = _chunkSize / 2;
             _tileManager = TileManager.Instance;
             
-            var _worldPosition = new Vector3(0, 0, 0);
+            var _worldPosition = new Vector3(0, tilemapY, 0);
             var tilemapGen = GameObject.FindGameObjectWithTag("TileManager").GetComponent<TileManager>();
             var heatmaps = heatmapGenerator.GenerateAllHeatmaps(tilemapGen);
 
             _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
             
-            for (var y = 0; y < 8; y++)
+            for (var y = 2; y < ChunkCount - 2; y++)
             {
-                for (var x = 0; x < 8; x++)
+                for (var x = 2; x < ChunkCount - 2; x++)
                 {
                     _tileDict[new Vector2(x, y)] = new Dictionary<Vector2Int, Vector3Int>();
                     foreach (var overlay in _overlayValueByTile.Keys)
@@ -104,7 +106,7 @@ namespace MapGeneration
             _halfChunkSize = _chunkSize / 2;
             _tileManager = TileManager.Instance;
             
-            var _worldPosition = new Vector3(0, 0, 0);
+            var _worldPosition = new Vector3(0, tilemapY, 0);
             
             _maps[MapDisplay.MapOverlay.Terrain] = MapExtractor.Instance.GetTerrainTextures();
             
@@ -181,7 +183,7 @@ namespace MapGeneration
         {
             var colorMap = new Color[_chunkSize * _chunkSize];
             var tileChunk = _tileDict[chunk];
-            
+
             var heatmapOverlay = _heatmapDict[overlay];
             var min = heatmapOverlay.min;
             var max = heatmapOverlay.max;

@@ -29,7 +29,6 @@ public class NPCSpawner : MonoBehaviour
     private void Start()
     {
         
-        print("A");
         StartCoroutine(Spawning());
     }
 
@@ -49,7 +48,6 @@ public class NPCSpawner : MonoBehaviour
             
             SpawnCiv(spawnLocation, population, 20, 0);
         }
-        print("Z");
         yield break;
     }
 
@@ -88,6 +86,14 @@ public class NPCSpawner : MonoBehaviour
             {
                 continue;
             }
+            var surrounding = TM.GetSpecificRange(loc, 2);
+            foreach (var neighbour in surrounding)
+            {
+                if (TM.IsOcean(neighbour))
+                {
+                    goto cont;
+                }
+            }
             
             float value = (TM.GetFood(loc) + TM.GetWater(loc) + TM.GetSafety(loc) + TM.GetShelter(loc) + TM.GetEnergy(loc)) / 5;
             if(winValue < value)
@@ -95,6 +101,8 @@ public class NPCSpawner : MonoBehaviour
                 winValue = value;
                 settlingPos = loc;
             }
+
+            cont: ;
         }
         civ.GetComponent<Civilization>().SetSettlingValues(settlingPos);
         

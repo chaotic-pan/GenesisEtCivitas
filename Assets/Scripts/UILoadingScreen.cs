@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -25,7 +26,6 @@ public class UILoadingScreen : MonoBehaviour
      [SerializeField] private CanvasGroup loadingPanel;
      [SerializeField] private GameObject creatureFeature;
      
-     [SerializeField] private MapFileLocation mapFileLocation;
      
      private bool _isLoading;
      
@@ -58,22 +58,39 @@ public class UILoadingScreen : MonoBehaviour
           // fade in loading screen
           yield return StartCoroutine(FadeIn());
           
-          // load level additively
+          // fake start loading to .1
+          var fadeTimer = 1f;
+          while (fadeTimer > 0)
+          {
+               fadeTimer -= Time.deltaTime;
+               loadingSlider.value = .1f + fadeTimer*-.1f;
+               yield return null;
+          }
+          
+          // load level additively .1 - .5
           var asyncLoad = SceneManager.LoadSceneAsync(level, LoadSceneMode.Additive);
           
-          while (asyncLoad.progress < 0.9f)
+          while (!asyncLoad.isDone)
           {
-               loadingSlider.value = asyncLoad.progress / 0.9f;
+               loadingSlider.value = .1f + asyncLoad.progress * .4f;
                yield return null;
           }
 
-          loadingSlider.value = 1f;
-          
-          yield return new WaitUntil(() => asyncLoad.isDone);
-          
+          loadingSlider.value = .5f;
+
           // destroy main menu and camera
           Destroy(mainMenu);
           Destroy(mainMenuCamera);
+
+          // fake end load .5-1 + gives Civs a sec to initialize fully
+          fadeTimer = 2f;
+          while (fadeTimer > 0)
+          {
+               fadeTimer -= Time.deltaTime;
+               loadingSlider.value = .75f + fadeTimer*-(.25f/2)+.25f;
+               yield return null;
+          }
+          
           
           // fade out loading screen
           yield return StartCoroutine(FadeOut());

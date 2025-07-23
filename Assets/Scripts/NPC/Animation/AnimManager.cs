@@ -123,7 +123,7 @@ public class AnimManager : MonoBehaviour
             timer += 2f;
             yield return new WaitForSecondsRealtime(2f);
         }
-        GameEvents.Civilization.OnPreachEnd.Invoke(transform.parent.gameObject);
+        GameEvents.Civilization.OnPreachEnd?.Invoke(transform.parent.gameObject);
         setBool(IsPreaching, null, false);
         
         setBool(IsPraying, new List<GameObject>{Podium}, true);
@@ -169,6 +169,14 @@ public class AnimManager : MonoBehaviour
         if (civObject == transform.parent.gameObject)
         {
             resetBools();
+            GameEvents.Civilization.OnStartWalking -= OnStartWalk;
+            GameEvents.Civilization.OnStopWalking -= OnStopWalk;
+            GameEvents.Civilization.OnSwim -= Swim;
+            GameEvents.Civilization.OnCivilizationDeath -= OnTriggerDeath;
+            GameEvents.Civilization.OnPreach -= Preach;
+            GameEvents.Civilization.OnPray -= Pray;
+            GameEvents.Civilization.OnListen -= Listen;
+            GameEvents.Civilization.OnBuild -= Build;
             float randTime = Random.Range(1,50);
             transform.parent.GetComponent<NPCMovement>().StopAllCoroutines();
             StartCoroutine(delayedDeath(randTime/100f));

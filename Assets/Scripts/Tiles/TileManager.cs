@@ -19,7 +19,7 @@ public class TileManager : MonoBehaviour
     [SerializeField] private bool WATERDEBUG;
     
     [SerializeField] private MapFileLocation SO_fileLoc;
-    public bool boatsUnlocked = false;
+    [NonSerialized] public bool boatsUnlocked = false;
     private float waterTravelCost = 50;
     private void Awake()
     {
@@ -109,7 +109,7 @@ public class TileManager : MonoBehaviour
                 if (tile != null)
                 {
                     var p = ME.CoordsToPoints( map.CellToWorld(new Vector3Int(x, y, 0)));
-                    var height = ME.meshHeightCurve.Evaluate(ME.heightMap[p.x, p.y]) * ME.mapHeightMultiplier;
+                    var height = ME.heightMap[p.x, p.y] * ME.mapHeightMultiplier;
                     TileData tileData = new TileData(
                         ME.travelcost[p.x,p.y],
                         ME.fertility[p.x,p.y],
@@ -160,14 +160,14 @@ public class TileManager : MonoBehaviour
     public float GetWater(Vector3Int coords)
     {
         return dataFromTiles.ContainsKey(coords) ? 
-            (dataFromTiles[coords].waterValue/3) 
+            (dataFromTiles[coords].waterValue*0.06f) 
             : -1;
     }
     public float GetSafety(Vector3Int coords)
     {
         if (dataFromTiles.ContainsKey(coords))
         {
-            float height = MapExtractor.Instance.meshHeightCurve.Evaluate(dataFromTiles[coords].height) * MapExtractor.Instance.mapHeightMultiplier;
+            float height = dataFromTiles[coords].height * MapExtractor.Instance.mapHeightMultiplier;
             height = 0.1f <= height && height <= 0.7f ? 15f : 0;
             return (height/3 + dataFromTiles[coords].animalHostility) / 2;
         }

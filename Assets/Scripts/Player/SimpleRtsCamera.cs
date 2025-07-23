@@ -78,17 +78,20 @@ namespace Player
 			_playerInput.actions["MiddleMouse"].canceled += MiddleMouseHandler;
 		}
 
-		private void LateUpdate()
+		private void Update()
+		{
+			ZoomCamera();
+			LimitCamera();
+		}
+
+		private void FixedUpdate()
 		{
 			UpdateRelativeCameraVectors();
 			heightMultiplier = transform.position.y;
 			MoveCamera();
 			MoveCameraWithCursor();
 			MoveCameraWithRightMouse();
-			ZoomCamera();
 			RotateCamera();
-			LimitCamera();
-			
 		}
 
 		private void LimitCamera()

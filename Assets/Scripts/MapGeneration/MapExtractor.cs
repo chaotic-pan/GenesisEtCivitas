@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MapGeneration.Maps;
 using Terrain;
 using UnityEditor;
 using UnityEngine;
@@ -14,22 +15,19 @@ using Utilities;
 [ExecuteInEditMode]
 public class MapExtractor : MonoBehaviour
 {
+
     public static MapExtractor Instance;
     [SerializeField] private string fileName = "file1.txt";
-    [SerializeField, Range(0, 3)] private int PointsMapType;
     [SerializeField] private MapDisplay mapDisplay;
     [SerializeField] private HeatmapDisplay heatmapDisplay;
     [SerializeField] public float mapHeightMultiplier = 50f;
     [SerializeField] private TerrainType[] regions;
     //1913*1913 Punkte für die Gesamtmap
-    private int points = 1914;
+    public int points = 2870;
     private int totalPoints;
     private int chunkSize = 240;
-    private int chunkCountRoot = 8;
-    [SerializeField] private AnimationCurve HeightCurve;
-    [NonSerialized] public AnimationCurve meshHeightCurve;
+    private int chunkCountRoot = 12;
     [SerializeField] private MapFileLocation SO_fileLoc;
-    private float waterHeight = 0.21f;
     
     public float[,] heightMap;
     public float[,] travelcost;
@@ -42,6 +40,7 @@ public class MapExtractor : MonoBehaviour
     public int[,] climate;
     public int[,] walkable;
     public int[,] water;
+    public SoilType[,] soil;
 
     private void Awake()
     {
@@ -59,33 +58,12 @@ public class MapExtractor : MonoBehaviour
 
     private void Initialize()
     {
-        if (!fileName.Contains(".txt")) fileName += ".txt";
-        switch (PointsMapType)
-        {
-            case 0: points = 1913;
-                chunkCountRoot = 8;
-                break;
-            case 1: points = 1914;
-                chunkCountRoot = 8;
-                break;
-            case 2: points = 2870;
-                chunkCountRoot = 12;
-                break;
-            case 3: points = 2870;
-                chunkCountRoot = 12;
-                break;
-            default:
-                break;
-        }
-        
-        if (!fileName.Contains(".txt")) fileName += ".txt";
-        
+        if (!fileName.Contains(".world")) fileName += ".world";
+
         // Um gewünschte Punkte mit Werten zu erhalten, muss von byte zu float[] zu float[,] transferiert werden
         var path = "./Assets/GenesisMap/" + fileName;
         if (SO_fileLoc.isBuild && SO_fileLoc.MapLocation != null) path = SO_fileLoc.MapLocation;
         
-        
-        meshHeightCurve = PointsMapType > 0 ? AnimationCurve.Linear(0, 0, 1, 1) : HeightCurve;
         totalPoints = points*points;
         
         heightMap = new float[points, points];
@@ -99,11 +77,12 @@ public class MapExtractor : MonoBehaviour
         climate = new int[points, points];
         walkable = new int[points, points];
         water = new int[points, points];
+        soil = new SoilType[points, points];
         
         
         byte[] byteArray = File.ReadAllBytes(path);
         
-        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate 0-255
+        // Werte von 0-1 für Heightmap, 0-15 für alles andere, climate und water 0-255
         // Nur Heightmap ist in float, alle andere sind in bytes oder half bytes
         float[] floatArrayHeightMap = new float[totalPoints];
         byte[] fertilityFirmnessMap = new byte[totalPoints];
@@ -128,8 +107,6 @@ public class MapExtractor : MonoBehaviour
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 3),
             climateMap, 0, climateMap.Length);
         Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 4), 
-            walkableMap, 0, walkableMap.Length);
-        Buffer.BlockCopy(byteArray, totalPoints * (sizeof(float) + 5), 
             waterMap, 0, waterMap.Length);
 
         // Separate bytes into 2D arrays for each value
@@ -137,16 +114,20 @@ public class MapExtractor : MonoBehaviour
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
             heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
-            fertility[coord.x, coord.y] = (int)fertilityFirmnessMap[i] & 0xF;
-            firmness[coord.x, coord.y] = (int)(fertilityFirmnessMap[i] >> 4) & 0xF;
             ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
             vegetation[coord.x, coord.y] = (int)(oreVegetationMap[i] >> 4) & 0xF;
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
-            if (PointsMapType>=2) walkable[coord.x, coord.y] = (int)walkableMap[i];
-            if (PointsMapType>=3) water[coord.x, coord.y] = (int)waterMap[i];
-
+            
+            SoilType currentSoil = GetSoilTypeForInt((int)fertilityFirmnessMap[i]);
+            fertility[coord.x, coord.y] = GetFertility(currentSoil);
+            firmness[coord.x, coord.y] = GetFirmness(currentSoil);
+            soil[coord.x, coord.y] = currentSoil;
+            walkable[coord.x, coord.y] = currentSoil is SoilType.Seafloor or SoilType.Riverbed ? 0 : 1;
+            
+            water[coord.x, coord.y] = walkable[coord.x, coord.y]==1? (int)waterMap[i] : 0;
+            
             i++;
         }
         
@@ -169,45 +150,18 @@ public class MapExtractor : MonoBehaviour
 
         mapDisplay.DrawMeshes(
             TerrainMeshGenerator.GenerateMesh(
-                heightMap, mapHeightMultiplier, meshHeightCurve, chunkCountRoot, chunkCountRoot),
+                heightMap, mapHeightMultiplier, chunkCountRoot, points),
             textures);
     }
 
     private void CalculateTravelCost()
     {
-        if (PointsMapType>=2)
-        {
-           foreach (var coord in VectorUtils.GridCoordinates(points, points))
-           {
-               travelcost[coord.x, coord.y] = walkable[coord.x,coord.y] == 0 ? 20 :
-                   heightMap[coord.x, coord.y]*mapHeightMultiplier;
-           } 
-        }
-        else
-        {
-            foreach (var coord in VectorUtils.GridCoordinates(points, points))
-            {
-                if (heightMap[coord.x, coord.y] <= waterHeight)
-                {
-                    travelcost[coord.x, coord.y] = 20;
-                    walkable[coord.x, coord.y] = 0;
-                }
-                else
-                {
-                    travelcost[coord.x, coord.y] = heightMap[coord.x, coord.y]*mapHeightMultiplier;
-                    walkable[coord.x, coord.y] = 1;
-                }
-            } 
-        }
+       foreach (var coord in VectorUtils.GridCoordinates(points, points))
+       {
+           travelcost[coord.x, coord.y] = walkable[coord.x,coord.y] == 0 ? 20 :
+               heightMap[coord.x, coord.y]*mapHeightMultiplier;
+       }
 
-        if (PointsMapType<3)
-        {
-            foreach (var coord in VectorUtils.GridCoordinates(points, points))
-            {
-                water[coord.x, coord.y] = heightMap[coord.x, coord.y] <= waterHeight ? 5 : 255;
-            } 
-        }
-        
     }
     public Dictionary<Vector2, Texture2D> GetTerrainTextures()
     {
@@ -259,10 +213,72 @@ public class MapExtractor : MonoBehaviour
         return colorMaps;
     }
 
+    private SoilType GetSoilTypeForInt(int i)
+    {
+        return i switch
+        {
+            0 => SoilType.BlackEarth,
+            1 => SoilType.BrownEarth,
+            2 => SoilType.Desert,
+            3 => SoilType.HalfDesert,
+            4 => SoilType.Ice,
+            5 => SoilType.Jungle,
+            6 => SoilType.Podzol,
+            7 => SoilType.Seafloor,
+            8 => SoilType.Swamp,
+            9 => SoilType.Riverbed,
+            10 => SoilType.Rock,
+            11 => SoilType.TerraRossa,
+            _ => SoilType.Wetland
+        };
+    } 
+    
+    public static int GetFertility(SoilType soil)
+    {
+        return soil switch
+        {
+            SoilType.BlackEarth => 15,
+            SoilType.BrownEarth => 13,
+            SoilType.Desert => 2,
+            SoilType.HalfDesert => 4,
+            SoilType.Ice => 4,
+            SoilType.Jungle => 8,
+            SoilType.Podzol => 5,
+            SoilType.Seafloor => 0,
+            SoilType.Swamp => 11,
+            SoilType.Riverbed => 10,
+            SoilType.Rock => 1,
+            SoilType.TerraRossa => 7,
+            SoilType.Wetland => 12,
+            _ => 8,
+        };
+    }
+    
+    public static int GetFirmness(SoilType soil)
+    {
+        return soil switch
+        {
+            SoilType.BlackEarth => 10,
+            SoilType.BrownEarth => 12,
+            SoilType.Desert => 7,
+            SoilType.HalfDesert => 8,
+            SoilType.Ice => 4,
+            SoilType.Jungle => 7,
+            SoilType.Podzol => 9,
+            SoilType.Seafloor => 0,
+            SoilType.Swamp => 2,
+            SoilType.Riverbed => 6,
+            SoilType.Rock => 15,
+            SoilType.TerraRossa => 13,
+            SoilType.Wetland => 3,
+            _ => 8,
+        };
+    }
+
     public float GetHeightByWorldCoord(Vector3 coord)
     {
         var p = CoordsToPoints(coord);
-        return meshHeightCurve.Evaluate(heightMap[p.x, p.y]) * mapHeightMultiplier;
+        return heightMap[p.x, p.y] * mapHeightMultiplier;
     }
     
 
@@ -275,6 +291,16 @@ public class MapExtractor : MonoBehaviour
     {
         var height = GetHeightByWorldCoord(coord);
         return new Vector3(coord.x,height , coord.z);
-    }    
+    }
 
+    public bool IsWalkable(Vector3 coord)
+    {
+        var p = CoordsToPoints(coord);
+        return walkable[p.x, p.y] != 0;
+    }
+
+    
 }
+ 
+
+
