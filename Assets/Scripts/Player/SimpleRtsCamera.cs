@@ -35,6 +35,9 @@ namespace Player
 		private float _middleMouseInput;
 
 		private bool _canZoom = true;
+		private Vector3 _cinemachineFollowTarget;
+		private int minZoom = 50;
+		private int maxZoom = 1250;
 		
 		private Vector3 _cameraForward;
 		private Vector3 _cameraRight;
@@ -78,6 +81,11 @@ namespace Player
 			_playerInput.actions["MiddleMouse"].canceled += MiddleMouseHandler;
 		}
 
+		private void Start()
+		{
+			_cinemachineFollowTarget = cinemachineFollow.FollowOffset;
+		}
+
 		private void Update()
 		{
 			ZoomCamera();
@@ -99,7 +107,7 @@ namespace Player
 			var pos = transform.position;
 			transform.position = new Vector3(
 				Math.Max(-30, Math.Min(pos.x, 2660)),
-				Math.Max(50, Math.Min(pos.y, 1250)),
+				Math.Max(minZoom, Math.Min(pos.y, 1250)),
 				Math.Max(-2660, Math.Min(pos.z, 30))
 				);
 
@@ -232,13 +240,19 @@ namespace Player
 		private void ZoomCamera()
 		{
 			if (!_canZoom) return;
-			if (Mathf.Approximately(_scrollMouseInput, 0)) return;
+			if (!Mathf.Approximately(_scrollMouseInput, 0))
+			{
+				var zoomDirection = transform.forward;
+				var zoomDelta = _scrollMouseInput * heightMultiplier * zoomSpeed * Time.deltaTime;
+				
+				var zoomPos = zoomDirection * zoomDelta;
+				_cinemachineFollowTarget.y = Mathf.Clamp(_cinemachineFollowTarget.y + zoomDelta, minZoom, maxZoom);
+				transform.position += zoomPos;
+			}
 
-			var zoomDirection = transform.forward;
-			var zoomPos = zoomDirection * (_scrollMouseInput * heightMultiplier * zoomSpeed * Time.deltaTime);
-			transform.position += zoomPos;
-
-			cinemachineFollow.FollowOffset += new Vector3(0, zoomPos.y, 0);
+			cinemachineFollow.FollowOffset = new Vector3(0,
+				Mathf.Lerp(cinemachineFollow.FollowOffset.y, _cinemachineFollowTarget.y, 3 * Time.deltaTime),
+				0);
 		}
 
 		private void RotateCamera()
