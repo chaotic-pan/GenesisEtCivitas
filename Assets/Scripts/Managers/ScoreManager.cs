@@ -4,12 +4,14 @@ using Events;
 using Models;
 using UnityEngine;
 using Player;
+using TMPro;
 
 namespace Managers
 {
     public class ScoreManager : MonoBehaviour
     {
         [SerializeField] private NPCSpawner _npcSpawner;
+        [SerializeField] private TextMeshProUGUI _finalScoreText;
         private PlayerModel _playerModel;
 
         private void Awake()
@@ -52,7 +54,7 @@ namespace Managers
         {
             var finalScore = 0f;
 
-            // Sum belief from all active civilizations
+            // Sum belief from all active civilizations.
             foreach (GameObject civObj in _npcSpawner.civilisations)
             {
                 if (civObj == null) continue;
@@ -64,10 +66,7 @@ namespace Managers
                 }
             }
 
-            Debug.Log("Calculated Final Score: " + finalScore);
-    
-            // Optional: Trigger UI event to display final score
-            // UIEvents.UIUpdate.OnShowFinalScore?.Invoke(finalScore);
+            _finalScoreText.SetText("Faith Score: " + finalScore);
         }
         
         private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints += points;
