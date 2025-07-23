@@ -10,8 +10,9 @@ namespace Player.Skills
         public Skill requirement;
         public int cost;
         public UnityAction onUnlocked;
-        
-        [Header("UI")]
+
+        [Header("UI")] 
+        public Sprite icon;
         public Color uiColor;
         public string title;
         [TextArea] public string description;

@@ -30,26 +30,29 @@ namespace UI
             onUnlockPlantGrowth.onUnlocked -= unlockPlantGrowth;
         }
 
-        private void SpawnAbilityButton(String label, AbilityType ability)
+        private void SpawnAbilityButton(String label, Sprite image,  AbilityType ability)
         {
             var but = Instantiate(buttonPrefab, transform);
-            but.GetComponentInChildren<TextMeshProUGUI>().text = label;
+            var icon = but.transform.GetChild(0).GetComponent<Image>();
+            icon.sprite = image;
+            var cost = but.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+            cost.text = label;
             but.GetComponent<Button>().onClick.AddListener(() => _playerController.callAbility(ability));
         }
 
         private void unlockRain()
         {
-            SpawnAbilityButton("RAIN (100 IP)", AbilityType.Rain);
+            SpawnAbilityButton("100 IP", onUnlockRain.icon, AbilityType.Rain);
         }
         
         private void unlockEarthquake()
         {
-            SpawnAbilityButton("EARTHQUAKE (200 IP)", AbilityType.Earthquake);
+            SpawnAbilityButton("200 IP", onUnlockEarthquake.icon, AbilityType.Earthquake);
         }
         
         private void unlockPlantGrowth()
         {
-            SpawnAbilityButton("PLANT GROWTH (200 IP)", AbilityType.PlantGrowth);
+            SpawnAbilityButton("200 IP", onUnlockPlantGrowth.icon, AbilityType.PlantGrowth);
         }
     }
 }

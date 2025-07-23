@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907fb6f044ce4379ad7f9b881a5bf978, type: 3}
   m_Name: Water1
   m_EditorClassIdentifier: 
-  requirement: {fileID: 0}
+  requirement: {fileID: 11400000, guid: dc2e581d375189948907c1b103692645, type: 2}
   cost: 200
+  icon: {fileID: 21300000, guid: 960ae1f3670ed7e4ab270e34eeb6f56e, type: 3}
   uiColor: {r: 0, g: 0.71827745, b: 1, a: 1}
   title: Rain Miracle
   description: Allows you to perform a Rain Miracle to raise the water values within

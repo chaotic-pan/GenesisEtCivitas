@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   requirement: {fileID: 11400000, guid: ae37a0204b4746449939f3c1dcfe96d1, type: 2}
   cost: 1000
-  uiColor: {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
+  icon: {fileID: 21300000, guid: 170072f73d7232c499ce25e11a49bf2c, type: 3}
+  uiColor: {r: 1, g: 0.42352942, b: 0.42352942, a: 1}
   title: Church Building
   description: Your followers can build churches in their city, to generate more
     Influence Points for you
