@@ -54,8 +54,8 @@ public class HeatmapKey : MonoBehaviour
         
         panel.texture = tex;
         
-        minText.text = heatmap.min.ToString();
-        maxText.text = heatmap.max.ToString();
+        minText.text = "0";
+        maxText.text = "100";
         
         gameObject.SetActive(true);
     }

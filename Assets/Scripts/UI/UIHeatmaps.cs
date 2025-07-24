@@ -20,7 +20,14 @@ namespace UI
         {
             foreach (var overlay in Enum.GetValues(typeof(MapDisplay.MapOverlay)))
             {
-                _dropdown.AddOptions(new List<string>() { overlay.ToString() });
+                if (overlay.ToString() == "Climate")
+                {
+                    _dropdown.AddOptions(new List<string>() { "Temperatur" });
+                }
+                else
+                {
+                    _dropdown.AddOptions(new List<string>() { overlay.ToString() });
+                }
             }
         }
     
