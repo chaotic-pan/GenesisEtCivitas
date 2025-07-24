@@ -15,7 +15,7 @@ public class UISkillTree : MonoBehaviour
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI costsText;
     public Button buyButton;
-    public Skill startSkill;
+    public Skill saviourSkill;
 
     private CanvasGroup overlay;
     private bool active = false;
@@ -44,9 +44,9 @@ public class UISkillTree : MonoBehaviour
         overlay = transform.GetChild(0).GetComponent<CanvasGroup>();
         setCanvasGroupActive(false);
 
-        displayedSkill = startSkill;
+        displayedSkill = saviourSkill;
         UnlockSkill();
-        UIEvents.UIOpen.OnOpenSkillItem.Invoke(startSkill);
+        UIEvents.UIOpen.OnOpenSkillItem.Invoke(saviourSkill);
     }
 
     private void setCanvasGroupActive(bool isActive)

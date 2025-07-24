@@ -186,7 +186,7 @@ MonoBehaviour:
   descriptionText: {fileID: 7538432228059448874}
   costsText: {fileID: 4279667768934739856}
   buyButton: {fileID: 3862227106724665836}
-  startSkill: {fileID: 11400000, guid: dc2e581d375189948907c1b103692645, type: 2}
+  saviourSkill: {fileID: 11400000, guid: dc2e581d375189948907c1b103692645, type: 2}
 --- !u!1 &3766452702038860431
 GameObject:
   m_ObjectHideFlags: 0

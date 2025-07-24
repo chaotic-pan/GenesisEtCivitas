@@ -37,12 +37,14 @@ namespace UI
         [SerializeField] private List<GameObject> lockedBuilding;
         [SerializeField] private Skill onUnlockWell;
         [SerializeField] private Skill onUnlockChurch;
-        [SerializeField] private int unlockingIPCost = 400;
+        [SerializeField] private Skill onUnlockSaviour;
         
-        [Header("Buttons")]
+        [Header("Buildings")]
+        [SerializeField] private int buildingCost = 400;
         [SerializeField] private GameObject BuildWellbutton;
         [SerializeField] private GameObject BuildChurchButton;
-        
+
+        private bool saviourUnlocked = false;
         private NPCModel model;
         private PlayerModel pm;
         
@@ -56,6 +58,7 @@ namespace UI
 
             onUnlockWell.onUnlocked += UnlockWell;
             onUnlockChurch.onUnlocked += UnlockChurch;
+            onUnlockSaviour.onUnlocked += UnlockSaviour;
             foreach (var build in lockedBuilding.Where(build => cityObjects.Contains(build)))
             {
                cityObjects.Remove(build);
@@ -70,6 +73,7 @@ namespace UI
                 UIEvents.UIOpen.OnOpenNpcMenu -= OnOpenNpcMenu;
                 onUnlockWell.onUnlocked -= UnlockWell;
                 onUnlockChurch.onUnlocked -= UnlockChurch;
+                onUnlockSaviour.onUnlocked -= UnlockSaviour;
                 UIEvents.UIOpen.OnOpenMessiahMenu -= _ => OnClose();
                 UIEvents.UIOpen.OnOpenSkillTree -= _ => OnClose();
                 UIEvents.UIUpdate.OnUpdatePlayerData -= CheckBuildingCost;
@@ -115,9 +119,9 @@ namespace UI
         public void CheckBuildingCost(PlayerModel pm)
         {
             if (!BuildChurchButton.activeSelf) return;
-                BuildChurchButton.GetComponent<Button>().interactable = unlockingIPCost <= pm.InfluencePoints;
+                BuildChurchButton.GetComponent<Button>().interactable = buildingCost <= pm.InfluencePoints;
             if (!BuildWellbutton.activeSelf) return;    
-                BuildWellbutton.GetComponent<Button>().interactable = unlockingIPCost <= pm.InfluencePoints;
+                BuildWellbutton.GetComponent<Button>().interactable = buildingCost <= pm.InfluencePoints;
         }
         public void OnBuildChurch()
         {
@@ -125,7 +129,7 @@ namespace UI
             model.City.BuildChurch();
             
             BuildChurchButton.SetActive(false);
-            pm.InfluencePoints -= unlockingIPCost;
+            pm.InfluencePoints -= buildingCost;
             CheckBuildingCost(pm);
         }
         
@@ -135,7 +139,7 @@ namespace UI
             model.City.BuildWell();
             
             BuildWellbutton.SetActive(false);
-            pm.InfluencePoints -= unlockingIPCost;
+            pm.InfluencePoints -= buildingCost;
             CheckBuildingCost(pm);
         }
 
@@ -158,7 +162,7 @@ namespace UI
 
             npcName.text = model.NPCName;
 
-            SaviourButton.gameObject.SetActive(!UIEvents.UIVar.saviourExists);
+            SaviourButton.gameObject.SetActive(saviourUnlocked && !UIEvents.UIVar.saviourExists);
             civTab.GetComponent<Image>().sprite = tabActive;
             cityTab.GetComponent<Image>().sprite = tabInactive;
         }
@@ -205,6 +209,11 @@ namespace UI
                 CheckBuildingCost(pm);
                 return;
             }
+        }
+        public void UnlockSaviour()
+        {
+            saviourUnlocked = true;
+            SaviourButton.gameObject.SetActive(true);
         }
     }
 }

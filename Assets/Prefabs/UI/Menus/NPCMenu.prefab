@@ -898,7 +898,8 @@ MonoBehaviour:
   - {fileID: 1841846149354058870}
   onUnlockWell: {fileID: 11400000, guid: 4704a31539c46f14d9e6e57323c247d9, type: 2}
   onUnlockChurch: {fileID: 11400000, guid: d0b26378431080345bbd2ca530f9be1a, type: 2}
-  unlockingIPCost: 400
+  onUnlockSaviour: {fileID: 11400000, guid: dc2e581d375189948907c1b103692645, type: 2}
+  buildingCost: 400
   BuildWellbutton: {fileID: 0}
   BuildChurchButton: {fileID: 0}
 --- !u!1 &1229143434515906169
