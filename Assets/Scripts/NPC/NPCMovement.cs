@@ -164,7 +164,7 @@ public class NPCMovement : MonoBehaviour
             boatCheck(gridPos);
             
             var cost = TM.GetTravelCost(gridPos);
-            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+            movementSpeed = Math.Max(3, maxSpeed - cost/10);
             
             transform.rotation = rotation;
             rot = rotation;

@@ -124,7 +124,7 @@ public class SaviourMovement : MonoBehaviour
         {
             var gridPos = TM.WorldToCell(position);
             var cost = TM.GetTravelCost(gridPos);
-            movementSpeed = Math.Max(1, maxSpeed - cost/10);
+            movementSpeed = Math.Max(10, maxSpeed - cost/10);
 
             
             var direction = (target - position).normalized;

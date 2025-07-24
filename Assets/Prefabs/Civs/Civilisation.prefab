@@ -117,9 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ea2b9f58ababb4f80e92ddef09b72a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
+  maxSpeed: 12
   rangeRadius: 20
-  map: {fileID: 0}
   boatPrefab: {fileID: 6165641262965079714, guid: ad665e2ad35f79b418e1281811fe1eb4, type: 3}
   DEBUG_PathBreadcrumbs: 0
 --- !u!114 &7232340983693077581
@@ -192,4 +191,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ebed6ec18de4ab49fe437dbeae924ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  civiPrefab: {fileID: 2897488292148782235, guid: d8233ff47f79f9e46bdd547467d8dc96, type: 3}
