@@ -53,7 +53,6 @@ namespace UI
         }
         private void deblockButtons(GameObject arg0)
         {
-            
             PreachButton.gameObject.GetComponent<Button>().interactable = true;
             SendButton.gameObject.GetComponent<Button>().interactable = true;
         }
@@ -89,7 +88,7 @@ namespace UI
             }
         }
         
-        private void toggleSend(bool isActive)
+        public void toggleSend(bool isActive)
         {
             sendToggle = isActive;
             description.text = isActive? "Send your saviour to a selected location." : "";
@@ -111,7 +110,7 @@ namespace UI
             }
         }
 
-        private void togglePreach(bool isActive)
+        public void togglePreach(bool isActive)
         {
             preachToggle = isActive;
             description.text = isActive? "Send your saviour to a struggling city, to improve their needs." : "";
