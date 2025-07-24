@@ -68,6 +68,6 @@ namespace Managers
             _finalScoreText.SetText("Faith Score: " + finalScore.ToString("0"));
         }
         
-        private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints += points;
+        private void OnGainInfluencePoints(int points) => _playerModel.InfluencePoints = Mathf.Clamp(_playerModel.InfluencePoints + points, 0, _playerModel.MaxIP);
     }
 }

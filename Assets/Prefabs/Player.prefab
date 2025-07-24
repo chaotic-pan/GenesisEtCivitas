@@ -138,13 +138,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7894587655ab4e418259be6ccf26c3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
+  moveSpeed: 3
   edgeThreshold: 0
   rightMouseSpeedMultiplier: 50
-  zoomSpeed: 10
-  rotateSpeed: 50
+  zoomSpeed: 20
+  rotateSpeed: 30
   rotateFallback: 1000
   cinemachineCamera: {fileID: 5159516932481656964}
+  cinemachineFollow: {fileID: 917236203988043110}
 --- !u!1 &4203700762675040028
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +439,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e4c0d271cefae54b90e615de86f8cb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virtuePoints: 2
 --- !u!114 &4703709236043091111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,3 +451,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cfde7c0460a4284b7f93759a686644d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerModel: {fileID: 0}
+  _activeAbility: {fileID: 0}
