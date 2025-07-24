@@ -1,18 +1,32 @@
+using System;
 using Models;
 using System.Collections;
+using Events;
 using Player;
 using Player.Abilities;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UI
 {
     public class UIMessiahMenu : UpdateableMenu<NPCModel>
     {
         public PlayerController _playerController;
+        [SerializeField] private TextMeshProUGUI description;
+        
+        [SerializeField] private Image PreachButton;
+        private bool preachToggle = false;
+        [SerializeField] private Image SendButton;
+        private bool sendToggle = false;
 
-        private IEnumerator coroutine;
+        [SerializeField] private Sprite buttonSprite;
+        [SerializeField] private Sprite toggledButtonSprite;
         public override void Initialize()
         {
+            GameEvents.Civilization.OnPreach += blockButtons;
+            GameEvents.Civilization.OnPreachEnd += deblockButtons;
             UIEvents.UIOpen.OnOpenMessiahMenu += OnOpenNpcMenu;
             UIEvents.UIOpen.OnSelectCityMessiahAction += SelectedCity;
             UIEvents.UIOpen.OnOpenNpcMenu += _ => OnClose();
@@ -24,15 +38,31 @@ namespace UI
         {
             if (scene.name != "WorldMap") return;
             
+            GameEvents.Civilization.OnPreach -= blockButtons;
+            GameEvents.Civilization.OnPreachEnd -= deblockButtons;
             UIEvents.UIOpen.OnOpenMessiahMenu -= OnOpenNpcMenu;
             UIEvents.UIOpen.OnSelectCityMessiahAction -= SelectedCity;
             UIEvents.UIOpen.OnOpenNpcMenu -= _ => OnClose();
             UIEvents.UIOpen.OnOpenSkillTree -= _ => OnClose();
         }
 
+        private void blockButtons(GameObject arg0)
+        {
+            PreachButton.gameObject.GetComponent<Button>().interactable = false;
+            SendButton.gameObject.GetComponent<Button>().interactable = false;
+        }
+        private void deblockButtons(GameObject arg0)
+        {
+            
+            PreachButton.gameObject.GetComponent<Button>().interactable = true;
+            SendButton.gameObject.GetComponent<Button>().interactable = true;
+        }
+        
         private void OnOpenNpcMenu(NPCModel npcModel)
         {
             OnOpen(npcModel);
+            togglePreach(false);
+            toggleSend(false);
         }
     
         protected override void UpdateData(NPCModel data)
@@ -40,38 +70,70 @@ namespace UI
             // npcName.text = data.NPCName;
         }
 
+        private void Update()
+        {
+            if ((sendToggle || preachToggle) && Input.GetMouseButtonDown(1))
+            {
+                togglePreach(false);
+                toggleSend(false);
+            }
+        }
+
         public void ButtonPressSendSaviour()
         {
-            _playerController.callAbility(AbilityType.SendSaviour);
+            sendToggle = !sendToggle;
+            toggleSend(sendToggle);
+            if (sendToggle)
+            {
+                _playerController.callAbility(AbilityType.SendSaviour);
+            }
         }
-
+        
+        private void toggleSend(bool isActive)
+        {
+            sendToggle = isActive;
+            description.text = isActive? "Send your saviour to a selected location." : "";
+            SendButton.sprite = isActive? toggledButtonSprite : buttonSprite;
+            if (!isActive)
+            {
+                _playerController.cancelAbility.Invoke();
+            }
+        }
+        
+        
         public void ButtonPressMessiahAction()
         {
-            Debug.Log("Select a civilisation");
-
-            coroutine = SelectCity(5);
-            StartCoroutine(coroutine);
+            preachToggle = !preachToggle;
+            togglePreach(preachToggle);
+            if (preachToggle)
+            {
+                UIEvents.UIVar.isCastingSaviourAction = true;
+            }
         }
+
+        private void togglePreach(bool isActive)
+        {
+            preachToggle = isActive;
+            description.text = isActive? "Send your saviour to a struggling city, to improve their needs." : "";
+            PreachButton.sprite = isActive? toggledButtonSprite : buttonSprite;
+            if (!isActive)
+            { 
+                UIEvents.UIVar.isCastingSaviourAction = false;
+            }
+        }
+        
         private void SelectedCity(Civilization civ)
         {
             if (!UIEvents.UIVar.isCastingSaviourAction || civ == null) return;
-            StopCoroutine(coroutine);
             UIEvents.UIVar.isCastingSaviourAction = false;
-            Debug.Log("City found");
             InvokeMessiahAction(civ);
         }
-        IEnumerator SelectCity(float timer)
-        {
-            UIEvents.UIVar.isCastingSaviourAction = true;
-            yield return new WaitForSeconds(timer);
-            UIEvents.UIVar.isCastingSaviourAction = false;
-            Debug.Log("No city found");
-            
-        }
+       
         private void InvokeMessiahAction(Civilization civ)
         {
-            Debug.Log(civ + " is currently in InvokeMessiahAction im UIMessiahMenu");
             Messiah.UseMessiah.Invoke(civ);
+            togglePreach(false);
         }
+        
     }
 }

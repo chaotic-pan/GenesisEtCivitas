@@ -45,7 +45,7 @@ class NPCIdeling : MonoBehaviour
 
     public void OnCityFounded(GameObject civObject)
     {
-        if (civObject != gameObject) return;
+        if (civObject != gameObject || civObject.TryGetComponent<Messiah>(out var M)) return;
         civ = civObject.GetComponent<Civilization>(); 
         var city = civ.GetComponent<Civilization>().city;
         housePos = ME.AdjustCoordsForHeight(city.GetHousePos());
@@ -60,7 +60,7 @@ class NPCIdeling : MonoBehaviour
     public void OnCityMerge(GameObject newCivObject, GameObject oldCivObject)
     {
         // reparent newCiv.civis to oldCiv
-        if (oldCivObject != gameObject) return;
+        if (oldCivObject != gameObject || newCivObject.TryGetComponent<Messiah>(out var M)) return;
         
         for (int i = newCivObject.transform.childCount; i > 1; i--)
         { 
@@ -113,7 +113,7 @@ class NPCIdeling : MonoBehaviour
     }
     IEnumerator Walk(GameObject civi, Vector3 destination, Action<GameObject> onReached)
     {
-        if (civi == null) yield break;
+        if (civi == null  || civi.TryGetComponent<Messiah>(out var M)) yield break;
         
         GameEvents.Civilization.OnStartWalking?.Invoke(civi);
         var position = civi.transform.position;
@@ -145,7 +145,7 @@ class NPCIdeling : MonoBehaviour
     }
     private void EndIdleAction(GameObject civi)
     {
-        if (civi == null) return;
+        if (civi == null || civi.TryGetComponent<Messiah>(out var M)) return;
         
         focusPoint = null;
 
@@ -194,7 +194,6 @@ class NPCIdeling : MonoBehaviour
         }
         
         end:
-        StopAllCoroutines();
         StartCoroutine(SpawnAndGo(audience, onReached, state));
     }
     
@@ -202,6 +201,7 @@ class NPCIdeling : MonoBehaviour
     private void OnPreach(GameObject saviour)
     {
         if (transform.position != saviour.transform.position) return;
+        StopAllCoroutines();
         SurroundFocusPoint(saviour, Listen, 2, IdleState.Praying);
     }
     private void Listen(GameObject go)
@@ -217,7 +217,7 @@ class NPCIdeling : MonoBehaviour
 
     private void OnCreateBuilding(GameObject civObject, GameObject building)
     {
-        if (civObject != gameObject) return;
+        if (civObject != gameObject  || civObject.TryGetComponent<Messiah>(out var M)) return;
         SurroundFocusPoint(building, StartBuild, 5, IdleState.Building);
     }
     private void StartBuild(GameObject civi)

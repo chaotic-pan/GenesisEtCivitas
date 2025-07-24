@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Events;
 using Models;
@@ -18,6 +19,7 @@ namespace Player
         public PlayerAbility _activeAbility;
         
         public UnityAction<AbilityType> callAbility;
+        public UnityAction cancelAbility;
         
         private bool _isWaitingForTileClick;
         
@@ -28,6 +30,7 @@ namespace Player
             _playerModel = GetComponent<PlayerModel>();
             _playerSkillSet = new PlayerSkillSet(_playerModel);
             callAbility += EnterAbility;
+            cancelAbility += CancelAbility;
             instance = this;
             
         }
@@ -72,7 +75,7 @@ namespace Player
                     Debug.Log("No Tile Data!");
                     return;
                 }
-                CastAbility(tileGridPos);
+                StartCoroutine(CastAbility(tileGridPos));
                 
                 // testheatmap update
                UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(TileManager.Instance.getWorldPositionOfTile(tileGridPos), MapDisplay.MapOverlay.WaterValue);
@@ -110,6 +113,7 @@ namespace Player
         
         private void CancelAbility()
         {
+            StopAllCoroutines();
             _isWaitingForTileClick = false;
             Destroy(_activeAbility);
             _activeAbility = null;
@@ -138,12 +142,13 @@ namespace Player
             GridOverlayManager.Instance.ShowAoeOverlay(new List<Vector3Int>());
         }
 
-        private void CastAbility(Vector3Int tileGridPos)
+        IEnumerator CastAbility(Vector3Int tileGridPos)
         {
+            yield return new WaitForSeconds(0.2f);
             if (_playerModel.InfluencePoints < _activeAbility.Cost)
             {
                 // Debug.Log("Too little CASH");
-                return;
+                yield break;
             }
             _playerModel.InfluencePoints -= _activeAbility.Cost;
             _activeAbility.CastAbility(tileGridPos);
