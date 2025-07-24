@@ -48,11 +48,14 @@ namespace Events
             public UnityAction OnGameEnd;
             public UnityAction OnGamePause;
             public UnityAction OnTileManagerFinishedInitializing;
+            
         }
         
         public class InfluencePointsEvents
         {
             public UnityAction<int> GainInfluencePoints;
+            
+            public UnityAction<Vector3> PlantsEffect;
         }
 
         public class DayNightCycleEvents

@@ -20,7 +20,7 @@ public class TileManager : MonoBehaviour
     
     [SerializeField] private MapFileLocation SO_fileLoc;
     [NonSerialized] public bool boatsUnlocked = false;
-    private float waterTravelCost = 50;
+    private float waterTravelCost = 100;
     private void Awake()
     {
         Instance = this;
@@ -118,7 +118,7 @@ public class TileManager : MonoBehaviour
                         ME.vegetation[p.x,p.y],
                         ME.animalPopulation[p.x, p.y],
                         ME.animalHostility[p.x, p.y],
-                        ME.climate[p.x,p.y],
+                        Mathf.InverseLerp(127, 255, ME.climate[p.x,p.y])*250, 
                         ME.water[p.x,p.y],
                         height
                         , ME.walkable[p.x,p.y] == 0
@@ -209,12 +209,6 @@ public class TileManager : MonoBehaviour
         }
 
         UIEvents.UIMap.OnUpdateAllHeatmapsOfType(MapDisplay.MapOverlay.Travelcost);
-        
-        // TODO update all chunks
-        // UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
-        //     new List<Vector2> { chunk }, 
-        //     MapDisplay.MapOverlay.Travelcost
-        // );
     }
 
     public Vector3Int WorldToCell(Vector3 worldPos)

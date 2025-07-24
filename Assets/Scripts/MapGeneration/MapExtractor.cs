@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Events;
 using MapGeneration.Maps;
 using Terrain;
 using UnityEditor;
@@ -47,6 +48,7 @@ public class MapExtractor : MonoBehaviour
 
     private void Awake()
     {
+        GameEvents.InfluencePoints.PlantsEffect += PlantGrowthAbility;
         Instance = this;
         if (SO_fileLoc.isBuild)
         {
@@ -56,6 +58,11 @@ public class MapExtractor : MonoBehaviour
         
         Initialize();
         treeGenerator = GetComponent<TreeGenerator>();
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.InfluencePoints.PlantsEffect -= PlantGrowthAbility;
     }
 
     private void Initialize()
@@ -116,24 +123,23 @@ public class MapExtractor : MonoBehaviour
         foreach (var coord in VectorUtils.GridCoordinates(points, points))
         {
             heightMap[coord.x, coord.y] = Math.Max(floatArrayHeightMap[i], 0);
-            ore[coord.x, coord.y] = (int)oreVegetationMap[i] & 0xF;
             animalPopulation[coord.x, coord.y] = (int)animalPopulationHostilityMap[i] & 0xF;
             animalHostility[coord.x, coord.y] = (int)(animalPopulationHostilityMap[i] >> 4) & 0xF;
             climate[coord.x, coord.y] = (int)climateMap[i];
             
             SoilType currentSoil = GetSoilTypeForInt((int)fertilityFirmnessMap[i]);
+            soil[coord.x, coord.y] = currentSoil;
             fertility[coord.x, coord.y] = GetFertility(currentSoil);
             firmness[coord.x, coord.y] = GetFirmness(currentSoil);
-            soil[coord.x, coord.y] = currentSoil;
             walkable[coord.x, coord.y] = currentSoil is SoilType.Seafloor or SoilType.Riverbed ? 0 : 1;
             
             vegetation[coord.x, coord.y] = walkable[coord.x, coord.y]==1? (int)(oreVegetationMap[i] >> 4) & 0xF : 0;
             water[coord.x, coord.y] = walkable[coord.x, coord.y]==1? (int)waterMap[i] : 0;
+            ore[coord.x, coord.y] =  walkable[coord.x, coord.y]==1? (int)oreVegetationMap[i] & 0xF : 0;
+            travelcost[coord.x, coord.y] = walkable[coord.x,coord.y] == 1 ?  heightMap[coord.x, coord.y]*mapHeightMultiplier : 100;
             
             i++;
         }
-        
-        CalculateTravelCost();
     }
 
     public void GenerateMap()
@@ -143,6 +149,7 @@ public class MapExtractor : MonoBehaviour
         {
             DestroyImmediate(transform.GetChild(i).gameObject);            
         }
+        
 
         Initialize();
         
@@ -155,20 +162,21 @@ public class MapExtractor : MonoBehaviour
                 heightMap, mapHeightMultiplier, chunkCountRoot, points),
             textures);
         
+        
+        treeGenerator = GetComponent<TreeGenerator>();
         treeGenerator.GenerateTrees(points, vegetation, climate, heightMap, mapHeightMultiplier, chunkSize);
     }
-
-    private void CalculateTravelCost()
+    
+    public void PlantGrowthAbility(Vector3 centerPos)
     {
-       foreach (var coord in VectorUtils.GridCoordinates(points, points))
-       {
-           travelcost[coord.x, coord.y] = walkable[coord.x,coord.y] == 0 ? 20 :
-               heightMap[coord.x, coord.y]*mapHeightMultiplier;
-       }
+        var centerPoint = CoordsToPoints(centerPos);
 
+        treeGenerator.GrowTreeAbility(centerPoint, 50, vegetation, climate, heightMap, mapHeightMultiplier, chunkSize);
     }
+
     public Dictionary<Vector2, Texture2D> GetTerrainTextures()
     {
+       
         var colorMap = WriteColorMap(heightMap, chunkCountRoot, walkable);
         var textures = TextureGenerator.TextureFromColorMaps(colorMap, chunkSize);
         

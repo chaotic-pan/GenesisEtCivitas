@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Events;
 using Terrain;
 using UI;
 
@@ -30,6 +31,7 @@ namespace Player.Abilities
                 if (tileData != null)
                 {
                     tileData.landFertility += 10;
+                    tileData.vegetation += 1;
                 }
             }
             
@@ -51,8 +53,15 @@ namespace Player.Abilities
                     new List<Vector2> { chunk }, 
                     MapDisplay.MapOverlay.Fertility
                 );
+                UIEvents.UIMap.OnUpdateHeatmapChunks.Invoke(
+                    new List<Vector2> { chunk }, 
+                    MapDisplay.MapOverlay.Vegetation
+                );
             }
             SpawnEffectOnTiles(affectedTiles, "PlantGrowth", heightOffset: 2f, scaleMultiplier: 1.3f);
+
+            
+            GameEvents.InfluencePoints.PlantsEffect.Invoke(TileManager.Instance.CellToWorld(centerTilePos));
         }
     }
 }
